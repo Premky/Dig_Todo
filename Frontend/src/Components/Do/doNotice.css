@@ -1,0 +1,19 @@
+.carousel-container {
+    width: 100vw; /* Full viewport width */
+    height: 80vh; /* Full viewport height */
+    overflow: hidden; /* Hide scrollbars */
+  }
+  
+  .carousel-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Full height of the carousel container */
+  }
+  
+  .carousel-image {
+    width: 50%;
+    height: 70%;
+    /* object-fit: cover; Ensure the image covers the container while maintaining aspect ratio */
+  }
+  

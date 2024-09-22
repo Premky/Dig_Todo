@@ -1,0 +1,31 @@
+@keyframes scrollUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(-100%);
+    }
+  }
+  
+  .table-container {
+    overflow: hidden;
+    height: 400px; /* Adjust the height as needed */
+    position: relative;
+  }
+  
+  .table-container tbody {
+    display: block;
+    animation: scrollUp 30s linear infinite;
+  }
+  
+  .table-container thead, .table-container tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  
+  .table-container thead{
+    position: sticky;
+    top:0;
+    z-index: 1;
+  }
