@@ -15,7 +15,7 @@ const AddOffice = () => {
 
   useEffect(() => {
     getBaseURLFunc();
-  }, []);
+  }, [BASE_URL]);
 
   const [headoffice, setHeadOffice] = useState([]);
   const [state, setState] = useState([]);
