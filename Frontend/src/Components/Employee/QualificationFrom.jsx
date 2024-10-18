@@ -104,7 +104,7 @@ const QualificationFrom = () => {
                                         {loading ? 'Submitting...' : editing ? 'Update Employee' : 'Add Employee'}
                                     </button>
                                     <div className="col mb-3">
-                                        <button className='btn btn-danger' onClick={handleClear}>Clear</button>
+                                        <button className='btn btn-danger' onClick={handleClear}>Clearr</button>
                                     </div>
                                 </div>
                             </form>
