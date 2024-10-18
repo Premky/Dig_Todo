@@ -24,20 +24,33 @@ const QualificationFrom = () => {
 
     const [fetchEdu, setFetchEdu] = useState([]);
 
-    const fetchEmployee = ()=>{
-        try{
-            const result = await axios.get(`${BASE_URL}/display/`)
+    const fetchEmployee = async () => {
+        try {
+            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
+            if (result.data.Status) {
+                setFetchEmp(result.data.Result);
+            } else {
+                alert(result.data.Result);
+                console.error(result.data.Result);
+            }
+        } catch (err) {
+            console.error(err);
+            alert(err)
         }
     }
 
-    const onFormSubmit=()=>{
+    const onFormSubmit = () => {
         console.log('onformsubmit')
     }
     const handleClear = (e) => {
         e.preventDefault();
         reset();
-        setEditing(false);                
+        setEditing(false);
     }
+
+    useEffect(() => {
+        fetchEmployee();
+    }, [BASE_URL]);
     return (
         <>
             <div className="container-fluid p-0">
@@ -45,9 +58,17 @@ const QualificationFrom = () => {
                     <div className="col-12">
                         <div className="p-2 pt-0 justify-content shadow text-center">
                             <u>
-                                <h4>{editing ? 'Edit Employee' : 'Add Employee'}</h4>
+                                <h4>{editing ? 'Edit Qualification' : 'Add Qualification'}</h4>
                             </u>
                         </div>
+                    </div>
+
+                    <div className="col-12 mt-2">
+                        <ul>
+                            {fetchEmp.map(emp => (
+                                <li key={emp.emp_id} className="list-group-item">{emp.name_np}</li>
+                            ))}
+                        </ul>
                     </div>
 
                     <div className="col-12">
@@ -98,13 +119,13 @@ const QualificationFrom = () => {
                                     {errors.symbol_no && <span>{errors.symbol_no.message}</span>}
                                 </div>
 
-                      
+
                                 <div className="col-12">
                                     <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
                                         {loading ? 'Submitting...' : editing ? 'Update Employee' : 'Add Employee'}
                                     </button>
                                     <div className="col mb-3">
-                                        <button className='btn btn-danger' onClick={handleClear}>Clearr</button>
+                                        <button className='btn btn-danger' onClick={handleClear}>Clear</button>
                                     </div>
                                 </div>
                             </form>

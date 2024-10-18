@@ -98,6 +98,16 @@ router.get('/employee', async(req, res)=>{
     })
 })
 
+router.get('/employee/:pmis', async(req, res)=>{
+    const pmis= req.params.pmis;
+    
+    const sql = `SELECT * from employee WHERE pmis=?  `;
+    con.query(sql,pmis, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
 router.get('/blood', async(req, res)=>{
     const sql = `SELECT * from bloodgroups`;
     con.query(sql, (err, result) => {
