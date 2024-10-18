@@ -1,24 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm, Controller } from 'react-hook-form';
 import NepaliDate from 'nepali-datetime';
 
 import './formstyle.css'
-// import { Calendar } from 'react-modern-calendar-datepicker';
-// import 'react-modern-calendar-datepicker/lib/DatePicker.css';
-// import NepaliDatePicker from 'react-nepali-datepicker';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 const AddEmployee = () => {
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    const navigate = useNavigate();
     const npToday = new NepaliDate();
     const formattedDateNp = npToday.format('YYYY-MM-DD');
     const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm();
     const [loading, setLoading] = useState(false);
 
-    const [currentEmp, setCurrentEmp] = useState(null);
     const [editing, setEditing] = useState(false);
+    const [currentEmp, setCurrentEmp] = useState(null);
     const [rank, setRank] = useState([]);
     const [rankOption, setRankOption] = useState([]);
     const [bloodGroups, setBloodGroups] = useState([]);
@@ -148,13 +146,13 @@ const AddEmployee = () => {
 
     // Handling file change for preview
     const onFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
+        const photo = e.target.files[0];
+        if (photo) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setFilePreview(reader.result);
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(photo);
         }
     };
 
@@ -179,23 +177,25 @@ const AddEmployee = () => {
         setLoading(true);
         try {
             const formData = new FormData();
+            formData.append('photo', data.photo[0])
+
             Object.keys(data).forEach(key => formData.append(key, data[key]));
             if (data.file && data.file.length > 0) {
                 formData.append('file', data.file[0]);
             }
-            const url = editing ? `${BASE_URL}/emp/update_emp/${currentEmp.id}` : `${BASE_URL}/auth/add_emp`;
+            const url = editing ? `${BASE_URL}/emp/update_emp/${currentEmp.id}` : `${BASE_URL}/emp/add_emp`;
             const method = editing ? 'PUT' : 'POST';
-            const result = await axios({
-                method, url, data: formData, headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            const result = await axios({ method, url, data: formData, headers: { 'Content-Type': 'multipart/form-data' } });
 
             if (result.data.Status) {
-                alert(`Employee ${editing ? 'updated' : 'added'} successfully!`);
+                alert(`Employee ${editing ? 'updated' : 'added'} ${result.data.pmis} successfully!`);
+                // console.log(result.data.pmis)
                 reset();
                 setEditing(false);
                 setCurrentEmp(null);
                 setFilePreview(null);
                 fetchEmployees();
+                navigate(`/emp/qualification-form/${result.data.pmis}`)
             }
         } catch (err) {
             console.error(err);
@@ -205,7 +205,8 @@ const AddEmployee = () => {
         }
     };
 
-    const handleClear = () => {
+    const handleClear = (e) => {
+        e.preventDefault();
         reset();
         setEditing(false);
         setCurrentEmp(null);
@@ -250,7 +251,7 @@ const AddEmployee = () => {
         setValue('dob', date); // Update the form state
     };
 
-    const clearImageUrl=()=>{
+    const clearImageUrl = () => {
         setFilePreview(null)
     }
 
@@ -267,7 +268,7 @@ const AddEmployee = () => {
 
                 <div className="col-12">
                     <div className="d-flex flex-column px-3 pt-0">
-                        <form className="row mt-1 g-3" onSubmit={handleSubmit(onFormSubmit)}>
+                        <form className="row mt-1 g-3" >
                             <div className="row">
                                 <div className="col">
                                     <div className="row">
@@ -327,21 +328,37 @@ const AddEmployee = () => {
 
 
                                         <div className="col-xl-4 col-md-6 col-sm-12">
-                                            <label htmlFor="file">Upload File</label>
-                                            <input type="file" {...register('file')} className="form-control" onChange={onFileChange} />
+                                            <label htmlFor="photo">Upload File</label>
+                                            <input type="file" {...register('photo')} className="form-control" onChange={onFileChange} />
                                         </div>
                                     </div>
                                 </div>
                                 <div className="col-3">
                                     <div className="col-xl-3 col-md-6 col-sm-12">
-                                        {filePreview && <div>
-                                            <img src={filePreview} alt="File Preview" style={{ width: '100px', height: 'auto' }} className="img-thumbnail mt-2" />
-                                            <div className='btn-danger btn' onClick={clearImageUrl}> x </div>
-                                        </div>}
+                                        {filePreview &&
+                                            <div className='row'>
+                                                <div className="col-1">
+                                                    <div className='btn-danger btn btn-sm ' onClick={clearImageUrl}> x </div>
+                                                </div>
+                                                <div className="col-11">
+                                                    <img src={filePreview} alt="File Preview" style={{ width: '100%', height: 'auto' }} className="img-thumbnail mt-2" />
+                                                </div>
+                                            </div>}
                                     </div>
                                 </div>
 
                             </div> {/*Close For First Row div*/}
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="gender">लिंङ्ग</label>
+                                <select {...register('gender')} className="form-select" placeholder="Select Rank">
+                                    <option value="">Gender</option>
+                                    <option key='M' value='M'>    पुरुष  </option>
+                                    <option key='F' value='F'>    महिला  </option>
+                                    <option key='O' value='O'>    अन्य  </option>
+                                </select>
+                                {errors.gender && <span>{errors.gender.message}</span>}
+                            </div>
 
                             <div className="col-xl-3 col-md-6 col-sm-12">
                                 <label htmlFor="dob">जन्म मिति<span>*</span></label>
@@ -349,6 +366,7 @@ const AddEmployee = () => {
                                     name="dob"
                                     control={control}
                                     rules={{ required: "This field is required" }}
+
                                     render={({ field: { onChange, onBlur, value, ref } }) => (
                                         <NepaliDatePicker
                                             value={value || ""} // Ensure empty string when no date is selected
@@ -366,15 +384,37 @@ const AddEmployee = () => {
                                 {errors.dob && <span>{errors.dob.message}</span>}
                             </div>
 
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="recruit_date">भर्ना मिति<span>*</span></label>
+                                <Controller
+                                    name="recruit_date"
+                                    control={control}
+                                    rules={{ required: "This field is required" }}
+                                    render={({ field: { onChange, onBlur, value, ref } }) => (
+                                        <NepaliDatePicker
+                                            value={value || ""} // Ensure empty string when no date is selected
+                                            onChange={(date) => {
+                                                onChange(date); // Update form state
+                                            }}
+                                            onBlur={onBlur} // Handle blur
+                                            dateFormat="YYYY-MM-DD" // Customize your date format
+                                            placeholder="Select Nepali Date"
+                                            ref={ref} // Use ref from react-hook-form
+                                        />
+                                    )}
+                                />
+                                {errors.recruit_date && <span>{errors.recruit_date.message}</span>}
+                            </div>
+
 
                             <div className="col-xl-3 col-md-6 col-sm-12">
-                                <label htmlFor="sanket_no">संकेत नं.<span>*</span></label>
+                                <label htmlFor="symbol_no">संकेत नं.<span>*</span></label>
                                 <input
-                                    {...register('sanket_no', { required: "This field is required." })}
+                                    {...register('symbol_no', { required: "This field is required." })}
                                     placeholder="संकेत नं."
                                     className="form-control"
                                 />
-                                {errors.sanket_no && <span>{errors.sanket_no.message}</span>}
+                                {errors.symbol_no && <span>{errors.symbol_no.message}</span>}
                             </div>
 
                             <div className="col-xl-3 col-md-6 col-sm-12">
@@ -388,13 +428,13 @@ const AddEmployee = () => {
                             </div>
 
                             <div className="col-xl-3 col-md-6 col-sm-12">
-                                <label htmlFor="kasakosh">कर्मचारी संचय कोष<span>*</span></label>
+                                <label htmlFor="sanchay_kosh">कर्मचारी संचय कोष<span>*</span></label>
                                 <input
-                                    {...register('kasakosh', { required: "This field is required." })}
+                                    {...register('sanchay_kosh', { required: "This field is required." })}
                                     placeholder="कर्मचारी संचय कोष"
                                     className="form-control"
                                 />
-                                {errors.kasakosh && <span>{errors.kasakosh.message}</span>}
+                                {errors.sanchay_kosh && <span>{errors.sanchay_kosh.message}</span>}
                             </div>
 
                             <div className="col-xl-3 col-md-6 col-sm-12">
@@ -428,31 +468,31 @@ const AddEmployee = () => {
                             </div>
 
                             <div className="col-xl-3 col-md-6 col-sm-12">
-                                <label htmlFor="ctz_iss">नागरिकता जारी जिल्ला<span>*</span></label>
+                                <label htmlFor="issue_district">नागरिकता जारी जिल्ला<span>*</span></label>
                                 <input
-                                    {...register('ctz_iss', { required: "This field is required." })}
+                                    {...register('issue_district', { required: "This field is required." })}
                                     placeholder="जारी जिल्ला"
                                     className="form-control"
                                 />
-                                {errors.ctz_iss && <span>{errors.ctz_iss.message}</span>}
+                                {errors.issue_district && <span>{errors.issue_district.message}</span>}
                             </div>
 
 
                             <div className="col-xl-3 col-md-6 col-sm-12">
-                                <label htmlFor="blood">ब्लड ग्रुप<span style={{ color: 'red' }}>*</span></label>
+                                <label htmlFor="blood_group">ब्लड ग्रुप<span style={{ color: 'red' }}>*</span></label>
                                 <select
-                                    {...register('blood', { required: "This field is required." })}
+                                    {...register('blood_group', { required: "This field is required." })}
                                     className="form-select"
                                     placeholder="Select blood"
                                 >
-                                    <option>Select Blood Group</option>
+                                    <option value=''>Select Blood Group</option>
                                     {bloodGroups.map((blood) => (
                                         <option key={blood.value} value={blood.value}>
                                             {blood.label}
                                         </option>
                                     ))}
                                 </select>
-                                {errors.blood && <span>{errors.blood.message}</span>}
+                                {errors.blood_group && <span>{errors.blood_group.message}</span>}
                             </div>
 
                             <div className="col-xl-3 col-md-6 col-sm-12">
@@ -495,11 +535,24 @@ const AddEmployee = () => {
                                 {errors.warna && <span>{errors.warna.message}</span>}
                             </div>
 
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="family">पति वा पत्नीको कम्प्युटर कोड</label>
+                                <input
+                                    {...register('family')}
+                                    placeholder="पति वा पत्निको कम्प्युटर कोड"
+                                    className="form-control"
+                                />
+                                {errors.family && <span>{errors.family.message}</span>}
+                            </div>
+
 
                             <div className="col-12">
-                                <button type="submit" className="btn btn-primary" disabled={loading}>
+                                <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
                                     {loading ? 'Submitting...' : editing ? 'Update Employee' : 'Add Employee'}
                                 </button>
+                                <div className="col mb-3">
+                                    <button className='btn btn-danger' onClick={handleClear}>Clear</button>
+                                </div>
                             </div>
                         </form>
 

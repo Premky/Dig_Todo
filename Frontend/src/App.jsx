@@ -27,6 +27,7 @@ import SancharRoute from './Components/PrivateRoute/SancharRoute'
 import OfficerLeave from './Components/LeaveCount/OfficerLeave'
 import CurrentOfficerLeave from './Components/LeaveCount/CurrentOfficerLeave'
 import AddEmployee from './Components/Employee/AddEmployee'
+import QualificationFrom from './Components/Employee/QualificationFrom'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -108,9 +109,9 @@ function App() {
           </Route>
 
           <Route path='/emp/' element={<AddEmployee />}>
-            {/* <Route path='' element=''/> */}
 
           </Route>
+          <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom/>}/>
 
 
         </Routes>
