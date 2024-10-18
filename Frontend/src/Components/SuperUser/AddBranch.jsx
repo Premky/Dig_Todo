@@ -15,7 +15,7 @@ const AddBranch = () => {
 
     useEffect(() => {
         getBaseURLFunc();
-    }, []);
+    }, [BASE_URL]);
 
     const [editMode, setEditMode] = useState(false);
     const [editOBMode, setEditOBMode] = useState(false);

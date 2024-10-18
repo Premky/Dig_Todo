@@ -107,9 +107,15 @@ function App() {
             </Route>
           </Route>
 
+          <Route path='/emp/' element={<AddEmployee />}>
+            {/* <Route path='' element=''/> */}
+
+          </Route>
+
+
         </Routes>
 
-      </BrowserRouter>
+      </BrowserRouter >
     </>
   )
 }

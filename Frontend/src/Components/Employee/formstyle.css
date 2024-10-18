@@ -5,3 +5,7 @@
     font-size: 1४px;    
   }
   
+  span{
+    color: red;
+    vertical-align: super;
+  }

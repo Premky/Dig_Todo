@@ -90,5 +90,20 @@ router.get('/ranks',(req,res)=>{
 })
 
 
+router.get('/employee', async(req, res)=>{
+    const sql = `SELECT * from employee`;
+    con.query(sql, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
+router.get('/blood', async(req, res)=>{
+    const sql = `SELECT * from bloodgroups`;
+    con.query(sql, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
 
 export { router as displayRouter }

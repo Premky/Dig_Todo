@@ -1,18 +1,24 @@
-import mysql from 'mysql'
-
-const con = mysql.createConnection({
-    host:'localhost',
-    user:'software',    
-    password:'Mark3@Rifile',
-    database:'kppo_program'
-})
+import mysql from 'mysql2';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // const con = mysql.createConnection({
 //     host:'localhost',
-//     user:'root',    
-//     password:'',
+//     user:'software',    
+//     password:'Mark3@Rifile',
 //     database:'kppo_program'
 // })
+
+const con = mysql.createConnection({
+    host:process.env.DB_HOST,
+    port:process.env.DB_PORT,    
+    user:process.env.DB_USER,    
+    password:process.env.DB_PASSWORD,
+    database:process.env.DB_NAME,
+    ssl:{
+        rejectUnauthorized:false,
+    }
+})
 
 con.connect(function(err){
     if(err){

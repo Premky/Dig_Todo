@@ -12,7 +12,7 @@ const AllNews = () => {
 
     useEffect(() => {
         getBaseURLFunc();
-    }, []);
+    }, [BASE_URL]);
     
     const [news, setNews] = useState([])
     const fetch_news=()=>{

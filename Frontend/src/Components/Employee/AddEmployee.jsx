@@ -1,144 +1,52 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import Select from 'react-select';
-import './formstyle.css';
+import axios from 'axios';
+import { useForm, Controller } from 'react-hook-form';
+import NepaliDate from 'nepali-datetime';
+
+import './formstyle.css'
+// import { Calendar } from 'react-modern-calendar-datepicker';
+// import 'react-modern-calendar-datepicker/lib/DatePicker.css';
+// import NepaliDatePicker from 'react-nepali-datepicker';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
-import { add } from 'date-fns';
-import CreateAddress from '../CreateAddress';
-import {getBaseUrl} from '../../Utilities/getBaseUrl'
-
 const AddEmployee = () => {
-    const navigate = useNavigate();
-    // const BASE_URL = import.meta.env.VITE_API_BASE_URL
-    const [BASE_URL, setBase_Url] = useState();
-    const getBaseURLFunc = async () => {
-        const url = await getBaseUrl();
-        setBase_Url(url)
-    }
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    const npToday = new NepaliDate();
+    const formattedDateNp = npToday.format('YYYY-MM-DD');
+    const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm();
+    const [loading, setLoading] = useState(false);
 
+    const [currentEmp, setCurrentEmp] = useState(null);
+    const [editing, setEditing] = useState(false);
+    const [rank, setRank] = useState([]);
+    const [rankOption, setRankOption] = useState([]);
+    const [bloodGroups, setBloodGroups] = useState([]);
+
+    const [filePreview, setFilePreview] = useState(null);
+    const [fetchEmp, setFetchEmp] = useState([]);
+    const [stateOption, setStateOption] = useState([]);
+    const [districtOption, setDistrictOption] = useState([]);
+    const [cityOption, setCityOption] = useState([]);
+    const [empAddress, setEmpAddress] = useState({});
+
+    const [selectedDay, setSelectedDay] = useState(null);
+
+    const handleDate = ({ bsDate, adDate }) => {
+        setDate({ date: bsDate });
+    };
+    const errsapnStyle = {
+        color: 'red',
+        verticalAlign: 'super'
+    }
+    // Fetching Ranks
     useEffect(() => {
-        getBaseURLFunc();
-    }, []);
-    
-    const [editMode, setEditMode] = useState(false);
+        fetchRank();
+        fetchState();
+        fetchEmployees();
+        fetchBloodGroup();
+    }, [BASE_URL]);
 
-    const [addEmployee, setAddEmployee] = useState({
-        docr_no: '',
-        personal_no: '',
-        pmis: '',
-        symbol_no: '',
-        rank: '',
-        name_en: '',
-        name_np: '',
-        dob: null,
-        address: '',
-        recruit_date: '',
-        recruit_rank: '',
-        gender: '',
-        qualification_id: null,
-        contact_no: '',
-        deputation: null,
-        working: null,
-        in_working: null,
-        family: null,
-        created_by: localStorage.getItem('uid')
-    })
-
-    const clearAddEmployee = () => {
-        setAddEmployee({
-            docr_no: '',
-            personal_no: '',
-            pmis: '',
-            symbol_no: '',
-            rank: '',
-            name_en: '',
-            name_np: '',
-            dob: '',
-            address: '',
-            recruit_date: '',
-            recruit_rank: '',
-            gender: '',
-            qualification_id: null,
-            contact_no: '',
-            deputation: null,
-            working: null,
-            in_working: null,
-            family: null,
-            created_by: localStorage.getItem('uid')
-        });
-        setEditMode(false);
-    }
-    const [empAddress, setEmpAddress] = useState({
-        state: '',
-        district: '',
-        city: '',
-        ward: '',
-        is_permanent: '',
-    })
-
-    const [office, setOffice] = useState([]);
-    const [officeOption, setOfficeOption] = useState([]);
-    const fetchOffice = async () => {
-        try {
-            const result = await axios.get(`${BASE_URL}/super/offices`);
-            if (result.data.Status) {
-                const options = result.data.Result.map(opt => ({
-                    value: opt.o_id,
-                    label: opt.office_name
-                }));
-                setOfficeOption(options);
-                setOffice(result.data.Result)
-            } else {
-                alert(result.data.Error);
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
-    const [branches, setBranches] = useState([])
-    const [branchOption, setBranchOption] = useState([])
-    const fetchBranches = async () => {
-        try {
-            const result = await axios.get(`${BASE_URL}/super/branches`);
-            if (result.data.Status) {
-                setBranches(result.data.Result);
-                const options = result.data.Result.map(opt => ({
-                    value: opt.bid,
-                    label: opt.branch_name
-                }));
-                setBranchOption(options);
-            } else {
-                alert(result.data.Error);
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
-    const [officeBranch, setOfficeBranch] = useState([])
-    const [officeBranchOption, setOfficeBranchOption] = useState([])
-    const fetchOfficeBranch = async () => {
-        try {
-            const result = await axios.get(`${BASE_URL}/super/officebranch`);
-            if (result.data.Status) {
-                setOfficeBranch(result.data.Result);
-                const options = result.data.Result.map(opt => ({
-                    value: opt.bid,
-                    label: opt.office_id
-                }))
-                setOfficeBranchOption();
-            } else {
-                alert(result.data.Error);
-            }
-        } catch (err) {
-            console.log(err);
-        }
-    };
-
-    const [rank, setRank] = useState([])
-    const [rankOption, setRankOption] = useState([])
     const fetchRank = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/display/ranks`);
@@ -147,9 +55,10 @@ const AddEmployee = () => {
                 const options = result.data.Result.map(opt => ({
                     value: opt.rank_id,
                     label: opt.rank_np
-                }))
+                }));
                 setRankOption(options);
             } else {
+                console.error(result.data.Error);
                 alert(result.data.Error);
             }
         } catch (err) {
@@ -157,35 +66,37 @@ const AddEmployee = () => {
         }
     };
 
-    const changeRank = (selectedOption) => {
-        setAddEmployee({ ...addEmployee, rank: selectedOption.value })
-    }
+    //Fetching Blood Groups
+    const fetchBloodGroup = async () => {
+        try {
+            const result = await axios.get(`${BASE_URL}/display/blood`);
+            if (result.data.Status) {
+                // setBlood(result.data.Result);
+                const options = result.data.Result.map(opt => ({
+                    value: opt.id,
+                    label: opt.bloodgroup
+                }));
+                setBloodGroups(options);
 
-    const changeRecruitRank = (selectedOption) => {
-        setAddEmployee({ ...addEmployee, recruit_rank: selectedOption.value })
-    }
-
-
-    const handleDobChange = (value) => {
-        setAddEmployee({ ...addEmployee, dob: value });
+            } else {
+                console.error(result.data.Error);
+                alert(result.data.Error);
+            }
+        } catch (err) {
+            console.log(err);
+        }
     };
-    const handleRecruitDateChange = (value) => {
-        setAddEmployee({ ...addEmployee, recruit_date: value });
-    };
-    const [dobValidationError, setDobValidationError] = useState();
-    const [recruitDateValidationError, setRecruitDateValidationError] = useState();
 
-    const [state, setState] = useState([])
-    const [stateOption, setStateOption] = useState([])
+
+    // Fetching States
     const fetchState = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/super/states`);
             if (result.data.Status) {
-                setState(result.data.Result);
                 const options = result.data.Result.map(opt => ({
                     value: opt.state_id,
                     label: opt.state_name
-                }))
+                }));
                 setStateOption(options);
             } else {
                 alert(result.data.Error);
@@ -194,25 +105,20 @@ const AddEmployee = () => {
             console.log(err);
         }
     };
+
+    // Change handlers for state, district, city
     const changeState = (selectedOption) => {
-        setEmpAddress({
-            ...empAddress,
-            state: selectedOption.value
-        })
+        setEmpAddress({ ...empAddress, state: selectedOption.value });
         fetchDistrict(selectedOption.value);
-    }
+    };
 
-
-    const [district, setDistrict] = useState([])
-    const [districtOption, setDistrictOption] = useState([])
     const fetchDistrict = async (state_id) => {
+        console.log(state_id)
         try {
             const result = await axios.get(`${BASE_URL}/super/districts/${state_id}`);
             if (result.data.Status) {
                 const optionDistrict = result.data.Result.map(d => ({ value: d.did, label: d.district_name }));
-                setDistrict(result.data.Result);
                 setDistrictOption(optionDistrict);
-                // console.log(result)
             }
         } catch (err) {
             console.log(err);
@@ -220,20 +126,16 @@ const AddEmployee = () => {
     };
 
     const changeDistrict = (selectedOption) => {
-        setEmpAddress({ ...empAddress, district: selectedOption.value })
-        fetchCity(selectedOption.value)
-    }
+        setEmpAddress({ ...empAddress, district: selectedOption.value });
+        fetchCity(selectedOption.value);
+    };
 
-    const [city, setCity] = useState([])
-    const [cityOption, setCityOption] = useState([])
-    const fetchCity = async (state_id) => {
+    const fetchCity = async (district_id) => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/local_level/${state_id}`);
+            const result = await axios.get(`${BASE_URL}/super/local_level/${district_id}`);
             if (result.data.Status) {
                 const optionCity = result.data.Result.map(d => ({ value: d.cid, label: d.city_name }));
-                setCity(result.data.Result);
                 setCityOption(optionCity);
-                // console.log(result)
             }
         } catch (err) {
             console.log(err);
@@ -241,297 +143,379 @@ const AddEmployee = () => {
     };
 
     const changeCity = (selectedOption) => {
-        setEmpAddress({ ...empAddress, city: selectedOption.value })
-    }
+        setEmpAddress({ ...empAddress, city: selectedOption.value });
+    };
 
-    const [ispermanent, setIsPermanent] = useState(false);
-    const handleCheckboxChange = (e) => {
-        setIsPermanent(e.target.checked)
-        setEmpAddress({ ...empAddress, is_permanent: ispermanent })
-        // console.log(ispermanent)
-    }
+    // Handling file change for preview
+    const onFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFilePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const postData = {
-            employee: addEmployee,
-            address: empAddress
-        };
-
+    // Fetch employees
+    const fetchEmployees = async () => {
         try {
-            const result = await axios.post(`${BASE_URL}/emp/add_employee`, postData);
+            const result = await axios.get(`${BASE_URL}/display/employee`);
             if (result.data.Status) {
-                alert('Employee added successfully')
-                // navigate('')
+                setFetchEmp(result.data.Result);
             } else {
                 alert(result.data.Error);
+                console.error(result.data.Error);
             }
         } catch (err) {
-            console.error('Error adding employee', err);
+            console.error(err);
+            alert('Failed to fetch employees. Please try again.');
+        }
+    };
+
+    // Handling form submit
+    const onFormSubmit = async (data) => {
+        setLoading(true);
+        try {
+            const formData = new FormData();
+            Object.keys(data).forEach(key => formData.append(key, data[key]));
+            if (data.file && data.file.length > 0) {
+                formData.append('file', data.file[0]);
+            }
+            const url = editing ? `${BASE_URL}/emp/update_emp/${currentEmp.id}` : `${BASE_URL}/auth/add_emp`;
+            const method = editing ? 'PUT' : 'POST';
+            const result = await axios({
+                method, url, data: formData, headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            if (result.data.Status) {
+                alert(`Employee ${editing ? 'updated' : 'added'} successfully!`);
+                reset();
+                setEditing(false);
+                setCurrentEmp(null);
+                setFilePreview(null);
+                fetchEmployees();
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Failed to submit the form. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleClear = () => {
+        reset();
+        setEditing(false);
+        setCurrentEmp(null);
+        setFilePreview(null);
+        fetchEmployees();
+    }
+
+    const handleEdit = (emp) => {
+        setCurrentEmp(emp);
+        setEditing(true);
+        setValue("pmis", emp.pmis);
+        setValue("dob", emp.dob);
+        setValue("rank", emp.rank);
+        if (emp.file) {
+            const fileUrl = `${BASE_URL}/${notice.file}`;
+            setFilePreview(fileUrl);
+        } else {
+            setFilePreview(null);
         }
     }
 
-    useEffect(() => {
-        fetchOfficeBranch();
-        fetchBranches();
-        fetchOffice();
-        fetchRank();
-        fetchState();
-        fetchDistrict();
-    }, []);
+    const handleDelete = async (id) => {
+        try {
+            const url = `${BASE_URL}/emp/delete_emp/${id}`;
+            const result = await axios.delete(url);
+            if (result.data.Status) {
+                alert('Employee deleted successfully!');
+            } else {
+                alert('Failed to delete employee');
+                console.error('Failed to delete employee')
+            }
+        } catch (err) {
+            console.error(err);
+            alert('An error occured while deleting the employee record.');
+        } finally {
+            fetchEmployees();
+        }
+    };
+
+    const handleDateChange = (date) => {
+        setSelectedDay(date); // Update local state
+        setValue('dob', date); // Update the form state
+    };
+
+    const clearImageUrl=()=>{
+        setFilePreview(null)
+    }
 
     return (
-        <>
-            <div className="row pl-2 d-flex">
-                <div className="col">
-                    <div className="p-1 d-flex justify-content-center shadow">
-                        <h4>Add Employee</h4>
+        <div className="container-fluid p-0">
+            <div className="row">
+                <div className="col-12">
+                    <div className="p-2 pt-0 justify-content shadow text-center">
+                        <u>
+                            <h4>{editing ? 'Edit Employee' : 'Add Employee'}</h4>
+                        </u>
                     </div>
-
-                    <div className="p-1">
-                        <span>Search</span>
-                    </div>
-
-                    <div className="p-1">
-                        <form action="" onSubmit={handleSubmit}>
-                            <div className="row">
-                                <div className="col mb-3">
-                                    <label htmlFor=""> डोसियर नं. </label>
-                                    <input type="text" name='docr' placeholder='डोसियर नं.'
-                                        className='custom-input'
-                                        value={addEmployee.docr_no}
-                                        onChange={(e) => setAddEmployee({ ...addEmployee, docr_no: e.target.value })}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="col mb-3">
-                                    <label htmlFor="personal_no">व्यक्तिगत नं.</label>
-                                    <input type="personal_no" name='personal_no' placeholder='व्यक्तिगत नं.'
-                                        className='custom-input'
-                                        value={addEmployee.personal_no}
-                                        onChange={(e) => setAddEmployee({ ...addEmployee, personal_no: e.target.value })}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="col mb-3">
-                                    <label htmlFor="pmis">कम्प्युटर कोड</label>
-                                    <input type="number" name='pmis' placeholder='PMIS(कम्प्युटर कोड)'
-                                        className='custom-input'
-                                        value={addEmployee.pmis}
-                                        onChange={(e) => setAddEmployee({ ...addEmployee, pmis: e.target.value })}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="col mb-3">
-                                    <label htmlFor="symbol_no">संकेत नं.</label>
-                                    <input type="symbol_no" name='symbol_no' placeholder='संकेत नं.'
-                                        className='custom-input'
-                                        value={addEmployee.symbol_no}
-                                        onChange={(e) => setAddEmployee({ ...addEmployee, symbol_no: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="row">
-                                <div className="col mb-3">
-                                    <label htmlFor="rank">दर्जा</label>
-                                    <Select
-                                        name='rank' id='offirankce'
-                                        className='custom-input'
-                                        options={rankOption}
-                                        value={rankOption.find(
-                                            option => option.value === rankOption.rank_id
-                                        )}
-                                        onChange={changeRank}
-                                        placeholder='दर्जा'
-                                        required
-                                    />
-                                </div>
-                                <div className="col mb-3">
-                                    <label htmlFor="name_en">Name (IN ENGLISH)</label>
-                                    <input type="name_en" name='name_en' placeholder='Name'
-                                        className='custom-input'
-                                        value={addEmployee.name_en}
-                                        onChange={(e) => setAddEmployee({ ...addEmployee, name_en: e.target.value })}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="col mb-3">
-                                    <label htmlFor="name_np">नाम (नेपालीमा)</label>
-                                    <input type="name_np" name='name_np' placeholder='नाम (नेपालीमा)'
-                                        className='custom-input'
-                                        value={addEmployee.name_np}
-                                        onChange={(e) => setAddEmployee({ ...addEmployee, name_np: e.target.value })}
-                                        required
-                                    />
-                                </div>
-
-                                <div className="col mb-3">
-                                    <label htmlFor="dob">जन्म मिति</label>
-
-                                    <NepaliDatePicker
-                                        value={addEmployee.dob}
-                                        className='custom-input'
-                                        required
-                                        onChange={handleDobChange}
-                                        options={{
-                                            calenderLocale: 'ne',
-                                            valueLocale: 'en',
-                                        }}
-                                    />
-                                    {dobValidationError && <div className='text-danger'>{dobValidationError}</div>}
-                                </div>
-                            </div>
-
-                            <div className="row">
-                                <div className="font-weight-bold">
-                                    ठेगानाः
-                                </div>
-                                <div className="col-3 mb-3">
-                                    <label htmlFor="state">प्रदेश</label>
-                                    <Select
-                                        name='state' id='state'
-                                        className='custom-input'
-                                        options={stateOption}
-                                        value={stateOption.find(
-                                            option => option.value === stateOption.state_id
-                                        )}
-                                        onChange={changeState}
-                                        placeholder='प्रदेश'
-                                        required
-                                    />
-                                </div>
-                                <div className="col-3 mb-3">
-                                    <label htmlFor="district">जिल्ला</label>
-                                    <Select
-                                        name='district' id='district'
-                                        className='custom-input'
-                                        options={districtOption}
-                                        value={districtOption.find(
-                                            option => option.value === districtOption.state_id
-                                        )}
-                                        onChange={changeDistrict}
-                                        placeholder='जिल्ला'
-                                        required
-                                    />
-                                </div>
-
-                                <div className="col-3 mb-3">
-                                    <label htmlFor="city">न.पा./गा.पा.</label>
-                                    <Select
-                                        name='city' id='city'
-                                        className='custom-input'
-                                        options={cityOption}
-                                        value={cityOption.find(
-                                            option => option.value === cityOption.state_id
-                                        )}
-                                        onChange={changeCity}
-                                        placeholder='न.पा./गा.पा.'
-                                        required
-                                    />
-                                </div>
-                                <div className="col-1 mb-3 pt-2">
-                                    <label htmlFor="ward">वडा नं.</label>
-                                    <input type="number" name='ward' placeholder='वडा नं.'
-                                        className='custom-input' style={{ width: '55px' }}
-                                        value={empAddress.ward}
-                                        onChange={(e) => setEmpAddress({ ...empAddress, ward: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                                <div className="col-1 mb-3 pt-2">
-                                    <label htmlFor='is_permanent'>
-                                        <input
-                                            type="checkbox"
-                                            checked={ispermanent}
-                                            onChange={handleCheckboxChange}
-                                        /> &nbsp;
-                                        स्थायी ठेगाना हो/होइन {ispermanent} (?)
-                                    </label>
-                                </div>
-
-                            </div>
-                            <div className="row">
-                                <div className="col mb-3">
-                                    <label htmlFor="recruit_date">जन्म मिति</label>
-
-                                    <NepaliDatePicker
-                                        value={addEmployee.dob}
-                                        className='custom-input'
-                                        required
-                                        onChange={handleRecruitDateChange}
-                                        options={{
-                                            calenderLocale: 'ne',
-                                            valueLocale: 'en',
-                                        }}
-                                    />
-                                    {recruitDateValidationError && <div className='text-danger'>{recruitDateValidationError}</div>}
-                                </div>
-                                <div className="col mb-3">
-                                    <label htmlFor="recruitrank">भर्ना दर्जा</label>
-                                    <Select
-                                        name='recruitrank' id='racruitrank'
-                                        className='custom-input'
-                                        options={rankOption}
-                                        value={rankOption.find(
-                                            option => option.value === rankOption.rank_id
-                                        )}
-                                        onChange={changeRecruitRank}
-                                        placeholder='शुरु भर्ना भएको दर्जा'
-                                        required
-                                    />
-                                </div>
-                                <div className="col mb-3">
-                                    <label htmlFor="gender">लिङ्ग</label>
-                                    <select name='gender' className='form-control'
-                                        onChange={(e) => setAddEmployee({ ...addEmployee, gender: e.target.value })}
-                                    >
-                                        <option value="1">पुरुष</option>
-                                        <option value="2">महिला</option>
-                                        <option value="3">अन्य</option>
-                                    </select>
-                                </div>
-                                <div className="col mb-3 pt-2">
-                                    <label htmlFor="ward">सम्पर्क नं.</label>
-                                    <input type="number" name='contact' placeholder='सम्पर्क नं.'
-                                        className='custom-input'
-                                        value={addEmployee.contact_no}
-                                        onChange={(e) => setAddEmployee({ ...addEmployee, contact_no: e.target.value })}
-                                        required
-                                    />
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col mb-3">
-                                    <button className='btn btn-success' >Add</button>
-                                </div>
-                                <div className="col mb-3">
-                                    <button className='btn btn-danger' onClick={clearAddEmployee}>Clear</button>
-                                </div>
-                            </div>
-
-                        </form>
-                    </div>
-
-
                 </div>
-                <div className="col-3">
-                    <div className="p-1 d-flex justify-content-center shadow">
-                        <h4>अन्य आवश्यक</h4>
-                    </div>
-                    <div>
-                        {/* <CreateAddress/> */}
+
+                <div className="col-12">
+                    <div className="d-flex flex-column px-3 pt-0">
+                        <form className="row mt-1 g-3" onSubmit={handleSubmit(onFormSubmit)}>
+                            <div className="row">
+                                <div className="col">
+                                    <div className="row">
+                                        <div className="col-xl-4 col-md-6 col-sm-12">
+                                            <label htmlFor="docr_no">डोसियर नं.<span style={{ color: 'red' }}>*</span></label>
+                                            <input
+                                                {...register('docr_no', { required: "This field is required." })}
+                                                placeholder="डोसियर नं."
+                                                className="form-control"
+                                            />
+                                            {errors.docr_no && <span style={{ color: 'red' }}>{errors.docr_no.message}</span>}
+                                        </div>
+
+                                        <div className="col-xl-4 col-md-6 col-sm-12">
+                                            <label htmlFor="pmis">कम्प्युटर कोड(PMIS)<span>*</span></label>
+                                            <input
+                                                {...register('pmis', { required: "This field is required." })}
+                                                placeholder="PMIS"
+                                                className="form-control"
+                                            />
+                                            {errors.pmis && <span style={{ color: 'red' }}>{errors.pmis.message}</span>}
+                                        </div>
+
+                                        <div className="col-xl-4 col-md-6 col-sm-12">
+                                            <label htmlFor="recruit_rank">भर्ना हुँदाको दर्जा</label>
+                                            <select {...register('recruit_rank')} className="form-select" placeholder="Select Rank">
+                                                <option value="">दर्जा छान्नुहोस्</option>
+                                                {rankOption.map((rank) => (
+                                                    <option key={rank.value} value={rank.value}>
+                                                        {rank.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            {errors.recruit_rank && <span>{errors.recruit_rank.message}</span>}
+                                        </div>
+
+
+                                        <div className="col-xl-4 col-md-6 col-sm-12">
+                                            <label htmlFor="name_np">नाम थर(नेपालीमा)<span>*</span></label>
+                                            <input
+                                                {...register('name_np', { required: "This field is required." })}
+                                                placeholder="Name (In Nepali)"
+                                                className="form-control"
+                                            />
+                                            {errors.name_np && <span>{errors.name_np.message}</span>}
+                                        </div>
+                                        <div className="col-xl-4 col-md-6 col-sm-12">
+                                            <label htmlFor="name_en">नाम थर(अंग्रेजीमा)<span>*</span></label>
+                                            <input
+                                                {...register('name_en', { required: "This field is required." })}
+                                                placeholder="Name (In English)"
+                                                className="form-control"
+                                            />
+                                            {errors.name_en && <span>{errors.name_en.message}</span>}
+                                        </div>
+
+
+
+                                        <div className="col-xl-4 col-md-6 col-sm-12">
+                                            <label htmlFor="file">Upload File</label>
+                                            <input type="file" {...register('file')} className="form-control" onChange={onFileChange} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="col-3">
+                                    <div className="col-xl-3 col-md-6 col-sm-12">
+                                        {filePreview && <div>
+                                            <img src={filePreview} alt="File Preview" style={{ width: '100px', height: 'auto' }} className="img-thumbnail mt-2" />
+                                            <div className='btn-danger btn' onClick={clearImageUrl}> x </div>
+                                        </div>}
+                                    </div>
+                                </div>
+
+                            </div> {/*Close For First Row div*/}
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="dob">जन्म मिति<span>*</span></label>
+                                <Controller
+                                    name="dob"
+                                    control={control}
+                                    rules={{ required: "This field is required" }}
+                                    render={({ field: { onChange, onBlur, value, ref } }) => (
+                                        <NepaliDatePicker
+                                            value={value || ""} // Ensure empty string when no date is selected
+                                            onChange={(date) => {
+                                                onChange(date); // Update form state
+                                                setSelectedDay(date); // Update local state
+                                            }}
+                                            onBlur={onBlur} // Handle blur
+                                            dateFormat="YYYY-MM-DD" // Customize your date format
+                                            placeholder="Select Nepali Date"
+                                            ref={ref} // Use ref from react-hook-form
+                                        />
+                                    )}
+                                />
+                                {errors.dob && <span>{errors.dob.message}</span>}
+                            </div>
+
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="sanket_no">संकेत नं.<span>*</span></label>
+                                <input
+                                    {...register('sanket_no', { required: "This field is required." })}
+                                    placeholder="संकेत नं."
+                                    className="form-control"
+                                />
+                                {errors.sanket_no && <span>{errors.sanket_no.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="personal_no">व्यक्तिगत नं.<span>*</span></label>
+                                <input
+                                    {...register('personal_no', { required: "This field is required." })}
+                                    placeholder="व्यक्तिगत नं."
+                                    className="form-control"
+                                />
+                                {errors.personal_no && <span>{errors.personal_no.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="kasakosh">कर्मचारी संचय कोष<span>*</span></label>
+                                <input
+                                    {...register('kasakosh', { required: "This field is required." })}
+                                    placeholder="कर्मचारी संचय कोष"
+                                    className="form-control"
+                                />
+                                {errors.kasakosh && <span>{errors.kasakosh.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="nalakosh">नागरिक लगानी नं.<span>*</span></label>
+                                <input
+                                    {...register('nalakosh', { required: "This field is required." })}
+                                    placeholder="नागरिक लगानी नं."
+                                    className="form-control"
+                                />
+                                {errors.personal_no && <span>{errors.nalakosh.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="pan">प्यान नं.<span>*</span></label>
+                                <input
+                                    {...register('pan', { required: "This field is required." })}
+                                    placeholder="PAN Number"
+                                    className="form-control"
+                                />
+                                {errors.pan && <span>{errors.pan.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="ctz_no">नागरिकता नं.<span>*</span></label>
+                                <input
+                                    {...register('ctz_no', { required: "This field is required." })}
+                                    placeholder="नागरिकता नं."
+                                    className="form-control"
+                                />
+                                {errors.ctz_no && <span>{errors.ctz_no.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="ctz_iss">नागरिकता जारी जिल्ला<span>*</span></label>
+                                <input
+                                    {...register('ctz_iss', { required: "This field is required." })}
+                                    placeholder="जारी जिल्ला"
+                                    className="form-control"
+                                />
+                                {errors.ctz_iss && <span>{errors.ctz_iss.message}</span>}
+                            </div>
+
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="blood">ब्लड ग्रुप<span style={{ color: 'red' }}>*</span></label>
+                                <select
+                                    {...register('blood', { required: "This field is required." })}
+                                    className="form-select"
+                                    placeholder="Select blood"
+                                >
+                                    <option>Select Blood Group</option>
+                                    {bloodGroups.map((blood) => (
+                                        <option key={blood.value} value={blood.value}>
+                                            {blood.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.blood && <span>{errors.blood.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="height">उचाई<span>*</span></label>
+                                <input
+                                    {...register('height', { required: "This field is required." })}
+                                    placeholder="५'५''"
+                                    className="form-control"
+                                />
+                                {errors.height && <span>{errors.height.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="chest">छाती<span>*</span></label>
+                                <input
+                                    {...register('chest', { required: "This field is required." })}
+                                    placeholder="३४''"
+                                    className="form-control"
+                                />
+                                {errors.chest && <span>{errors.chest.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="huliya">हुलिया<span>*</span></label>
+                                <input
+                                    {...register('huliya', { required: "This field is required." })}
+                                    placeholder="गालामा डिम्पल आदी"
+                                    className="form-control"
+                                />
+                                {errors.huliya && <span>{errors.huliya.message}</span>}
+                            </div>
+
+                            <div className="col-xl-3 col-md-6 col-sm-12">
+                                <label htmlFor="warna">वर्ण<span>*</span></label>
+                                <input
+                                    {...register('warna', { required: "This field is required." })}
+                                    placeholder="गहुँ गोरो आदी"
+                                    className="form-control"
+                                />
+                                {errors.warna && <span>{errors.warna.message}</span>}
+                            </div>
+
+
+                            <div className="col-12">
+                                <button type="submit" className="btn btn-primary" disabled={loading}>
+                                    {loading ? 'Submitting...' : editing ? 'Update Employee' : 'Add Employee'}
+                                </button>
+                            </div>
+                        </form>
+
+                        <div className="row p-2 mt-3">
+                            <ul className="list-group">
+                                {fetchEmp.map(emp => (
+                                    <li key={emp.emp_id} className="list-group-item">{emp.name_np}</li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </>
-    )
-}
+        </div>
 
-export default AddEmployee
+    );
+};
+
+export default AddEmployee;
