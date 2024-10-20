@@ -27,6 +27,9 @@ const JobDescriptionForm = () => {
     const [fetchedJd, setFetchedJd] = useState([]);
     const [currentJd, setCurrentJd] = useState([]);
     const [fetchedOffice, setFetchedOffice] = useState([]);
+    const [fetchedJobs, setFetchedJobs] = useState([]);
+    const [fetchedRanks, setFetchedRanks] = useState([]);
+    const [fetchedGroups, setFetchedGroups] = useState([]);
 
     const fetchEmployee = async () => {
         try {
@@ -75,6 +78,60 @@ const JobDescriptionForm = () => {
         }
     };
 
+    const fetchRank = async () => {
+        try {
+            const result = await axios.get(`${BASE_URL}/display/ranks`);
+            if (result.data.Status) {
+                const options = result.data.Result.map(opt => ({
+                    value: opt.rank_id,
+                    label: opt.rank_np,
+                    label_en: opt.rank_en
+                }));
+                setFetchedRanks(options);
+            } else {
+                alert(result.data.Error);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const fetchgroups = async () => {
+        try {
+            const result = await axios.get(`${BASE_URL}/display/emp_groups`);
+            if (result.data.Status) {
+                const options = result.data.Result.map(opt => ({                    
+                    value: opt.id,
+                    label: opt.name,
+                    label_en: opt.name_en
+                }));                
+                setFetchedGroups(options);
+            } else {
+                alert(result.data.Error);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const fetchJobs = async () => {
+        try {
+            const result = await axios.get(`${BASE_URL}/display/jobs`);
+            if (result.data.Status) {
+                const options = result.data.Result.map(opt => ({
+                    value: opt.id,
+                    label: opt.name,
+                    label_en: opt.name_en
+                }));
+                setFetchedJobs(options);
+            } else {
+                alert(result.data.Error);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
     const onFormSubmit = async (data) => {
         setLoading(true);
         try {
@@ -109,14 +166,15 @@ const JobDescriptionForm = () => {
     const handleEdit = (data) => {
         setCurrentJd(data);
         setEditing(true);
-        setValue("pmis", data.pmis);        
+        setValue("pmis", data.pmis);
+        setValue("rank_id", data.rank_id);
+        setValue("group_id", data.group_id );
+        setValue("job_done_id", data.job_done_id );
         setValue("office_id", data.office_id);
-        setValue("type", data.type);
-        setValue("sn", data.sn);
         // Converting dates to correct Nepali date format
         const date = convertToNepaliDate(data.date);
-        // Set the converted dates to the form
         setValue("date", date); // Use the converted start date    
+        setValue("deputation_id", data.deputation_id);        
         setValue("remarks", data.remarks);
     };
 
@@ -156,6 +214,9 @@ const JobDescriptionForm = () => {
         fetchJd();
         fetchEmployee();
         fetchOffice();
+        fetchRank();
+        fetchgroups();
+        fetchJobs();
     }, [BASE_URL]);
 
     return (
@@ -165,7 +226,7 @@ const JobDescriptionForm = () => {
                     <div className="col-12">
                         <div className="p-2 justify-content shadow text-center">
                             <u>
-                                <h4>कारवाहीको विवरण</h4>
+                                <h4> नोकरी विवरण</h4>
                             </u>
                         </div>
                     </div>
@@ -196,7 +257,46 @@ const JobDescriptionForm = () => {
                                         readOnly
                                     />
                                     {errors.pmis && <span>{errors.pmis.message}</span>}
-                                </div>                                
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="rank_id">दर्जा<span>*</span></label>
+                                    <select {...register('rank_id')} className="form-select" placeholder="Select Rank">
+                                        <option value="">Select</option>
+                                        {fetchedRanks.map((o) => (
+                                            <option key={o.value} value={o.value}>
+                                                {o.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.rank_id && <span>{errors.rank_id.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="group_id">सेवा समुह<span>*</span></label>
+                                    <select {...register('group_id')} className="form-select" placeholder="Select Rank">
+                                        <option value="">Select</option>
+                                        {fetchedGroups.map((o) => (
+                                            <option key={o.value} value={o.value}>
+                                                {o.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.group_id && <span>{errors.group_id.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="job_done_id">क्रियाकलाप<span>*</span></label>
+                                    <select {...register('job_done_id')} className="form-select" placeholder="Select Rank">
+                                        <option value="">Select</option>
+                                        {fetchedJobs.map((o) => (
+                                            <option key={o.value} value={o.value}>
+                                                {o.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.job_done_id && <span>{errors.job_done_id.message}</span>}
+                                </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="office_id">अफिस<span>*</span></label>
@@ -209,26 +309,6 @@ const JobDescriptionForm = () => {
                                         ))}
                                     </select>
                                     {errors.office_id && <span>{errors.office_id.message}</span>}
-                                </div>
-
-                                <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="type"> कारवाहीको प्रकार  </label>
-                                    <input
-                                        {...register('type', { required: "This field is required." })}
-                                        placeholder="कारवाहीको प्रकार"
-                                        className="form-control"
-                                    />
-                                    {errors.type && <span>{errors.type.message}</span>}
-                                </div>
-
-                                <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="sn"> चलानी नं. </label>
-                                    <input
-                                        {...register('sn', { required: "This field is required." })}
-                                        placeholder="चलानी नं."
-                                        className="form-control"
-                                    />
-                                    {errors.sn && <span>{errors.sn.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
@@ -254,6 +334,19 @@ const JobDescriptionForm = () => {
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="deputation_id">दरबन्दी<span>*</span></label>
+                                    <select {...register('deputation_id')} className="form-select" placeholder="Select Rank">
+                                        <option value="">Select</option>
+                                        {fetchedOffice.map((o) => (
+                                            <option key={o.value} value={o.value}>
+                                                {o.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.deputation_id && <span>{errors.deputation_id.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="remarks"> कैफियत </label>
                                     <input
                                         {...register('remarks', { required: "This field is required." })}
@@ -273,7 +366,7 @@ const JobDescriptionForm = () => {
                                         <button className='btn btn-danger' onClick={handleClear}>Clear</button>
                                     </div>
 
-                                    <div className="col-2 mb-3 btn btn-success" onClick={() => navigate(`/emp/job-description-form/${pmis}`)}>
+                                    <div className="col-2 mb-3 btn btn-success" onClick={() => navigate(`/emp/job-working-form/${pmis}`)}>
                                         Next
                                     </div>
 
@@ -286,10 +379,12 @@ const JobDescriptionForm = () => {
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell>PMIS</TableCell>
-                                                <TableCell>कारवाही गर्ने कार्यालय</TableCell>
-                                                <TableCell>कारवाही किसिम</TableCell>
-                                                <TableCell>चलानी नं.</TableCell>
-                                                <TableCell>मिति</TableCell>                                                
+                                                <TableCell>दर्जा</TableCell>
+                                                <TableCell>सेवा समुह</TableCell>
+                                                <TableCell>क्रियाकलाप</TableCell>
+                                                <TableCell>कार्यालय</TableCell>
+                                                <TableCell>मिति</TableCell>
+                                                <TableCell>कायम भएको दरबन्दी</TableCell>
                                                 <TableCell>Remarks</TableCell>
                                                 <TableCell>#</TableCell>
                                             </TableRow>
@@ -298,10 +393,12 @@ const JobDescriptionForm = () => {
                                             {fetchedJd.map((row) => (
                                                 <TableRow key={row.id}>
                                                     <TableCell>{row.pmis}</TableCell>
-                                                    <TableCell>{row.office_name}</TableCell>
-                                                    <TableCell>{row.type}</TableCell>
-                                                    <TableCell>{row.sn}</TableCell>
+                                                    <TableCell>{row.rank_np}</TableCell>
+                                                    <TableCell>{row.group_name}</TableCell>
+                                                    <TableCell>{row.job_name}</TableCell>
+                                                    <TableCell>{row.office_name}</TableCell>                                                    
                                                     <TableCell>{convertToNepaliDate(row.date)}</TableCell>
+                                                    <TableCell>{row.deputation}</TableCell>
                                                     <TableCell>{row.remarks}</TableCell>
                                                     <TableCell>
                                                         <div className="row">
@@ -317,7 +414,7 @@ const JobDescriptionForm = () => {
                                                                     title={'Are you sure you want to delete this record?'}
                                                                     buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
                                                                     onConfirm={() => handleDelete(row.id)}>
-                                                                    <b>{row.name}| {row.office_name} | {row.prize}</b>
+                                                                    <b>{row.job_name} | {row.office_name} | {convertToNepaliDate(row.date)}</b>
                                                                     <p>This action cannot be undone.</p>
                                                                 </DeleteConfirmationModal>
                                                             </div>

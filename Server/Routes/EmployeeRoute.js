@@ -372,5 +372,62 @@ router.delete('/delete_punishment/:id', async(req,res)=>{
     }
 })
 
+router.post('/add_jd', async (req, res) => {
+
+    const {
+        pmis,rank_id, group_id, job_done_id, office_id, date, deputation_id, remarks
+    } = req.body;
+
+    const created_by = 1; // Adjust this to dynamically handle creator if needed
+
+    const sql = `INSERT INTO emp_jd (
+        pmis,rank_id, group_id, job_done_id, office_id, date, deputation_id, remarks, created_by
+    ) VALUES (?)`;
+
+    const values = [
+        pmis,rank_id, group_id, job_done_id, office_id, date, deputation_id, remarks, created_by,
+    ];
+
+    try {
+        const result = await query(sql, [values]);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
+
+router.put('/update_jd/:id', async (req, res) => {
+    const id=req.params.id;    
+    const {
+        pmis,rank_id, group_id, job_done_id, office_id, date, deputation_id, remarks
+    } = req.body;
+    const updated_by = 1;
+    const sql = `UPDATE emp_jd SET pmis=?,rank_id=?, group_id=?, job_done_id=?, office_id=?, date=?, deputation_id=?, remarks=?, updated_by=? WHERE id=?`;
+    const values = [
+        pmis,rank_id, group_id, job_done_id, office_id, date, deputation_id, remarks, updated_by, id
+    ];
+
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.delete('/delete_jd/:id', async(req,res)=>{
+    const {id} = req.params;
+    console.log(id)
+    try{
+        const sql = `DELETE FROM emp_jd WHERE id=?`;
+        const result = await query(sql, id);
+        return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
+    } catch(err){
+        console.error('Error Deleting Record:',err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
 
 export { router as employeeRouter }
