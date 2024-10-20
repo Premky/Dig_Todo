@@ -32,7 +32,7 @@ const storage = multer.diskStorage({
     filename: (req, file, callback) => {
         const uniqueSuffix = Date.now(); // or use a library like uuid
         const sanitized = sanitizedFilename(file.originalname);
-        console.log('uniqueSuffix',uniqueSuffix);
+        console.log('uniqueSuffix', uniqueSuffix);
         console.log('sanitized', sanitized);
 
         const filename = `${uniqueSuffix}_${sanitized}`;
@@ -51,15 +51,15 @@ const query = promisify(con.query).bind(con);
 // console.log(fy_date)
 
 router.post('/add_emp', upload.single('photo'), async (req, res) => {
-    const { 
-        docr_no, personal_no, pmis, symbol_no, name_en, name_np, dob, recruit_date, recruit_rank, gender, 
-        sanchay_kosh, nalakosh, pan, ctz_no, issue_district, blood_group, height, chest, huliya, warna, family 
+    const {
+        docr_no, personal_no, pmis, symbol_no, name_en, name_np, dob, recruit_date, recruit_rank, gender,
+        sanchay_kosh, nalakosh, pan, ctz_no, issue_district, blood_group, height, chest, huliya, warna, family
     } = req.body;
 
     const created_by = 1; // Adjust this to dynamically handle creator if needed
     const filePath = req.file ? path.posix.join('Uploads/Employee', req.file.filename) : null; // Handle file upload path
 
-    console.log('filepath:',filePath)
+    console.log('filepath:', filePath)
 
     const sql = `INSERT INTO employee (
         docr_no, personal_no, pmis, symbol_no, name_en, name_np, dob, recruit_date, recruit_rank, gender, 
@@ -67,15 +67,15 @@ router.post('/add_emp', upload.single('photo'), async (req, res) => {
     ) VALUES (?)`;
 
     const values = [
-        docr_no, personal_no, pmis, symbol_no, name_en, name_np, dob, recruit_date, recruit_rank, gender, 
-        sanchay_kosh, nalakosh, pan, ctz_no, issue_district, blood_group, height, chest, huliya, warna, 
+        docr_no, personal_no, pmis, symbol_no, name_en, name_np, dob, recruit_date, recruit_rank, gender,
+        sanchay_kosh, nalakosh, pan, ctz_no, issue_district, blood_group, height, chest, huliya, warna,
         filePath, // Store file path as photo in the database
         family, created_by
     ];
-    
+
     try {
         const result = await query(sql, [values]);
-        return res.json({ Status: true, Result: result, pmis:pmis });
+        return res.json({ Status: true, Result: result, pmis: pmis });
     } catch (err) {
         console.error('Database error', err);
         return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
@@ -83,6 +83,236 @@ router.post('/add_emp', upload.single('photo'), async (req, res) => {
 });
 
 
+router.post('/add_qualification', async (req, res) => {
+
+    const {
+        pmis, level, faculty, institute, country, pass_year, rank, gpa, remarks
+    } = req.body;
+
+    const created_by = 1; // Adjust this to dynamically handle creator if needed
+
+    const sql = `INSERT INTO emp_education (
+        pmis, level, faculty, institute, country, pass_year, edu_rank, gpa, remarks, created_by, office_id, branch_id
+    ) VALUES (?)`;
+
+    const values = [
+        pmis, level, faculty, institute, country, pass_year, rank, gpa, remarks, created_by, created_by, created_by
+    ];
+
+    try {
+        const result = await query(sql, [values]);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
+
+router.put('/update_qualification/:id', async (req, res) => {
+    const id=req.params.id;    
+    const {
+        pmis, level, faculty, institute, country, pass_year, rank, gpa, remarks
+    } = req.body;
+    const updated_by = 1;
+    const sql = `UPDATE emp_education SET pmis=?, level=?, faculty=?, institute=?, country=?, pass_year=?, edu_rank=?, gpa=?, remarks=?, updated_by=? WHERE edu_id=?`;
+    const values = [
+        pmis, level, faculty, institute, country, pass_year, rank, gpa, remarks, updated_by, id
+    ];
+
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.delete('/delete_qualification/:id', async(req,res)=>{
+    const {id} = req.params;
+    try{
+        const sql = `DELETE FROM emp_education WHERE edu_id=?`;
+        const result = await query(sql, id);
+        return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
+    } catch(err){
+        console.error('Error Deleting Record:',err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.post('/add_training', async (req, res) => {
+
+    const {
+        pmis, training, grade, training_center, batch, start_date, end_date, remarks
+    } = req.body;
+
+    const created_by = 1; // Adjust this to dynamically handle creator if needed
+
+    const sql = `INSERT INTO emp_training (
+        pmis, training, grade, training_center, batch, start_date, end_date, remarks, created_by
+    ) VALUES (?)`;
+
+    const values = [
+        pmis, training, grade, training_center, batch, start_date, end_date, remarks, created_by,
+    ];
+
+    try {
+        const result = await query(sql, [values]);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
+
+router.put('/update_training/:id', async (req, res) => {
+    const id=req.params.id;    
+    const {
+        pmis, training, grade, training_center, batch, start_date, end_date, remarks
+    } = req.body;
+    const updated_by = 1;
+    const sql = `UPDATE emp_training SET pmis=?, training=?, grade=?, training_center=?, batch=?, start_date=?, end_date=?, remarks=?, updated_by=? WHERE id=?`;
+    const values = [
+        pmis, training, grade, training_center, batch, start_date, end_date, remarks, updated_by, id
+    ];
+
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.delete('/delete_training/:id', async(req,res)=>{
+    const {id} = req.params;
+    console.log(id)
+    try{
+        const sql = `DELETE FROM emp_training WHERE id=?`;
+        const result = await query(sql, id);
+        return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
+    } catch(err){
+        console.error('Error Deleting Record:',err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.post('/add_award', async (req, res) => {
+
+    const {
+        pmis, name, office_id, date, prize, sn, remarks
+    } = req.body;
+
+    const created_by = 1; // Adjust this to dynamically handle creator if needed
+
+    const sql = `INSERT INTO emp_award (
+        pmis, name, office_id, date, prize, sn, remarks, created_by
+    ) VALUES (?)`;
+
+    const values = [
+        pmis, name, office_id, date, prize, sn, remarks, created_by,
+    ];
+
+    try {
+        const result = await query(sql, [values]);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
+
+router.put('/update_award/:id', async (req, res) => {
+    const id=req.params.id;    
+    const {
+        pmis, name, office_id, date, prize, sn, remarks
+    } = req.body;
+    const updated_by = 1;
+    const sql = `UPDATE emp_award SET pmis=?, name=?, office_id=?, date=?, prize=?, sn=?, remarks=?, updated_by=? WHERE id=?`;
+    const values = [
+        pmis, name, office_id, date, prize, sn, remarks, updated_by, id
+    ];
+
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.delete('/delete_award/:id', async(req,res)=>{
+    const {id} = req.params;
+    console.log(id)
+    try{
+        const sql = `DELETE FROM emp_award WHERE id=?`;
+        const result = await query(sql, id);
+        return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
+    } catch(err){
+        console.error('Error Deleting Record:',err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.post('/add_decoration', async (req, res) => {
+
+    const {
+        pmis, name, office_id, date, prize, sn, remarks
+    } = req.body;
+
+    const created_by = 1; // Adjust this to dynamically handle creator if needed
+
+    const sql = `INSERT INTO emp_decoration (
+        pmis, name, office_id, date, prize, sn, remarks, created_by
+    ) VALUES (?)`;
+
+    const values = [
+        pmis, name, office_id, date, prize, sn, remarks, created_by,
+    ];
+
+    try {
+        const result = await query(sql, [values]);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
+
+router.put('/update_decoration/:id', async (req, res) => {
+    const id=req.params.id;    
+    const {
+        pmis, name, office_id, date, prize, sn, remarks
+    } = req.body;
+    const updated_by = 1;
+    const sql = `UPDATE emp_decoration SET pmis=?, name=?, office_id=?, date=?, prize=?, sn=?, remarks=?, updated_by=? WHERE id=?`;
+    const values = [
+        pmis, name, office_id, date, prize, sn, remarks, updated_by, id
+    ];
+
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.delete('/delete_decoration/:id', async(req,res)=>{
+    const {id} = req.params;
+    console.log(id)
+    try{
+        const sql = `DELETE FROM emp_decoration WHERE id=?`;
+        const result = await query(sql, id);
+        return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
+    } catch(err){
+        console.error('Error Deleting Record:',err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
 
 
-export {router as employeeRouter}
+export { router as employeeRouter }

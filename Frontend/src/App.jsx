@@ -28,6 +28,9 @@ import OfficerLeave from './Components/LeaveCount/OfficerLeave'
 import CurrentOfficerLeave from './Components/LeaveCount/CurrentOfficerLeave'
 import AddEmployee from './Components/Employee/AddEmployee'
 import QualificationFrom from './Components/Employee/QualificationFrom'
+import TrainingForm from './Components/Employee/TrainingForm'
+import AwardForm from './Components/Employee/AwardForm'
+import DecorationForm from './Components/Employee/DecorationForm'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -112,6 +115,9 @@ function App() {
 
           </Route>
           <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom/>}/>
+          <Route path='/emp/training-form/:pmis?' element={<TrainingForm/>}/>
+          <Route path='/emp/award-form/:pmis?' element={<AwardForm/>}/>
+          <Route path='/emp/decoration-form/:pmis?' element={<DecorationForm/>}/>
 
 
         </Routes>

@@ -12,8 +12,7 @@ import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
 
-
-const QualificationFrom = () => {
+const AwardForm = () => {
     const { pmis } = useParams();
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
@@ -23,19 +22,17 @@ const QualificationFrom = () => {
     const [loading, setLoading] = useState(false);
     const [editing, setEditing] = useState(false);
 
-    const [fetchEmp, setFetchEmp] = useState([]);
+    const [fetchedEmp, setFetchedEmp] = useState([]);
 
-    const [fetchEdu, setFetchEdu] = useState([]);
-    const [fetchedEduLvl, setFetchedEduLvl] = useState([]);
-    const [fetchedEduFaculty, setFetchedEduFaculty] = useState([]);
-    const [fetchedQualification, setFetchedQualification] = useState([]);
-    const [currentEdu, setCurrentEdu] = useState([]);
+    const [fetchedAward, setFetchedAward] = useState([]);
+    const [currentAward, setCurrentAward] = useState([]);
+    const [fetchedOffice, setFetchedOffice] = useState([]);
 
     const fetchEmployee = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
             if (result.data.Status) {
-                setFetchEmp(result.data.Result);
+                setFetchedEmp(result.data.Result);
             } else {
                 alert(result.data.Result);
                 console.error(result.data.Result);
@@ -46,11 +43,11 @@ const QualificationFrom = () => {
         }
     }
 
-    const fetchQualification = async () => {
+    const fetchAward = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/qualification/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/award/${pmis}`);
             if (result.data.Status) {
-                setFetchedQualification(result.data.Result);
+                setFetchedAward(result.data.Result);
             } else {
                 alert(result.data.Result);
                 console.error(result.data.Result);
@@ -61,54 +58,29 @@ const QualificationFrom = () => {
         }
     }
 
-    const fetchLevel = async () => {
+    const fetchOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/edu_level/`);
+            const result = await axios.get(`${BASE_URL}/super/offices`);
             if (result.data.Status) {
-                // setFetchedEduLvl(result.data.Result);
                 const options = result.data.Result.map(opt => ({
-                    value: opt.edu_lvl_id,
-                    label_np: opt.edu_level,
-                    label_en: opt.edu_level_en
+                    value: opt.o_id,
+                    label: opt.office_name
                 }));
-                setFetchedEduLvl(options);
+                setFetchedOffice(options);
             } else {
-                alert(result.data.Result);
-                console.error(result.data.Result);
+                alert(result.data.Error);
             }
         } catch (err) {
-            console.error(err);
-            alert(err)
+            console.log(err);
         }
-    }
-
-    const fetchFaculty = async () => {
-        try {
-            const result = await axios.get(`${BASE_URL}/display/edu_faculty/`);
-            if (result.data.Status) {
-                // setFetchedEduFaculty(result.data.Result);
-                const options = result.data.Result.map(opt => ({
-                    value: opt.edu_fac_id,
-                    label_np: opt.edu_faculty,
-                    label_en: opt.edu_faculty_en
-                }));
-                setFetchedEduFaculty(options);
-            } else {
-                alert(result.data.Result);
-                console.error(result.data.Result);
-            }
-        } catch (err) {
-            console.error(err);
-            alert(err)
-        }
-    }
+    };
 
     const onFormSubmit = async (data) => {
         setLoading(true);
         try {
             const url = editing
-                ? `${BASE_URL}/emp/update_qualification/${currentEdu.edu_id}`
-                : `${BASE_URL}/emp/add_qualification`;
+                ? `${BASE_URL}/emp/update_award/${currentAward.id}`
+                : `${BASE_URL}/emp/add_award`;
             const method = editing ? 'PUT' : 'POST';
 
             // Make API request
@@ -123,11 +95,7 @@ const QualificationFrom = () => {
                 alert(`Record ${editing ? 'updated' : 'added'} for PMIS: ${result.data.pmis} successfully!`);
                 reset();
                 setEditing(false);
-                fetchQualification();
-                // If PMIS exists, navigate to the next form
-                // if (result.data.pmis) {
-                //     navigate(`/emp/training-form/${result.data.pmis}`);
-                // }
+                fetchAward();
             }
         } catch (err) {
             console.error('Form submission error:', err);
@@ -138,23 +106,29 @@ const QualificationFrom = () => {
         }
     };
 
-    const handleEdit = (edu_detail) => {
-        setCurrentEdu(edu_detail);
+    const handleEdit = (award) => {
+        setCurrentAward(award);
         setEditing(true);
-        setValue("pmis", edu_detail.pmis);
-        setValue("level", edu_detail.level);
-        setValue("faculty", edu_detail.faculty);
-        setValue("institute", edu_detail.institute);
-        setValue("country", edu_detail.country);
-        setValue("pass_year", edu_detail.pass_year);
-        setValue("rank", edu_detail.edu_rank);
-        setValue("gpa", edu_detail.gpa)
-        setValue("remarks", edu_detail.remarks);
+        setValue("pmis", award.pmis);
+        setValue("name", award.name);
+        setValue("office_id", award.office_id);
+        // Converting dates to correct Nepali date format
+        const date = convertToNepaliDate(award.date);
+        // Set the converted dates to the form
+        setValue("date", date); // Use the converted start date    
+        setValue("prize", award.prize);
+        setValue("sn", award.sn);
+        setValue("remarks", award.remarks);
+    };
+
+    const convertToNepaliDate = (isoDate) => {
+        const datePart = isoDate.split('T')[0]; // Extract just the date part
+        return datePart; // Return in the format needed for the NepaliDatePicker
     };
 
     const handleDelete = async (id) => {
         try {
-            const url = `${BASE_URL}/emp/delete_qualification/${id}`;
+            const url = `${BASE_URL}/emp/delete_award/${id}`;
             const result = await axios.delete(url);
             if (result.data.Status) {
                 alert('Record deleted successfully.');
@@ -165,10 +139,9 @@ const QualificationFrom = () => {
             console.log(err);
             alert('Error occurred while deleting the record.');
         } finally {
-            fetchQualification();
+            fetchAward();
         }
     };
-
 
     const handleClear = (e) => {
         e.preventDefault();
@@ -181,10 +154,9 @@ const QualificationFrom = () => {
     }
 
     useEffect(() => {
+        fetchAward();
         fetchEmployee();
-        fetchQualification();
-        fetchLevel();
-        fetchFaculty();
+        fetchOffice();
     }, [BASE_URL]);
 
     return (
@@ -194,15 +166,14 @@ const QualificationFrom = () => {
                     <div className="col-12">
                         <div className="p-2 justify-content shadow text-center">
                             <u>
-                                <h4>शिक्षा विवरण</h4>
+                                <h4>पुरस्कार विवरण</h4>
                             </u>
                         </div>
                     </div>
-
                     <div className="col-12 mt-2">
-                        {fetchEmp && fetchEmp.length > 0 ? (
+                        {fetchedEmp && fetchedEmp.length > 0 ? (
                             <div className="row">
-                                {fetchEmp.map(emp => (
+                                {fetchedEmp.map(emp => (
                                     <div className="col" key={emp.pmis}>
                                         {emp.pmis} ,
                                         {emp.name_np} ,
@@ -212,11 +183,9 @@ const QualificationFrom = () => {
                             </div>)
                             : (<p>PMIS Not Found...</p>)}
                     </div>
-
                     <div className="col-12">
                         <div className="d-flex flex-column px-3 pt-0">
-
-                            <form className="row mt-1 g-3" >
+                            <form className='row mt-1 g-3'>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="pmis"> कम्प्युटर कोड (PMIS) </label>
@@ -231,89 +200,68 @@ const QualificationFrom = () => {
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="level">शैक्षिक उपाधि<span>*</span></label>
-                                    <select
-                                        {...register('level', { required: "This field is required." })}
-                                        className="form-select"
-                                        placeholder="Select"
-                                    >
-                                        <option value=''>Select Level</option>
-                                        {/* label_en: opt.edu_level_en */}
-                                        {fetchedEduLvl.map((lvl) => (
-                                            <option key={lvl.value} value={lvl.value}>
-                                                {lvl.label_np}
+                                    <label htmlFor="name"> पुरस्कारको नाम </label>
+                                    <input
+                                        {...register('name', { required: "This field is required." })}
+                                        placeholder="पुरस्कारको नाम"
+                                        className="form-control"
+                                    />
+                                    {errors.name && <span>{errors.name.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="office_id">अफिस<span>*</span></label>
+                                    <select {...register('office_id')} className="form-select" placeholder="Select Rank">
+                                        <option value="">Select</option>
+                                        {fetchedOffice.map((o) => (
+                                            <option key={o.value} value={o.value}>
+                                                {o.label}
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.level && <span>{errors.level.message}</span>}
+                                    {errors.office_id && <span>{errors.office_id.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="faculty">शैक्षिक संकाय<span>*</span></label>
-                                    <select
-                                        {...register('faculty', { required: "This field is required." })}
-                                        className="form-select"
-                                        placeholder="Select"
-                                    >
-                                        <option value=''>Select Level</option>
-                                        {fetchedEduFaculty.map((faculty) => (
-                                            <option key={faculty.value} value={faculty.value}>
-                                                {faculty.label_np}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.faculty && <span>{errors.faculty.message}</span>}
+                                    <label htmlFor="date">मिति<span>*</span></label>
+                                    <Controller
+                                        name="date"
+                                        control={control}
+                                        rules={{ required: "This field is required" }}
+                                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                                            <NepaliDatePicker
+                                                value={value || ""} // Ensure empty string when no date is selected
+                                                onChange={(date) => {
+                                                    onChange(date); // Update form state
+                                                }}
+                                                onBlur={onBlur} // Handle blur
+                                                dateFormat="YYYY-MM-DD" // Customize your date format
+                                                placeholder="Select Nepali Date"
+                                            // ref={ref} // Use ref from react-hook-form
+                                            />
+                                        )}
+                                    />
+                                    {errors.date && <span>{errors.date.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="institute"> शैक्षिक संस्था </label>
+                                    <label htmlFor="prize"> रकम(रु)/ग्रेड </label>
                                     <input
-                                        {...register('institute', { required: "This field is required." })}
-                                        placeholder="शैक्षिक संस्था"
+                                        {...register('prize', { required: "This field is required." })}
+                                        placeholder="रकम(रु)/ग्रेड"
                                         className="form-control"
                                     />
-                                    {errors.institute && <span>{errors.institute.message}</span>}
+                                    {errors.prize && <span>{errors.prize.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="country"> देश </label>
+                                    <label htmlFor="sn"> चलानी नं. </label>
                                     <input
-                                        {...register('country', { required: "This field is required." })}
-                                        placeholder="देश"
+                                        {...register('sn', { required: "This field is required." })}
+                                        placeholder="चलानी नं."
                                         className="form-control"
                                     />
-                                    {errors.country && <span>{errors.country.message}</span>}
-                                </div>
-
-                                <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="pass_year"> उत्तिर्ण गरेको साल </label>
-                                    <input
-                                        {...register('pass_year', { required: "This field is required." })}
-                                        placeholder="उत्तिर्ण गरेको साल"
-                                        className="form-control"
-                                    />
-                                    {errors.pass_year && <span>{errors.pass_year.message}</span>}
-                                </div>
-
-                                <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="rank"> श्रेणी/ग्रेड </label>
-                                    <input
-                                        {...register('rank', { required: "This field is required." })}
-                                        placeholder=" 1st / A"
-                                        className="form-control"
-                                    />
-                                    {errors.rank && <span>{errors.rank.message}</span>}
-                                </div>
-
-
-                                <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="gpa"> प्रतिशत/जि.पि.ए </label>
-                                    <input
-                                        {...register('gpa', { required: "This field is required." })}
-                                        placeholder="प्रतिशत/जि.पि.ए"
-                                        className="form-control"
-                                    />
-                                    {errors.gpa && <span>{errors.gpa.message}</span>}
+                                    {errors.sn && <span>{errors.sn.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
@@ -329,17 +277,17 @@ const QualificationFrom = () => {
                                 <div className="col-12 row mt-2">
                                     <div className="col-4">
                                         <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
-                                            {loading ? 'Submitting...' : editing ? 'Update & Continue' : 'Save & Continue'}
+                                            {loading ? 'Submitting...' : editing ? 'Update' : 'Add'}
                                         </button>
                                     </div>
                                     <div className="col-4 mb-3">
                                         <button className='btn btn-danger' onClick={handleClear}>Clear</button>
                                     </div>
 
-                                    <div className="col-2 mb-3 btn btn-success" onClick={() => navigate(`/emp/training-form/${pmis}`)}>
-                                        {/* <button className='btn btn-success' onClick={() => navigate(`/emp/training-form/${pmis}`)}>Next</button> */}
+                                    <div className="col-2 mb-3 btn btn-success" onClick={() => navigate(`/emp/decoration-form/${pmis}`)}>
                                         Next
                                     </div>
+
                                 </div>
                             </form>
 
@@ -349,28 +297,24 @@ const QualificationFrom = () => {
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell>PMIS</TableCell>
-                                                <TableCell>Level</TableCell>
-                                                <TableCell>Faculty</TableCell>
-                                                <TableCell>Institute</TableCell>
-                                                <TableCell>Country</TableCell>
-                                                <TableCell>Pass Year</TableCell>
-                                                <TableCell>Rank</TableCell>
-                                                <TableCell>Percentage/GPA</TableCell>
+                                                <TableCell>पुरस्कार विवरण</TableCell>
+                                                <TableCell>पुरस्कार दिने कार्यालय</TableCell>
+                                                <TableCell>प्राप्त मिति</TableCell>
+                                                <TableCell>रकम(रु)/ग्रेड</TableCell>
+                                                <TableCell>चलानी नं.</TableCell>
                                                 <TableCell>Remarks</TableCell>
                                                 <TableCell>#</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {fetchedQualification.map((row) => (
-                                                <TableRow key={row.edu_id}>
+                                            {fetchedAward.map((row) => (
+                                                <TableRow key={row.id}>
                                                     <TableCell>{row.pmis}</TableCell>
-                                                    <TableCell>{row.edu_level}</TableCell>
-                                                    <TableCell>{row.edu_faculty}</TableCell>
-                                                    <TableCell>{row.institute}</TableCell>
-                                                    <TableCell>{row.country}</TableCell>
-                                                    <TableCell>{row.pass_year}</TableCell>
-                                                    <TableCell>{row.edu_rank}</TableCell>
-                                                    <TableCell>{row.gpa}</TableCell>
+                                                    <TableCell>{row.name}</TableCell>
+                                                    <TableCell>{row.office_name}</TableCell>
+                                                    <TableCell>{convertToNepaliDate(row.date)}</TableCell>
+                                                    <TableCell>{row.prize}</TableCell>
+                                                    <TableCell>{row.sn}</TableCell>
                                                     <TableCell>{row.remarks}</TableCell>
                                                     <TableCell>
                                                         <div className="row">
@@ -385,8 +329,8 @@ const QualificationFrom = () => {
                                                                 <DeleteConfirmationModal
                                                                     title={'Are you sure you want to delete this record?'}
                                                                     buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
-                                                                    onConfirm={() => handleDelete(row.edu_id)}>
-                                                                    <b>{row.edu_level}| {row.edu_faculty} | {row.institute}</b>
+                                                                    onConfirm={() => handleDelete(row.id)}>
+                                                                    <b>{row.name}| {row.office_name} | {row.prize}</b>
                                                                     <p>This action cannot be undone.</p>
                                                                 </DeleteConfirmationModal>
                                                             </div>
@@ -398,13 +342,13 @@ const QualificationFrom = () => {
                                     </Table>
                                 </TableContainer>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
-
         </>
     )
 }
 
-export default QualificationFrom
+export default AwardForm

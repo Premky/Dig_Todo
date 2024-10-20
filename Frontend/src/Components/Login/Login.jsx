@@ -19,9 +19,27 @@ const Login = ({ onLogin }) => {
 
     useEffect(() => {
         getBaseURLFunc();
-    }, []);
+    }, [BASE_URL]);
 
     const navigate = useNavigate()
+
+    const navigateBasedOnUsertype = (usertype, branch) => {
+        switch (usertype) {
+            case 'superuser':
+                return '/super/admin_dashboard';
+            case 'संचार':
+                return '/sanchar';
+            case 'प्रशासन':
+                return '/admin/officeleave';
+            case 'Display':
+                return branch === 'कार्यालय प्रमुख' ? '/display/chief' : '/display/dodisplay';
+            case 'डि.अ. प्रशासन':
+                return '/doadmin';
+            default:
+                return '/';
+        }
+    };
+    
     //Object Method
     const [values, setValues] = useState({
         username: '',
@@ -51,25 +69,8 @@ const Login = ({ onLogin }) => {
                         localStorage.setItem("bid", result.data.branch_id)
                         // setOfficeName(result.data.office)                
                         // console.log("result:", result)
-                        if (result.data.usertype === "superuser") {
-                            navigate('/super/admin_dashboard')
-                        }
-                        if (result.data.usertype === "संचार") {
-                            navigate('/sanchar')
-                        }
-                        if (result.data.usertype === "प्रशासन") {
-                            navigate('/admin/officeleave')
-                        }
-                        if (result.data.usertype === "Display") {
-                            if (result.data.branch === "कार्यालय प्रमुख") {
-                                navigate('/display/chief')
-                            } else {
-                                navigate('/display/dodisplay')
-                            }
-                        }
-                        if (result.data.usertype === "डि.अ. प्रशासन") {
-                            navigate('/doadmin')
-                        }
+                        const path = navigateBasedOnUsertype(result.data.usertype, result.data.branch);
+                        navigate(path);
                     } else {
                         setError(result.data.Error)
                     }

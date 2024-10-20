@@ -116,4 +116,87 @@ router.get('/blood', async(req, res)=>{
     })
 })
 
+
+//Qualification Page Start
+router.get('/edu_level', async(req, res)=>{
+    const sql = `SELECT * from edu_level`;
+    con.query(sql, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
+router.get('/edu_faculty', async(req, res)=>{
+    const sql = `SELECT * from edu_faculty`;
+    con.query(sql, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
+router.get('/qualification/:pmis', async(req, res)=>{
+    // const sql = `SELECT * from emp_education`;
+    const {pmis}=req.params;
+    
+    const sql = `SELECT q.*, l.*, f.*
+       	FROM 
+           emp_education q
+        LEFT JOIN
+            edu_level l ON q.level = l.edu_lvl_id
+        LEFT JOIN
+        	edu_faculty f ON q.faculty = f.edu_fac_id
+        WHERE q.pmis = ?
+            `;
+
+    con.query(sql,pmis, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
+router.get('/training/:pmis', async(req, res)=>{
+    // const sql = `SELECT * from emp_education`;
+    const {pmis}=req.params;
+    const sql = `SELECT * FROM emp_training WHERE pmis=?
+            `;
+    con.query(sql,pmis, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
+router.get('/award/:pmis', async(req, res)=>{
+    // const sql = `SELECT * from emp_education`;
+    const {pmis}=req.params;
+    const sql = `SELECT a.*, o.office_name
+       	FROM 
+           emp_award a
+        LEFT JOIN
+            office o ON a.office_id = o.o_id
+        WHERE a.pmis = ?`;
+
+    con.query(sql,pmis, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
+router.get('/decoration/:pmis', async(req, res)=>{
+    // const sql = `SELECT * from emp_education`;
+    const {pmis}=req.params;
+    const sql = `SELECT a.*, o.office_name
+       	FROM 
+           emp_decoration a
+        LEFT JOIN
+            office o ON a.office_id = o.o_id
+        WHERE a.pmis = ?`;
+
+    con.query(sql,pmis, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
+
+//Qualification Page End
 export { router as displayRouter }
