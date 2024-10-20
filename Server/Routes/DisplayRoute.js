@@ -197,6 +197,21 @@ router.get('/decoration/:pmis', async(req, res)=>{
     })
 })
 
+router.get('/punishment/:pmis', async(req, res)=>{
+    // const sql = `SELECT * from emp_education`;
+    const {pmis}=req.params;
+    const sql = `SELECT a.*, o.office_name
+       	FROM 
+           emp_punishment a
+        LEFT JOIN
+            office o ON a.office_id = o.o_id
+        WHERE a.pmis = ?`;
+
+    con.query(sql,pmis, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
 
 //Qualification Page End
 export { router as displayRouter }
