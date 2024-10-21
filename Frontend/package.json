@@ -18,6 +18,8 @@
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "date-fns": "^3.6.0",
+    "docx": "^9.0.2",
+    "file-saver": "^2.0.5",
     "nepali-date-converter": "^3.3.2",
     "nepali-datepicker-reactjs": "^1.1.7",
     "nepali-datetime": "^1.2.1",
@@ -30,7 +32,7 @@
     "react-redux": "^9.1.2",
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.23.1",
-    "react-select": "^5.8.0",
+    "react-select": "^5.8.1",
     "styled-components": "^6.1.13"
   },
   "devDependencies": {

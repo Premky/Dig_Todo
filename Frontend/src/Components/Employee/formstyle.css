@@ -9,3 +9,15 @@
     color: red;
     vertical-align: super;
   }
+
+  .span{
+    vertical-align: text-top;
+    font-weight: bolder;
+    color: black;
+  }
+
+  .span_value{
+    vertical-align: text-top;
+    font-weight: lighter;
+    color:rgb(14, 14, 223)
+  }

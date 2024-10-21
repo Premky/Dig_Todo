@@ -33,6 +33,8 @@ import AwardForm from './Components/Employee/AwardForm'
 import DecorationForm from './Components/Employee/DecorationForm'
 import PunishmentForm from './Components/Employee/PunishmentForm'
 import JobDescriptionForm from './Components/Employee/JobDescriptionForm'
+import EmpChangeForm from './Components/Employee/EmpChangeForm'
+import FinalPreview from './Components/Employee/FinalPreview'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -120,6 +122,8 @@ function App() {
           <Route path='/emp/decoration-form/:pmis?' element={<DecorationForm/>}/>
           <Route path='/emp/punishment-form/:pmis?' element={<PunishmentForm/>}/>
           <Route path='/emp/job-description-form/:pmis?' element={<JobDescriptionForm/>}/>
+          <Route path='/emp/job-working-form/:pmis?' element={<EmpChangeForm/>}/>
+          <Route path='/emp/3puste/:pmis?' element={<FinalPreview/>}/>
 
 
         </Routes>
