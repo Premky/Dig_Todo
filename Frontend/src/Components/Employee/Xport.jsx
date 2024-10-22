@@ -2,10 +2,24 @@ import { Document, Packer, Table, TableRow, TableCell, Paragraph, WidthType } fr
 import { saveAs } from "file-saver";
 
 
-const exportToWord = (emp, edu, train) => {
+const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
     const convertToNepaliDate = (isoDate) => {
         const datePart = isoDate.split('T')[0]; // Extract just the date part
-        return datePart; // Return in the format needed for the NepaliDatePicker
+        const englishToNepaliMap = {
+            '0': '०',
+            '1': '१',
+            '2': '२',
+            '3': '३',
+            '4': '४',
+            '5': '५',
+            '6': '६',
+            '7': '७',
+            '8': '८',
+            '9': '९',
+        };
+
+        // return datePart; // Return in the format needed for the NepaliDatePicker
+        return datePart.split('').map(char => englishToNepaliMap[char] || char).join('');
     };
 
     const doc = new Document({
@@ -75,7 +89,7 @@ const exportToWord = (emp, edu, train) => {
                                         width: { size: 2000, type: WidthType.DXA }, // Set width to 3000 DXA for first column
                                     }),
                                     new TableCell({
-                                        children: [new Paragraph(row.dob)],
+                                        children: [new Paragraph(convertToNepaliDate(row.dob))],
                                         width: { size: 5000, type: WidthType.DXA }, // Set width to 3000 DXA for first column
                                     }),
                                 ],
@@ -181,7 +195,7 @@ const exportToWord = (emp, edu, train) => {
                                         width: { size: 2000, type: WidthType.DXA }, // Set width to 3000 DXA for first column
                                     }),
                                     new TableCell({
-                                        children: [new Paragraph(row.dob)],
+                                        children: [new Paragraph(convertToNepaliDate(row.dob))],
                                         width: { size: 5000, type: WidthType.DXA }, // Set width to 3000 DXA for first column
                                     }),
                                 ],
@@ -232,9 +246,10 @@ const exportToWord = (emp, edu, train) => {
 
                         ]),
                     }),
+
+                    // Qualification Table
                     new Paragraph({ text: " " }), // Add a space between tables
                     new Paragraph({ text: "शैक्षिक योग्यताः" }),
-                    // Second Table
                     new Table({
                         rows: [
                             new TableRow({
@@ -269,7 +284,7 @@ const exportToWord = (emp, edu, train) => {
                                             children: [new Paragraph(`${index + 1}`)]
                                         }),
                                         new TableCell({
-                                            children: [new Paragraph(row.level)]
+                                            children: [new Paragraph(row.edu_level)]
                                         }),
                                         new TableCell({
                                             children: [new Paragraph(row.edu_rank)]
@@ -278,7 +293,7 @@ const exportToWord = (emp, edu, train) => {
                                             children: [new Paragraph(row.institute)]
                                         }),
                                         new TableCell({
-                                            children: [new Paragraph(row.pass_year)]
+                                            children: [new Paragraph(convertToNepaliDate(row.pass_year))]
                                         }),
                                     ]
                                 })
@@ -286,9 +301,9 @@ const exportToWord = (emp, edu, train) => {
                         ]
                     }),
 
+                    // Training Table
                     new Paragraph({ text: " " }), // Add a space between tables
                     new Paragraph({ text: "तालिमको विवरणः" }),
-                    // Second Table
                     new Table({
                         rows: [
                             new TableRow({
@@ -353,6 +368,255 @@ const exportToWord = (emp, edu, train) => {
                             ),
                         ]
                     }),
+
+                    // Award or Prize Table
+                    new Paragraph({ text: " " }), // Add a space between tables
+                    new Paragraph({ text: "पुरस्कारः" }),
+                    new Table({
+                        rows: [
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph(`सि.नं.`)],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 2000, type: WidthType.DXA },
+                                        children: [new Paragraph('पुरस्कारको विवरण')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 3000, type: WidthType.DXA },
+                                        children: [new Paragraph('पुरस्कार दिने कार्यालय')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('प्राप्त मिति')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('रकम(रु)/ग्रेड')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('चलानी नं.')],
+                                    }),
+                                ],
+                            }),
+                            //Second Row for Datas:
+                            ...award.map((row, index) =>
+                                new TableRow({
+                                    children: [
+                                        new TableCell({
+                                            children: [new Paragraph(`${index + 1}`)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.name)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.office_name)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(convertToNepaliDate(row.date))]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.prize)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.sn)]
+                                        }),
+                                    ]
+                                })
+                            ),
+                        ]
+                    }),
+
+                    //Decoration Table
+
+                    new Paragraph({ text: " " }), // Add a space between tables
+                    new Paragraph({ text: "विभुषण" }),
+                    new Table({
+                        rows: [
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph(`सि.नं.`)],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 2000, type: WidthType.DXA },
+                                        children: [new Paragraph('विभुषणको विवरण')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 3000, type: WidthType.DXA },
+                                        children: [new Paragraph('विभुषण दिने कार्यालय')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('प्राप्त मिति')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('रकम(रु)/ग्रेड')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('चलानी नं.')],
+                                    }),
+                                ],
+                            }),
+                            //Second Row for Datas:
+                            ...decor.map((row, index) =>
+                                new TableRow({
+                                    children: [
+                                        new TableCell({
+                                            children: [new Paragraph(`${index + 1}`)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.name)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.office_name)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(convertToNepaliDate(row.date))]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.prize)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.sn)]
+                                        }),
+                                    ]
+                                })
+                            ),
+                        ]
+                    }),
+
+                    // Punishment Table
+                    new Paragraph({ text: " " }), // Add a space between tables
+                    new Paragraph({ text: "कारवाही सम्बन्धी विवरण" }),
+                    // Second Table
+                    new Table({
+                        rows: [
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph(`सि.नं.`)],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 3000, type: WidthType.DXA },
+                                        children: [new Paragraph('कारवाही गर्ने कार्यालय')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 2000, type: WidthType.DXA },
+                                        children: [new Paragraph('कारवाही किसिम')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 2000, type: WidthType.DXA },
+                                        children: [new Paragraph('चलानी नं.')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('मिति')],
+                                    }),
+                                ],
+                            }),
+                            //Second Row for Datas:
+                            ...punishment.map((row, index) =>
+                                new TableRow({
+                                    children: [
+                                        new TableCell({
+                                            children: [new Paragraph(`${index + 1}`)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.office_name)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.type)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.sn)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(convertToNepaliDate(row.date))]
+                                        }),
+                                    ]
+                                })
+                            ),
+                        ]
+                    }),
+
+                    // JD Table
+                    new Paragraph({ text: " " }), // Add a space between tables
+                    new Paragraph({ text: "नोकरी विवरण" }),
+
+                    new Table({
+                        rows: [
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph(`सि.नं.`)],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('सेवा समुह')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('दर्जा')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('क्रियाकलाप')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 2000, type: WidthType.DXA },
+                                        children: [new Paragraph('न.नि. सरुवा/बढुवा गर्ने कार्यालय')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 1000, type: WidthType.DXA },
+                                        children: [new Paragraph('मिति')],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 2000, type: WidthType.DXA },
+                                        children: [new Paragraph('दरबन्दी')],
+                                    }),
+                                ],
+                            }),
+                            //Second Row for Datas:
+                            ...jd.map((row, index) =>
+                                new TableRow({
+                                    children: [
+                                        new TableCell({
+                                            children: [new Paragraph(`${index + 1}`)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.group_name)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.rank_np)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.job_name)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.office_name)]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(convertToNepaliDate(row.date))]
+                                        }),
+                                        new TableCell({
+                                            children: [new Paragraph(row.deputation)]
+                                        }),
+                                    ]
+                                })
+                            ),
+                        ]
+                    }),
+
+                    //Add Next Table Here
                 ],
             },
         ],

@@ -9,6 +9,8 @@ import verifyToken from '../middleware/verifyuser.js'
 import NepaliDate from 'nepali-datetime'
 import fs from 'fs';
 import { promisify } from 'util';
+// import {PizZip} from 'pizzip';
+// import {Docxtemplater} from 'docxtemplater';
 
 import { fileURLToPath } from 'url';
 
@@ -429,5 +431,92 @@ router.delete('/delete_jd/:id', async(req,res)=>{
         return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
     }
 })
+
+router.post('/add_in_change', async (req, res) => {
+
+    const {
+        pmis, office_id, date, remarks
+    } = req.body;
+
+    const created_by = 1; // Adjust this to dynamically handle creator if needed
+
+    const sql = `INSERT INTO emp_internal_change (
+        pmis, office_id, date, remarks, created_by
+    ) VALUES (?)`;
+
+    const values = [
+        pmis, office_id, date, remarks, created_by,
+    ];
+
+    try {
+        const result = await query(sql, [values]);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
+
+router.put('/update_in_change/:id', async (req, res) => {
+    const id=req.params.id;    
+    const {
+        pmis, office_id, date, remarks
+    } = req.body;
+    const updated_by = 1;
+    const sql = `UPDATE emp_internal_change SET pmis=?, office_id=?, date=?, remarks=?, updated_by=? WHERE id=?`;
+    const values = [
+        pmis, office_id, date, remarks, updated_by, id
+    ];
+
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.delete('/delete_in_change/:id', async(req,res)=>{
+    const {id} = req.params;
+    console.log(id)
+    try{
+        const sql = `DELETE FROM emp_internal_change WHERE id=?`;
+        const result = await query(sql, id);
+        return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
+    } catch(err){
+        console.error('Error Deleting Record:',err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+
+
+// const exportTableToWord = (tableData, res) => {
+//     const content = fs.readFileSync(path.resolve(__dirname, 'template.docx'), 'binary');
+//     const zip = new PizZip(content);
+//     const doc = new Docxtemplater(zip);
+
+//     const tableRows = tableData.map(row => {
+//         return {
+//             row: row.map(cell => ({ text: cell }))
+//         };
+//     });
+
+//     doc.setData({
+//         table: tableRows,
+//     });
+
+//     try {
+//         doc.render();
+//     } catch (error) {
+//         console.error(error);
+//     }
+
+//     const buf = doc.getZip().generate({ type: 'nodebuffer' });
+//     fs.writeFileSync(path.resolve(__dirname, 'output.docx'), buf);
+//     res.download('output.docx');
+// };
+
 
 export { router as employeeRouter }

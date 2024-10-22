@@ -3,6 +3,7 @@ import axios from 'axios';
 const primaryUrl = import.meta.env.VITE_API_BASE_URL_PRIMARY;
 const secondaryUrl = import.meta.env.VITE_API_BASE_URL_SECONDARY;
 const ternaryUrl = import.meta.env.VITE_API_BASE_URL_TERNARY;
+const mainUrl = import.meta.env.VITE_API_BASE_URL;
 
 // Function to check if a URL is reachable
 const isUrlAvailable = async (url) => {
@@ -17,7 +18,9 @@ const isUrlAvailable = async (url) => {
 
 // Function to get the working base URL
 export const getBaseUrl = async () => {
-    if (await isUrlAvailable(primaryUrl)) {
+    if (await isUrlAvailable(mainUrl)) {
+        return mainUrl;
+    } else if (await isUrlAvailable(primaryUrl)) {
         // console.log('primary', primaryUrl)
         return primaryUrl;
     } else if (await isUrlAvailable(secondaryUrl)) {

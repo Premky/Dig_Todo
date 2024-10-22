@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import NepaliDate from 'nepali-datetime';
 import Select from 'react-select';
 
+import getGender from '../../Utilities/getGender';
 import Icon from '../Utils/Icon';
 import './formstyle.css'
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
@@ -28,6 +29,7 @@ const FinalPreview = () => {
     const [editing, setEditing] = useState(false);
 
     const [fetchedEmp, setFetchedEmp] = useState([]);
+    
 
     const [fetchedInChange, setFetchedInChange] = useState([]);
     const [currentInChange, setCurrentInChange] = useState([]);
@@ -53,6 +55,12 @@ const FinalPreview = () => {
             alert(err)
         }
     }
+
+    const [gender, setGender] = useState('');
+    const fetchGender = async (genderCode) => {
+        const genderValue = await getGender(genderCode);
+        setGender(genderValue);
+    };
 
     const fetchChange = async () => {
         try {
@@ -191,6 +199,7 @@ const FinalPreview = () => {
         fetchDecoration();
         fetchPunishment();
         fetchJd();
+        fetchGender();
 
         fetchChange();
         fetchOffice();
@@ -217,7 +226,7 @@ const FinalPreview = () => {
                         <div className="row p-2 pt-0">
                             {fetchedEmp && fetchedEmp.length > 0 ? (
                                 <div className="row">
-                                    {fetchedEmp.map(emp => (
+                                    {fetchedEmp.flatMap(emp => (
                                         <>
                                             <div className="row">
                                                 <div className="col-9 row">
@@ -235,7 +244,7 @@ const FinalPreview = () => {
                                                     </div>
                                                     <div className="col-xl-2 col-md-3 col-sm-4">
                                                         <span className='span'>लैंगिकः </span>
-                                                        <span className='span_value'>{emp.gender}</span>
+                                                        <span className='span_value'>{getGender(emp.gender)}</span>
                                                     </div>
                                                 </div>
                                                 <div className="col-3">
@@ -337,7 +346,7 @@ const FinalPreview = () => {
                                                 <TableCell>{row.edu_faculty}</TableCell>
                                                 <TableCell>{row.institute}</TableCell>
                                                 <TableCell>{row.country}</TableCell>
-                                                <TableCell>{row.pass_year}</TableCell>
+                                                <TableCell>{convertToNepaliDate(row.pass_year)}</TableCell>
                                                 <TableCell>{row.edu_rank}</TableCell>
                                                 <TableCell>{row.gpa}</TableCell>
                                                 <TableCell>{row.remarks}</TableCell>
@@ -579,7 +588,7 @@ const FinalPreview = () => {
                                 Previous
                             </div>
 
-                            <div className="col-2 m-3 btn btn-warning" onClick={() => exportToWord(fetchedEmp, fetchedQualification, fetchedTraining)}>
+                            <div className="col-2 m-3 btn btn-warning" onClick={() => exportToWord(fetchedEmp, fetchedQualification, fetchedTraining, fetchedAward, fetchedDecoration, fetchedPunishment, fetchedJd)}>
                                 Export To Word
                             </div>
 

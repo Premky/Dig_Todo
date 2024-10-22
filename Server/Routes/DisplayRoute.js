@@ -267,6 +267,21 @@ router.get('/emp_groups', async (req, res) => {
         return res.json({ Status: true, Result: result })
     })
 })
+
+router.get('/in_change/:pmis', async (req, res) => {
+    const { pmis } = req.params;
+    const sql = `SELECT a.*, o.office_name
+       	FROM 
+           emp_internal_change a
+        LEFT JOIN
+            office o ON a.office_id = o.o_id
+        WHERE a.pmis = ?`;
+
+    con.query(sql, pmis, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
 //Support for JD Page End
 
 export { router as displayRouter }

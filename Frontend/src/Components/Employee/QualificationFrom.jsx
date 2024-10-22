@@ -31,6 +31,15 @@ const QualificationFrom = () => {
     const [fetchedQualification, setFetchedQualification] = useState([]);
     const [currentEdu, setCurrentEdu] = useState([]);
 
+    const convertToNepaliDate = (isoDate) => {
+        if(!isoDate){
+            return 'null';
+        }else{
+        const datePart = isoDate.split('T')[0]; // Extract just the date part
+        return datePart; // Return in the format needed for the NepaliDatePicker)
+    }}
+      ;
+
     const fetchEmployee = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
@@ -285,15 +294,25 @@ const QualificationFrom = () => {
                                     {errors.country && <span>{errors.country.message}</span>}
                                 </div>
 
-                                <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="pass_year"> उत्तिर्ण गरेको साल </label>
-                                    <input
-                                        {...register('pass_year', { required: "This field is required." })}
-                                        placeholder="उत्तिर्ण गरेको साल"
-                                        className="form-control"
-                                    />
-                                    {errors.pass_year && <span>{errors.pass_year.message}</span>}
-                                </div>
+                                <Controller
+                                    name="pass_year"
+                                    control={control}
+                                    rules={{ required: "This field is required" }}
+
+                                    render={({ field: { onChange, onBlur, value, ref } }) => (
+                                        <NepaliDatePicker
+                                            value={value || ""} // Ensure empty string when no date is selected
+                                            onChange={(date) => {
+                                                onChange(date); // Update form state
+                                                setSelectedDay(date); // Update local state
+                                            }}
+                                            onBlur={onBlur} // Handle blur
+                                            dateFormat="YYYY-MM-DD" // Customize your date format
+                                            placeholder="Select Nepali Date"
+                                            ref={ref} // Use ref from react-hook-form
+                                        />
+                                    )}
+                                />
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="rank"> श्रेणी/ग्रेड </label>
@@ -368,7 +387,7 @@ const QualificationFrom = () => {
                                                     <TableCell>{row.edu_faculty}</TableCell>
                                                     <TableCell>{row.institute}</TableCell>
                                                     <TableCell>{row.country}</TableCell>
-                                                    <TableCell>{row.pass_year}</TableCell>
+                                                    <TableCell>{convertToNepaliDate(row.pass_year)}</TableCell>
                                                     <TableCell>{row.edu_rank}</TableCell>
                                                     <TableCell>{row.gpa}</TableCell>
                                                     <TableCell>{row.remarks}</TableCell>
