@@ -35,6 +35,7 @@ import PunishmentForm from './Components/Employee/PunishmentForm'
 import JobDescriptionForm from './Components/Employee/JobDescriptionForm'
 import EmpChangeForm from './Components/Employee/EmpChangeForm'
 import FinalPreview from './Components/Employee/FinalPreview'
+import Employee from './Components/Employee/Employee'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -77,7 +78,6 @@ function App() {
             </PrivateRoute>
           } />
 
-
           <Route path='/admin/addleavecount' element={
             <PrivateRoute>
               <AddLeaveCount />
@@ -115,7 +115,8 @@ function App() {
             </Route>
           </Route>
 
-          <Route path='/emp/' element={<AddEmployee />}/>          
+          <Route path='/emp/' element={<Employee />}/>          
+          <Route path='/emp/addemp_form/' element={<AddEmployee />}/>          
           <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom/>}/>
           <Route path='/emp/training-form/:pmis?' element={<TrainingForm/>}/>
           <Route path='/emp/award-form/:pmis?' element={<AwardForm/>}/>
@@ -124,8 +125,6 @@ function App() {
           <Route path='/emp/job-description-form/:pmis?' element={<JobDescriptionForm/>}/>
           <Route path='/emp/job-working-form/:pmis?' element={<EmpChangeForm/>}/>
           <Route path='/emp/3puste/:pmis?' element={<FinalPreview/>}/>
-
-
         </Routes>
 
       </BrowserRouter >
