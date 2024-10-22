@@ -286,6 +286,9 @@ const TrainingForm = () => {
                 </div>
 
                 <div className="col-12 row mt-2">
+                  <div className="col-2 mb-3 btn btn-success" onClick={() => navigate(`/emp/qualification-form/${pmis}`)}>
+                    Previous
+                  </div>
                   <div className="col-4">
                     <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
                       {loading ? 'Submitting...' : editing ? 'Update & Continue' : 'Save & Continue'}

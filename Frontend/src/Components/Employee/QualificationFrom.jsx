@@ -32,13 +32,14 @@ const QualificationFrom = () => {
     const [currentEdu, setCurrentEdu] = useState([]);
 
     const convertToNepaliDate = (isoDate) => {
-        if(!isoDate){
+        if (!isoDate) {
             return 'null';
-        }else{
-        const datePart = isoDate.split('T')[0]; // Extract just the date part
-        return datePart; // Return in the format needed for the NepaliDatePicker)
-    }}
-      ;
+        } else {
+            const datePart = isoDate.split('T')[0]; // Extract just the date part
+            return datePart; // Return in the format needed for the NepaliDatePicker)
+        }
+    }
+        ;
 
     const fetchEmployee = async () => {
         try {
@@ -348,7 +349,7 @@ const QualificationFrom = () => {
                                 <div className="col-12 row mt-2">
                                     <div className="col-4">
                                         <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
-                                            {loading ? 'Submitting...' : editing ? 'Update & Continue' : 'Save & Continue'}
+                                            {loading ? 'Submitting...' : editing ? 'Update' : 'Save'}
                                         </button>
                                     </div>
                                     <div className="col-4 mb-3">

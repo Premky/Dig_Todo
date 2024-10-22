@@ -100,11 +100,11 @@ const JobDescriptionForm = () => {
         try {
             const result = await axios.get(`${BASE_URL}/display/emp_groups`);
             if (result.data.Status) {
-                const options = result.data.Result.map(opt => ({                    
+                const options = result.data.Result.map(opt => ({
                     value: opt.id,
                     label: opt.name,
                     label_en: opt.name_en
-                }));                
+                }));
                 setFetchedGroups(options);
             } else {
                 alert(result.data.Error);
@@ -168,13 +168,13 @@ const JobDescriptionForm = () => {
         setEditing(true);
         setValue("pmis", data.pmis);
         setValue("rank_id", data.rank_id);
-        setValue("group_id", data.group_id );
-        setValue("job_done_id", data.job_done_id );
+        setValue("group_id", data.group_id);
+        setValue("job_done_id", data.job_done_id);
         setValue("office_id", data.office_id);
         // Converting dates to correct Nepali date format
         const date = convertToNepaliDate(data.date);
         setValue("date", date); // Use the converted start date    
-        setValue("deputation_id", data.deputation_id);        
+        setValue("deputation_id", data.deputation_id);
         setValue("remarks", data.remarks);
     };
 
@@ -357,6 +357,9 @@ const JobDescriptionForm = () => {
                                 </div>
 
                                 <div className="col-12 row mt-2">
+                                    <div className="col-2 mb-3 btn btn-success" onClick={() => navigate(`/emp/punishment-form/${pmis}`)}>
+                                        Previous
+                                    </div>
                                     <div className="col-4">
                                         <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
                                             {loading ? 'Submitting...' : editing ? 'Update' : 'Add'}
@@ -396,7 +399,7 @@ const JobDescriptionForm = () => {
                                                     <TableCell>{row.rank_np}</TableCell>
                                                     <TableCell>{row.group_name}</TableCell>
                                                     <TableCell>{row.job_name}</TableCell>
-                                                    <TableCell>{row.office_name}</TableCell>                                                    
+                                                    <TableCell>{row.office_name}</TableCell>
                                                     <TableCell>{convertToNepaliDate(row.date)}</TableCell>
                                                     <TableCell>{row.deputation}</TableCell>
                                                     <TableCell>{row.remarks}</TableCell>

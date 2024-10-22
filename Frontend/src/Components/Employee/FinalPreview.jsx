@@ -584,15 +584,18 @@ const FinalPreview = () => {
                         </div>
 
                         <div className="row p-2">
-                            <div className="col-2 m-3  btn btn-success" onClick={() => navigate(`/emp/job-working-form/${pmis}`)}>
-                                Previous
+                            <div className="col-2 m-3  btn btn-success" onClick={() => navigate(`/emp/addemp_form/`)}>
+                                Edit
                             </div>
+                            {/* <div className="col-2 m-3  btn btn-success" onClick={() => navigate(`/emp/addemp_form/${pmis}`)}>
+                                Previous
+                            </div> */}
 
                             <div className="col-2 m-3 btn btn-warning" onClick={() => exportToWord(fetchedEmp, fetchedQualification, fetchedTraining, fetchedAward, fetchedDecoration, fetchedPunishment, fetchedJd)}>
                                 Export To Word
                             </div>
 
-                            <div className="col-2 m-3  btn btn-success" onClick={() => navigate(`/emp`)}>
+                            <div className="col-2 m-3  btn btn-success" onClick={() => navigate(`/emp/addemp_form/`)}>
                                 Add New
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-import { Document, Packer, Table, TableRow, TableCell, Paragraph, WidthType } from "docx";
+import { Document, Packer, Table, TableRow, TableCell, Paragraph, WidthType, AlignmentType, TextRun, BorderStyle } from "docx";
 import { saveAs } from "file-saver";
 
 
@@ -26,6 +26,48 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
         sections: [
             {
                 children: [
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                            new TextRun({
+                                text: "नेपाल सरकार",
+                                size: 26,
+                            }),]
+                    }),
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                            new TextRun({
+                                text: "गृह मन्त्रालय",
+                                size: 26,
+                            }),]
+                    }),
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                            new TextRun({
+                                text: "नेपाल प्रहरी",
+                                size: 26,
+                            }),]
+                    }),
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                            new TextRun({
+                                text: "[Office Name]",
+                                size: 32,
+                            }),]
+                    }),
+                    new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                            new TextRun({
+                                text: "(कर्मचारी प्रशासन शाखा)",
+                                size: 26,
+                            }),
+                        ]
+                    }),
+
                     new Paragraph({ text: "व्यक्तिगत विवरणः" }),
                     // First Table
                     new Table({
@@ -614,6 +656,56 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                                 })
                             ),
                         ]
+                    }),
+                    new Paragraph({ text: " " }), // Add a space between tables
+
+                    new Table({
+                        rows: [
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        width: { size: 10000, type: WidthType.DXA },
+                                        children: [new Paragraph(`उतार गर्ने`)],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 10000, type: WidthType.DXA },
+                                        children: [new Paragraph('प्रमाणित गर्ने')],
+                                    }),
+                                ],
+                            }),
+                            //Second Row for Datas:                            
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [
+                                            new Paragraph(`नाम थरः`),
+                                            new Paragraph('दर्जाः'),
+                                            new Paragraph('दस्तखतः'),
+                                            new Paragraph('मितिः')
+                                        ]
+                                    }),
+
+                                    new TableCell({
+                                        children: [
+                                            new Paragraph(`नाम थरः`),
+                                            new Paragraph('दर्जाः'),
+                                            new Paragraph('दस्तखतः'),
+                                            new Paragraph('मितिः')
+                                        ]
+                                    }),
+                                    
+                                ]
+                            })
+
+                        ],
+                        borders: {
+                            top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            insideVertical: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        },
                     }),
 
                     //Add Next Table Here

@@ -109,7 +109,7 @@ const PunishmentForm = () => {
     const handleEdit = (data) => {
         setCurrentPunishment(data);
         setEditing(true);
-        setValue("pmis", data.pmis);        
+        setValue("pmis", data.pmis);
         setValue("office_id", data.office_id);
         setValue("type", data.type);
         setValue("sn", data.sn);
@@ -196,7 +196,7 @@ const PunishmentForm = () => {
                                         readOnly
                                     />
                                     {errors.pmis && <span>{errors.pmis.message}</span>}
-                                </div>                                
+                                </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="office_id">अफिस<span>*</span></label>
@@ -264,6 +264,9 @@ const PunishmentForm = () => {
                                 </div>
 
                                 <div className="col-12 row mt-2">
+                                    <div className="col-2 mb-3 btn btn-success" onClick={() => navigate(`/emp/decoration-form/${pmis}`)}>
+                                        Previous
+                                    </div>
                                     <div className="col-4">
                                         <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
                                             {loading ? 'Submitting...' : editing ? 'Update' : 'Add'}
@@ -289,7 +292,7 @@ const PunishmentForm = () => {
                                                 <TableCell>कारवाही गर्ने कार्यालय</TableCell>
                                                 <TableCell>कारवाही किसिम</TableCell>
                                                 <TableCell>चलानी नं.</TableCell>
-                                                <TableCell>मिति</TableCell>                                                
+                                                <TableCell>मिति</TableCell>
                                                 <TableCell>Remarks</TableCell>
                                                 <TableCell>#</TableCell>
                                             </TableRow>
