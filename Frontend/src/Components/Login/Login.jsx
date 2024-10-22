@@ -35,11 +35,13 @@ const Login = ({ onLogin }) => {
                 return branch === 'कार्यालय प्रमुख' ? '/display/chief' : '/display/dodisplay';
             case 'डि.अ. प्रशासन':
                 return '/doadmin';
+            case 'कर्मचारी प्रशासन':
+                return '/emp';
             default:
                 return '/';
         }
     };
-    
+
     //Object Method
     const [values, setValues] = useState({
         username: '',
@@ -76,42 +78,42 @@ const Login = ({ onLogin }) => {
                     }
                 })
                 .catch(err => console.log(err))
-        }else{
+        } else {
             console.log("No Base Url Found")
         }
     }
 
-        const handleSuperClick = () => {
-            navigate('/super/login')
-        }
-        return (
-            <div className='d-flex justify-content-center align-items-center vh-100 loginPage'>
-                <div className='p-3 rounded w-40 border loginForm'>
-                    <h2><center>Login Page</center></h2>
-                    <form onSubmit={handleSubmit}>
-                        <div className='mb-3'>
-                            <label htmlFor="username"><strong>Username:</strong></label>
-                            <input type="text" name='username' autoComplete='off' placeholder='Enter username'
-                                className='form-control' rounded-0='true'
-                                onChange={(e) => setValues({ ...values, username: e.target.value })} />
-                        </div>
-                        <div className='mb-3'>
-                            <label htmlFor="password"><strong>Password:</strong></label>
-                            <input type="password" name='password' autoComplete='off' placeholder='Enter Password'
-                                className='form-control' rounded-0='true'
-                                onChange={(e) => setValues({ ...values, password: e.target.value })} />
-                            <div className="text-danger">
-                                {error && error}
-                            </div>
-                        </div>
-                        <button className='btn btn-success w-100 rounded-0'>
-                            Login
-                        </button>
-                    </form>
-                    {/* <span onClick={handleSuperClick}>**</span> */}
-                </div>
-            </div>
-        )
+    const handleSuperClick = () => {
+        navigate('/super/login')
     }
+    return (
+        <div className='d-flex justify-content-center align-items-center vh-100 loginPage'>
+            <div className='p-3 rounded w-40 border loginForm'>
+                <h2><center>Login Page</center></h2>
+                <form onSubmit={handleSubmit}>
+                    <div className='mb-3'>
+                        <label htmlFor="username"><strong>Username:</strong></label>
+                        <input type="text" name='username' autoComplete='off' placeholder='Enter username'
+                            className='form-control' rounded-0='true'
+                            onChange={(e) => setValues({ ...values, username: e.target.value })} />
+                    </div>
+                    <div className='mb-3'>
+                        <label htmlFor="password"><strong>Password:</strong></label>
+                        <input type="password" name='password' autoComplete='off' placeholder='Enter Password'
+                            className='form-control' rounded-0='true'
+                            onChange={(e) => setValues({ ...values, password: e.target.value })} />
+                        <div className="text-danger">
+                            {error && error}
+                        </div>
+                    </div>
+                    <button className='btn btn-success w-100 rounded-0'>
+                        Login
+                    </button>
+                </form>
+                {/* <span onClick={handleSuperClick}>**</span> */}
+            </div>
+        </div>
+    )
+}
 
-    export default Login
+export default Login
