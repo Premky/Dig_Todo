@@ -31,6 +31,7 @@ app.use(cors({
     origin: function (origin, callback) {
         const allowedOrigins = [
             'https://kppo-frontend.onrender.com',
+            'https://kppo-frontend.onrender.com/',
             'http://localhost:5173',
             'http://192.168.162.15:8211',
             'http://192.168.1.35:5173',
