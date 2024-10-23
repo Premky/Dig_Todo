@@ -311,4 +311,23 @@ router.get('/fetch_emp/:pmis', async (req, res) => {
 })
 //Support for JD Page End
 
+
+//Tango Support Start
+router.get('/vehicles', async (req, res) => {
+    const sql = `SELECT * FROM tango_vehicles`;
+    con.query(sql, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
+router.get('/punishments', async (req, res) => {
+    const sql = `SELECT * FROM tango_punishment`;
+    con.query(sql, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+//Tango Support END
+
 export { router as displayRouter }

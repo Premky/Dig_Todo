@@ -37,6 +37,8 @@ const Login = ({ onLogin }) => {
                 return '/doadmin';
             case 'कर्मचारी प्रशासन':
                 return '/emp';
+            case 'ट्राफिक':
+                return '/tango';
             default:
                 return '/';
         }

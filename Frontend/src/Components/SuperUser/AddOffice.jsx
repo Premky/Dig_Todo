@@ -278,6 +278,8 @@ const AddOffice = () => {
             </form>
           </div>
         </div>
+        </div>
+        <div className="row pl-3 d-flex">
         <div className="col">
           <div className="p-1 d-flex justify-content-center shadow">
             <h4>All Office</h4>
