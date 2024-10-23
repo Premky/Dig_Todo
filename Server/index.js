@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { displayRouter } from './Routes/DisplayRoute.js';
 import { employeeRouter } from './Routes/EmployeeRoute.js';
+import { tangoRouter } from './Routes/TangoRoute.js';
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use('/display', displayRouter);
 app.use('/auth', adminRouter);
 app.use('/super', superAdminRouter);
 app.use('/emp', employeeRouter);
+app.use('/tango', tangoRouter);
 
 app.use(express.static('Public'));
 

@@ -50,13 +50,13 @@ const PunishmentActionForm = () => {
 
     const fetchPunishment = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/punishments`);
+            const result = await axios.get(`${BASE_URL}/display/punishments_data`);
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
                     label: opt.name_np
                 }));
-                setFetchedPunishment(options);
+                setFetchedPunishment(result.data.Result);
             } else {
                 alert(result.data.Error);
                 console.error(result.data.Error);
@@ -87,42 +87,43 @@ const PunishmentActionForm = () => {
         setLoading(true);
         try {
             const url = editing
-                ? `${BASE_URL}/emp/update_punishment/${currentInChange.id}`
-                : `${BASE_URL}/emp/add_punishment`;
+                ? `${BASE_URL}/tango/update_punishment/${currentPunishment.id}`
+                : `${BASE_URL}/tango/add_punishment`;
             const method = editing ? 'PUT' : 'POST';
-
-            // Make API request
+    
             const result = await axios({
                 method,
                 url,
-                data: data,
+                data,
                 headers: { 'Content-Type': 'application/json' }
             });
-
+    
             if (result.data.Status) {
-                alert(`Record ${editing ? 'updated' : 'added'} for PMIS: ${result.data.pmis} successfully!`);
-                reset();
+                alert(`Record ${editing ? 'updated' : 'added'} successfully!`);
+                await reset(); // Clear the form after submission
                 setEditing(false);
-                fetchChange();
+                fetchPunishment(); // Refresh the punishment list
+            } else {
+                alert(result.data.Error || 'Failed to submit the form.');
             }
         } catch (err) {
             console.error('Form submission error:', err);
-            alert(err)
-            // alert('Failed to submit the form. Please try again.');
+            alert('Error occurred during form submission.');
         } finally {
             setLoading(false);
         }
     };
+    
 
     const handleEdit = (data) => {
-        setCurrentInChange(data);
+        setCurrentPunishment(data);
         setEditing(true);
-        setValue("pmis", data.pmis);
-        setValue("office_id", data.office_id);
+        setValue("date", date); // Use the converted start date    
+        setValue("vehicle_id", data.vehicle_id);
+        setValue("count", data.count);
         // Converting dates to correct Nepali date format
         const date = convertToNepaliDate(data.date);
-        setValue("date", date); // Use the converted start date    
-        setValue("remarks", data.remarks);
+        setValue("fine", data.fine);
     };
 
     const convertToNepaliDate = (isoDate) => {
@@ -226,57 +227,18 @@ const PunishmentActionForm = () => {
                                     />
                                     {errors.vehicle_id && <span>{errors.vehicle_id.message}</span>}
                                 </div>
-
+                              
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="punishment_id">कारवाहीको किसिम<span>*</span></label>
-                                    <Controller
-                                        name="punishment_id"
-                                        control={control} // This should come from useForm() hook
-                                        rules={{ required: "This field is required" }}
-                                        defaultValue=""
-                                        render={({ field: { onChange, value, ref } }) => (
-                                            <Select
-                                                inputRef={ref} // Set ref to react-select input
-                                                className='basic-single'
-                                                classNamePrefix='select'
-                                                value={fetchedPunishment.find(option => option.value === value) || null} // Match selected option
-                                                onChange={(selectedOption) => {
-                                                    onChange(selectedOption ? selectedOption.value : ""); // Update form value
-                                                }}
-                                                isClearable={true} // Correct boolean format
-                                                isSearchable={true}
-                                                options={fetchedPunishment}
-                                            />
-                                        )}
+                                    <label htmlFor="count"> संख्या </label>
+                                    <input
+                                        type='number'
+                                        {...register('count', { required: "This field is required." })}
+                                        placeholder="संख्या"
+                                        className="form-control"
                                     />
-                                    {errors.punishment_id && <span>{errors.punishment_id.message}</span>}
+                                    {errors.count && <span>{errors.count.message}</span>}
                                 </div>
-
-                                {/* <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="office_id">अफिस<span>*</span></label>
-                                    <Controller
-                                        name="office_id"
-                                        control={control} // This should come from useForm() hook
-                                        rules={{ required: "This field is required" }}
-                                        defaultValue=""
-                                        render={({ field: { onChange, value, ref } }) => (
-                                            <Select
-                                                inputRef={ref} // Set ref to react-select input
-                                                className='basic-single'
-                                                classNamePrefix='select'
-                                                value={fetchedOffice.find(option => option.value === value) || null} // Match selected option
-                                                onChange={(selectedOption) => {
-                                                    onChange(selectedOption ? selectedOption.value : ""); // Update form value
-                                                }}
-                                                isClearable={true} // Correct boolean format
-                                                isSearchable={true}
-                                                options={fetchedOffice}
-                                            />
-                                        )}
-                                    />
-                                    {errors.office_id && <span>{errors.office_id.message}</span>}
-                                </div> */}
-
+                             
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="fine"> राजस्व </label>
                                     <input
@@ -319,20 +281,22 @@ const PunishmentActionForm = () => {
                                     <Table size="small">
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>PMIS</TableCell>
-                                                <TableCell>कार्यालय</TableCell>
+                                                <TableCell>सि.नं.</TableCell>
                                                 <TableCell>मिति</TableCell>
-                                                <TableCell>Remarks</TableCell>
+                                                <TableCell>गाडी</TableCell>
+                                                <TableCell>संख्या</TableCell>
+                                                <TableCell>राजस्व</TableCell>                                                
                                                 <TableCell>#</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {/* {fetchedPunishment.map((row) => (
+                                            {fetchedPunishment.map((row, index) => (
                                                 <TableRow key={row.id}>
-                                                    <TableCell>{row.pmis}</TableCell>
-                                                    <TableCell>{row.office_name}</TableCell>
+                                                    <TableCell>{index+1}</TableCell>
                                                     <TableCell>{convertToNepaliDate(row.date)}</TableCell>
-                                                    <TableCell>{row.remarks}</TableCell>
+                                                    <TableCell>{row.name_np}</TableCell>
+                                                    <TableCell>{row.count}</TableCell>                                                    
+                                                    <TableCell>{row.fine}</TableCell>
                                                     <TableCell>
                                                         <div className="row">
                                                             <div className="col">
@@ -347,14 +311,16 @@ const PunishmentActionForm = () => {
                                                                     title={'Are you sure you want to delete this record?'}
                                                                     buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
                                                                     onConfirm={() => handleDelete(row.id)}>
-                                                                    <b>{row.job_name} | {row.office_name} | {convertToNepaliDate(row.date)}</b>
+                                                                    <b>{row.job_name} | {row.office_name} | 
+                                                                        {/* {convertToNepaliDate(row.date)} */}
+                                                                        </b>
                                                                     <p>This action cannot be undone.</p>
                                                                 </DeleteConfirmationModal>
                                                             </div>
                                                         </div>
                                                     </TableCell>
                                                 </TableRow>
-                                            ))} */}
+                                            ))}
                                         </TableBody>
                                     </Table>
                                 </TableContainer>

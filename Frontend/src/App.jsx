@@ -38,7 +38,7 @@ import FinalPreview from './Components/Employee/FinalPreview'
 import Employee from './Components/Employee/Employee'
 import TangoHome from './Components/Tango/TangoHome'
 import TangoDashboard from './Components/Tango/TangoDashboard'
-import PunishmentActionForm from './Components/Tango/PunishmentActionForm'
+import PunishmentActionForm from './Components/Tango/DailyKashur'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -132,7 +132,8 @@ function App() {
 
           <Route path='/tango/' element={<TangoDashboard />}>
             <Route path='/tango/' element={<TangoHome/>} />
-            <Route path='/tango/action-form' element={<PunishmentActionForm />} />
+            <Route path='/tango/rajashwa-form' element={<PunishmentActionForm />} />
+            <Route path='/tango/kasur-form' element={<PunishmentActionForm />} />
           </Route>
         </Routes>
 

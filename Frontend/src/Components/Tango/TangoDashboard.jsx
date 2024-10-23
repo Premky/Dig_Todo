@@ -19,14 +19,21 @@ const TangoDashboard = () => {
                         <div className='d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100'>
                             <Link to="/tango/"
                                 className='d-flex align-items-center pb-3 mb-md-1 mt-md-3 me-md-auto text-white text-decoration-none '>
-                                <span className='ms-2 d-none d-sm-inline fs-4'> Admin Panel </span>
+                                <span className='ms-2 d-none d-sm-inline fs-4 text-warning'> Admin Panel </span>
                             </Link>
                             <ul className='nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items'>
                                 <li className='W-100'>
-                                    <Link to="/tango/action-form/" className='nav-link text-white px-0 align-middle'>
+                                    <Link to="/tango/rajashwa-form/" className='nav-link text-white px-0 align-middle'>
                                         {/* <i className='fs-4 bi-speedometer2 ms-2 '></i> */}
                                         <i class="bi bi-person-badge fs-4 "></i>
-                                        <span className='ms-2 d-none d-sm-inline'>Form</span>
+                                        <span className='ms-2 d-none d-sm-inline text-white'>दैनिक राजश्व</span>
+                                    </Link>
+                                </li>
+                                <li className='W-100'>
+                                    <Link to="/tango/kasur-form/" className='nav-link text-white px-0 align-middle'>
+                                        {/* <i className='fs-4 bi-speedometer2 ms-2 '></i> */}
+                                        <i class="bi bi-person-badge fs-4 "></i>
+                                        <span className='ms-2 d-none d-sm-inline text-white'>दैनिक कसुर</span>
                                     </Link>
                                 </li>
                                 
@@ -36,7 +43,7 @@ const TangoDashboard = () => {
                                     <div to="/dashboard/logout"
                                         className='nav-link px-0 align-middle text-white'>
                                         <i className='fs-4 bi-power ms-2'></i>
-                                        <span className='ms-2 d-none d-sm-inline'><Logout /></span>
+                                        <span className='ms-2 d-none d-sm-inline text-white'><Logout /></span>
                                     </div>
                                 </li>
                             </ul>
