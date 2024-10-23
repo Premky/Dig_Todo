@@ -12,8 +12,9 @@ import Icon from '../Utils/Icon';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
+import XportKasur from './XportKasur';
 
-const PunishmentActionForm = () => {
+const DailyKasurForm = () => {
     const { pmis } = useParams();
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
@@ -27,18 +28,18 @@ const PunishmentActionForm = () => {
 
     const [fetchedPunishment, setFetchedPunishment] = useState([]);
     const [currentPunishment, setCurrentPunishment] = useState([]);
-    const [fetchedVehicles, setFetchedVehicles] = useState([]);
+    const [fetchedKasur, setFetchedKasur] = useState([]);
 
 
-    const fetchvehicles = async () => {
+    const fetchKasur = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/vehicles`);
+            const result = await axios.get(`${BASE_URL}/display/punishments`);
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
                     label: opt.name_np
                 }));
-                setFetchedVehicles(options);
+                setFetchedKasur(options);
             } else {
                 alert(result.data.Error);
                 console.error(result.data.Error);
@@ -50,7 +51,7 @@ const PunishmentActionForm = () => {
 
     const fetchPunishment = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/punishments_data`);
+            const result = await axios.get(`${BASE_URL}/tango/kasur_data`);
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
@@ -87,8 +88,8 @@ const PunishmentActionForm = () => {
         setLoading(true);
         try {
             const url = editing
-                ? `${BASE_URL}/tango/update_punishment/${currentPunishment.id}`
-                : `${BASE_URL}/tango/add_punishment`;
+                ? `${BASE_URL}/tango/update_kasur/${currentPunishment.id}`
+                : `${BASE_URL}/tango/add_kasur`;
             const method = editing ? 'PUT' : 'POST';
     
             const result = await axios({
@@ -116,15 +117,17 @@ const PunishmentActionForm = () => {
     
 
     const handleEdit = (data) => {
-        setCurrentPunishment(data);
-        setEditing(true);
-        setValue("date", date); // Use the converted start date    
-        setValue("vehicle_id", data.vehicle_id);
-        setValue("count", data.count);
-        // Converting dates to correct Nepali date format
-        const date = convertToNepaliDate(data.date);
-        setValue("fine", data.fine);
+        setCurrentPunishment(data); // Set the current punishment data
+        setEditing(true); // Enable editing mode
+    
+        // Use setValue to populate the form fields
+        setValue("date", convertToNepaliDate(data.date)); // Convert and set Nepali date
+        setValue("kasur_id", data.kasur_id); // Set the vehicle ID
+        setValue("count", data.count); // Set count value
+        setValue("fine", data.fine); // Set fine value
+        
     };
+    
 
     const convertToNepaliDate = (isoDate) => {
         const datePart = isoDate.split('T')[0]; // Extract just the date part
@@ -160,7 +163,7 @@ const PunishmentActionForm = () => {
 
     useEffect(() => {
         fetchPunishment();
-        fetchvehicles();
+        fetchKasur();
         fetchOffice();
 
     }, [BASE_URL]);
@@ -172,7 +175,7 @@ const PunishmentActionForm = () => {
                     <div className="col-12">
                         <div className="p-2 justify-content shadow text-center">
                             <u>
-                                <h4> दैनिक विवरण</h4>
+                                <h4> कसुर विवरण</h4>
                             </u>
                         </div>
                     </div>
@@ -204,9 +207,9 @@ const PunishmentActionForm = () => {
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="vehicle_id">गाडी<span>*</span></label>
+                                    <label htmlFor="kasur_id">कसुर<span>*</span></label>
                                     <Controller
-                                        name="vehicle_id"
+                                        name="kasur_id"
                                         control={control} // This should come from useForm() hook
                                         rules={{ required: "This field is required" }}
                                         defaultValue=""
@@ -215,17 +218,17 @@ const PunishmentActionForm = () => {
                                                 inputRef={ref} // Set ref to react-select input
                                                 className='basic-single'
                                                 classNamePrefix='select'
-                                                value={fetchedVehicles.find(option => option.value === value) || null} // Match selected option
+                                                value={fetchedKasur.find(option => option.value === value) || null} // Match selected option
                                                 onChange={(selectedOption) => {
                                                     onChange(selectedOption ? selectedOption.value : ""); // Update form value
                                                 }}
                                                 isClearable={true} // Correct boolean format
                                                 isSearchable={true}
-                                                options={fetchedVehicles}
+                                                options={fetchedKasur}
                                             />
                                         )}
                                     />
-                                    {errors.vehicle_id && <span>{errors.vehicle_id.message}</span>}
+                                    {errors.kasur_id && <span>{errors.kasur_id.message}</span>}
                                 </div>
                               
                                 <div className="col-xl-3 col-md-4 col-sm-12">
@@ -251,15 +254,7 @@ const PunishmentActionForm = () => {
                                 </div>
 
 
-                                <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="remarks"> कैफियत </label>
-                                    <input
-                                        {...register('remarks', { required: "This field is required." })}
-                                        placeholder="कैफियत"
-                                        className="form-control"
-                                    />
-                                    {errors.remarks && <span>{errors.remarks.message}</span>}
-                                </div>
+
 
                                 <div className="col-12 row mt-2">
 
@@ -283,10 +278,12 @@ const PunishmentActionForm = () => {
                                             <TableRow>
                                                 <TableCell>सि.नं.</TableCell>
                                                 <TableCell>मिति</TableCell>
-                                                <TableCell>गाडी</TableCell>
+                                                <TableCell>कसुर</TableCell>
                                                 <TableCell>संख्या</TableCell>
                                                 <TableCell>राजस्व</TableCell>                                                
-                                                <TableCell>#</TableCell>
+                                                <TableCell>#
+                                                    <div onClick={()=>XportKasur(fetchedPunishment)}>Export</div>
+                                                </TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -334,4 +331,4 @@ const PunishmentActionForm = () => {
     )
 }
 
-export default PunishmentActionForm
+export default DailyKasurForm;

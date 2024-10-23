@@ -11,6 +11,8 @@ import Logout from '../Login/Logout';
 const TangoDashboard = () => {
     const navigate = useNavigate()
     axios.defaults.withCredentials = true;
+    const usertype = localStorage.getItem('type')
+    
     return (
         <>
             <div className='container-fluid'>
@@ -36,8 +38,6 @@ const TangoDashboard = () => {
                                         <span className='ms-2 d-none d-sm-inline text-white'>दैनिक कसुर</span>
                                     </Link>
                                 </li>
-                                
-
 
                                 <li className='W-100' >
                                     <div to="/dashboard/logout"
