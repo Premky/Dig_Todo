@@ -97,9 +97,9 @@ const Employee = () => {
                                             <div className="col mb-3 btn btn-success" onClick={() => navigate(`/emp/3puste/${row.pmis}`)}>
                                                 View
                                             </div>
-                                            <div className="col mb-3 btn btn-success" onClick={() => navigate(`/emp/edit_emp_from/${row.pmis}`)}>
+                                            {/* <div className="col mb-3 btn btn-success" onClick={() => navigate(`/emp/edit_emp_from/${row.pmis}`)}>
                                                 Edit
-                                            </div>
+                                            </div> */}
                                             <div className="col">
                                             </div>
 

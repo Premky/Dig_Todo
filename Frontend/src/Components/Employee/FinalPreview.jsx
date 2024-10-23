@@ -218,10 +218,15 @@ const FinalPreview = () => {
                         </div>
                     </div>
                     <div className="col-12 mt-2">
-                        <div className="p-2 justify-content ">
-                            <u>
-                                <h5> प्रहरी कर्मचारीको विवरण:</h5>
-                            </u>
+                    <div className="p-2 justify-content row">
+                            <div className="col">
+                                <u>
+                                    <h5> प्रहरी कर्मचारीको विवरण:</h5>
+                                </u>
+                            </div>
+                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/qualification-form/${pmis}`)}>
+                                Edit
+                            </div>
                         </div>
                         <div className="row p-2 pt-0">
                             {fetchedEmp && fetchedEmp.length > 0 ? (
