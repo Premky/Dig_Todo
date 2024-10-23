@@ -282,6 +282,33 @@ router.get('/in_change/:pmis', async (req, res) => {
         return res.json({ Status: true, Result: result })
     })
 })
+
+router.get('/fetch_emp/:pmis', async (req, res) => {
+    const { pmis } = req.params;    
+    const sql = `SELECT e.*, jd.*, r.*
+                FROM 
+                    employee e     
+                LEFT JOIN (
+                        SELECT jd.* FROM emp_jd jd
+                        INNER JOIN(
+                        SELECT pmis, MAX(date) AS max_date
+                            FROM emp_jd
+                            GROUP BY pmis
+                        ) AS latest ON jd.pmis = latest.pmis AND jd.date = latest.max_date
+                    ) AS jd ON e.pmis = jd.pmis 
+                LEFT JOIN 
+                    ranks r ON jd.rank_id = r.rank_id                   
+                WHERE e.pmis = ?`;
+                // SELECT e.*, r.rank_np AS rank
+                // FROM employee e
+                // JOIN ranks r ON e.rank = r.rank_id                
+                // WHERE pmis = ?
+
+    con.query(sql, pmis, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
 //Support for JD Page End
 
 export { router as displayRouter }

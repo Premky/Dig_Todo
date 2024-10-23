@@ -29,7 +29,7 @@ const FinalPreview = () => {
     const [editing, setEditing] = useState(false);
 
     const [fetchedEmp, setFetchedEmp] = useState([]);
-    
+
 
     const [fetchedInChange, setFetchedInChange] = useState([]);
     const [currentInChange, setCurrentInChange] = useState([]);
@@ -317,10 +317,15 @@ const FinalPreview = () => {
                                 : (<p>PMIS Not Found...</p>)}
                         </div>
 
-                        <div className="p-2 justify-content ">
-                            <u>
-                                <h5> शैक्षिक योग्यता:</h5>
-                            </u>
+                        <div className="p-2 justify-content row">
+                            <div className="col">
+                                <u>
+                                    <h5> शैक्षिक योग्यता:</h5>
+                                </u>
+                            </div>
+                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/qualification-form/${pmis}`)}>
+                                Edit
+                            </div>
                         </div>
                         <div className="row p-2 pt-0">
                             <TableContainer component={Paper}>
@@ -357,10 +362,16 @@ const FinalPreview = () => {
                             </TableContainer>
                         </div>
 
-                        <div className="p-2 justify-content ">
-                            <u>
-                                <h5> तालिम सम्बन्धी विवरण:</h5>
-                            </u>
+                        <div className="p-2 justify-content row ">
+                            <div className="col">
+                                <u>
+                                    <h5> तालिम सम्बन्धी विवरण:</h5>
+                                </u>
+                            </div>
+                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/training-form/${pmis}`)}>
+                                Edit
+                            </div>
+
                         </div>
                         <div className="row p-2 pt-0">
                             <TableContainer component={Paper}>
@@ -395,10 +406,15 @@ const FinalPreview = () => {
                             </TableContainer>
                         </div>
 
-                        <div className="p-2 justify-content ">
-                            <u>
-                                <h5> पुरस्कार सम्बन्धी विवरण:</h5>
-                            </u>
+                        <div className="p-2 justify-content row">
+                            <div className="col">
+                                <u>
+                                    <h5> पुरस्कार सम्बन्धी विवरण:</h5>
+                                </u>
+                            </div>
+                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/award-form/${pmis}`)}>
+                                Edit
+                            </div>
                         </div>
                         <div className="row p-2 pt-0">
                             <TableContainer component={Paper}>
@@ -431,10 +447,15 @@ const FinalPreview = () => {
                             </TableContainer>
                         </div>
 
-                        <div className="p-2 justify-content ">
-                            <u>
-                                <h5> विभुषण सम्बन्धी विवरण:</h5>
-                            </u>
+                        <div className="p-2 justify-content row">
+                            <div className="col">
+                                <u>
+                                    <h5> विभुषण सम्बन्धी विवरण:</h5>
+                                </u>
+                            </div>
+                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/decoration-form/${pmis}`)}>
+                                Edit
+                            </div>
                         </div>
                         <div className="row p-2 pt-0">
                             <TableContainer component={Paper}>
@@ -467,10 +488,15 @@ const FinalPreview = () => {
                             </TableContainer>
                         </div>
 
-                        <div className="p-2 justify-content ">
-                            <u>
-                                <h5> सजाय सम्बन्धी विवरण:</h5>
-                            </u>
+                        <div className="p-2 justify-content row">
+                            <div className="col">
+                                <u>
+                                    <h5> सजाय सम्बन्धी विवरण:</h5>
+                                </u>
+                            </div>
+                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/punishment-form/${pmis}`)}>
+                                Edit
+                            </div>
                         </div>
                         <div className="row p-2 pt-0">
                             <TableContainer component={Paper}>
@@ -501,10 +527,15 @@ const FinalPreview = () => {
                             </TableContainer>
                         </div>
 
-                        <div className="p-2 justify-content ">
-                            <u>
-                                <h5> नोकरी विवरण विवरण:</h5>
-                            </u>
+                        <div className="p-2 justify-content row">
+                            <div className="col">
+                                <u>
+                                    <h5> नोकरी सम्बन्धी विवरण:</h5>
+                                </u>
+                            </div>
+                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/job-description-form/${pmis}`)}>
+                                Edit
+                            </div>
                         </div>
                         <div className="row p-2 pt-0">
                             <TableContainer component={Paper}>
@@ -538,10 +569,15 @@ const FinalPreview = () => {
                                 </Table>
                             </TableContainer>
                         </div>
-                        <div className="p-2 justify-content ">
-                            <u>
-                                <h5> आन्तरिक सरुवा सम्बन्धी विवरण:</h5>
-                            </u>
+                        <div className="p-2 justify-content row">
+                            <div className="col">
+                                <u>
+                                    <h5> आन्तरीक सरुवा सम्बन्धी विवरण:</h5>
+                                </u>
+                            </div>
+                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/job-working-form/${pmis}`)}>
+                                Edit
+                            </div>
                         </div>
                         <div className="row p-2 pt-0">
                             <TableContainer component={Paper}>
@@ -584,9 +620,9 @@ const FinalPreview = () => {
                         </div>
 
                         <div className="row p-2">
-                            <div className="col-2 m-3  btn btn-success" onClick={() => navigate(`/emp/addemp_form/`)}>
+                            {/* <div className="col-2 m-3  btn btn-success" onClick={() => navigate(`/emp/addemp_form/`)}>
                                 Edit
-                            </div>
+                            </div> */}
                             {/* <div className="col-2 m-3  btn btn-success" onClick={() => navigate(`/emp/addemp_form/${pmis}`)}>
                                 Previous
                             </div> */}

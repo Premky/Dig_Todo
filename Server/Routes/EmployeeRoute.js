@@ -84,6 +84,30 @@ router.post('/add_emp', upload.single('photo'), async (req, res) => {
     }
 });
 
+router.put('/update_emp/:id', async (req, res) => {
+    const id=req.params.id;    
+    const {
+        docr_no, personal_no, pmis, symbol_no, name_en, name_np, dob, recruit_date, recruit_rank, gender,
+        sanchay_kosh, nalakosh, pan, ctz_no, issue_district, blood_group, height, chest, huliya, warna, family
+    } = req.body;
+    
+    const updated_by = 1;
+    const sql = `UPDATE employee SET docr_no=?, personal_no=?, pmis=?, symbol_no=?, name_en=?, name_np=?, dob=?, recruit_date=?, recruit_rank=?, gender=?,
+        sanchay_kosh=?, nalakosh=?, pan=?, ctz_no=?, issue_district=?, blood_group=?, height=?, chest=?, huliya=?, warna=?, family=?, updated_by=? WHERE pmis=?`;
+    const values = [
+        docr_no, personal_no, pmis, symbol_no, name_en, name_np, dob, recruit_date, recruit_rank, gender,
+        sanchay_kosh, nalakosh, pan, ctz_no, issue_district, blood_group, height, chest, huliya, warna, family, updated_by, id
+    ];
+
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result, pmis: pmis });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
 
 router.post('/add_qualification', async (req, res) => {
 
@@ -109,6 +133,8 @@ router.post('/add_qualification', async (req, res) => {
         return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
     }
 });
+
+
 
 router.put('/update_qualification/:id', async (req, res) => {
     const id=req.params.id;    

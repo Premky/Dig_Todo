@@ -117,6 +117,7 @@ function App() {
 
           <Route path='/emp/' element={<Employee />}/>          
           <Route path='/emp/addemp_form/' element={<AddEmployee />}/>          
+          <Route path='/emp/edit_emp_from/:pmis?' element={<AddEmployee />}/>          
           <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom/>}/>
           <Route path='/emp/training-form/:pmis?' element={<TrainingForm/>}/>
           <Route path='/emp/award-form/:pmis?' element={<AwardForm/>}/>

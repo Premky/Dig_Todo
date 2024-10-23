@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useForm, Controller } from 'react-hook-form';
 import NepaliDate from 'nepali-datetime';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
+import Icon from '../Utils/Icon';
 
 import './formstyle.css'
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 const AddEmployee = () => {
+
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
     const npToday = new NepaliDate();
@@ -44,6 +48,27 @@ const AddEmployee = () => {
         fetchEmployees();
         fetchBloodGroup();
     }, [BASE_URL]);
+
+    // Fetch employees
+    const { pmis } = useParams();
+
+    const fetchEmployees = async () => {
+        try {
+            setLoading(true);
+            const result = await axios.get(`${BASE_URL}/display/fetch_emp/${pmis}`);
+            if (result.data.Status) {
+                setFetchEmp(result.data.Result);
+            } else {
+                alert(result.data.Error);
+                console.error(result.data.Error);
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Failed to fetch employees. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const fetchRank = async () => {
         try {
@@ -156,21 +181,7 @@ const AddEmployee = () => {
         }
     };
 
-    // Fetch employees
-    const fetchEmployees = async () => {
-        try {
-            const result = await axios.get(`${BASE_URL}/display/employee`);
-            if (result.data.Status) {
-                setFetchEmp(result.data.Result);
-            } else {
-                alert(result.data.Error);
-                console.error(result.data.Error);
-            }
-        } catch (err) {
-            console.error(err);
-            alert('Failed to fetch employees. Please try again.');
-        }
-    };
+
 
     // Handling form submit
     const onFormSubmit = async (data) => {
@@ -183,7 +194,7 @@ const AddEmployee = () => {
             if (data.file && data.file.length > 0) {
                 formData.append('file', data.file[0]);
             }
-            const url = editing ? `${BASE_URL}/emp/update_emp/${currentEmp.id}` : `${BASE_URL}/emp/add_emp`;
+            const url = editing ? `${BASE_URL}/emp/update_emp/${currentEmp.pmis}` : `${BASE_URL}/emp/add_emp`;
             const method = editing ? 'PUT' : 'POST';
             const result = await axios({ method, url, data: formData, headers: { 'Content-Type': 'multipart/form-data' } });
 
@@ -217,9 +228,28 @@ const AddEmployee = () => {
     const handleEdit = (emp) => {
         setCurrentEmp(emp);
         setEditing(true);
+        setValue("docr_no", emp.docr_no);
+        setValue("personal_no", emp.personal_no);
         setValue("pmis", emp.pmis);
+        setValue("symbol_no", emp.symbol_no);
+        setValue("name_en", emp.name_en);
+        setValue("name_np", emp.name_np);
         setValue("dob", emp.dob);
-        setValue("rank", emp.rank);
+        setValue("recruit_date", emp.recruit_date);
+        setValue("recruit_rank", emp.recruit_rank);
+        setValue("gender", emp.gender);
+        setValue("sanchay_kosh", emp.sanchay_kosh);
+        setValue("nalakosh", emp.nalakosh);
+        setValue("pan", emp.pan);
+        setValue("ctz_no", emp.ctz_no);
+        setValue("issue_district", emp.issue_district);
+        setValue("blood_group", emp.blood_group);
+        setValue("height", emp.height);
+        setValue("chest", emp.chest);
+        setValue("huliya", emp.huliya);
+        setValue("warna", emp.warna);
+        setValue("photo", emp.photo);
+        setValue("family", emp.family);        
         if (emp.file) {
             const fileUrl = `${BASE_URL}/${notice.file}`;
             setFilePreview(fileUrl);
@@ -251,9 +281,22 @@ const AddEmployee = () => {
         setValue('dob', date); // Update the form state
     };
 
+    const convertToNepaliDate = (isoDate) => {
+        if (!isoDate) {
+            return 'null';
+        } else {
+            const datePart = isoDate.split('T')[0]; // Extract just the date part
+            return datePart; // Return in the format needed for the NepaliDatePicker)
+        }
+    }
+        ;
+
+
     const clearImageUrl = () => {
         setFilePreview(null)
     }
+
+
 
     return (
         <div className="container-fluid p-0">
@@ -264,6 +307,60 @@ const AddEmployee = () => {
                             <h4>{editing ? 'Edit Employee' : 'Add Employee'}</h4>
                         </u>
                     </div>
+                </div>
+
+                <div className="row p-2 mt-3">
+                    <TableContainer component={Paper}>
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>डोसियर</TableCell>
+                                    <TableCell>कम्प्युटर कोड</TableCell>
+                                    <TableCell>दर्जा</TableCell>
+                                    <TableCell>नामथर</TableCell>
+                                    <TableCell>जन्म मिति</TableCell>
+                                    <TableCell>ठेगाना</TableCell>                                    
+                                    <TableCell>रक्त समुह</TableCell>                                    
+                                    <TableCell>Remarks</TableCell>
+                                    <TableCell>#</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {fetchEmp.map((row) => (
+                                    <TableRow key={row.edu_id}>
+                                        <TableCell>{row.docr_no}</TableCell>
+                                        <TableCell>{row.pmis}</TableCell>
+                                        <TableCell>{row.rank_np}</TableCell>
+                                        <TableCell>{row.name_np}</TableCell>
+                                        <TableCell>{convertToNepaliDate(row.dob)}</TableCell>                                        
+                                        <TableCell>{'address'}</TableCell>
+                                        <TableCell>{row.blood_group}</TableCell>
+                                        <TableCell>{row.remarks}</TableCell>
+                                        <TableCell>
+                                            <div className="row">
+                                                <div className="col">
+                                                    <button name='edit' className='btn btn-sm bg-primary'
+                                                        onClick={() => handleEdit(row)}>
+                                                        <Icon iconName="Pencil" style={{ color: 'white', fontSize: '1em' }} />
+                                                    </button>
+                                                </div>
+                                                <div className="col">
+
+                                                    <DeleteConfirmationModal
+                                                        title={'Are you sure you want to delete this record?'}
+                                                        buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
+                                                        onConfirm={() => handleDelete(row.edu_id)}>
+                                                        <b>{row.edu_level}| {row.edu_faculty} | {row.institute}</b>
+                                                        <p>This action cannot be undone.</p>
+                                                    </DeleteConfirmationModal>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
                 </div>
 
                 <div className="col-12">

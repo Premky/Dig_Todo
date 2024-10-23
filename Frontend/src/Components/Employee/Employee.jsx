@@ -76,9 +76,8 @@ const Employee = () => {
                                 <TableCell>संकेत नं.</TableCell>
                                 <TableCell>नामथर</TableCell>
                                 <TableCell>जन्म मिति</TableCell>
-                                <TableCell>लैंगिक</TableCell>
-                                <TableCell>नागरिकता नं.</TableCell>
-                                <TableCell>जारी जिल्ला</TableCell>
+                                <TableCell>लैंगिक</TableCell>                                
+                                <TableCell>जिल्ला</TableCell>
                                 <TableCell>Remarks</TableCell>
                                 <TableCell>#</TableCell>
                             </TableRow>
@@ -90,27 +89,20 @@ const Employee = () => {
                                     <TableCell>{row.symbol_no}</TableCell>
                                     <TableCell>{row.name_np}</TableCell>
                                     <TableCell>{convertToNepaliDate(row.dob)}</TableCell>
-                                    <TableCell>{row.gender}</TableCell>
-                                    <TableCell>{row.ctz_no}</TableCell>
+                                    <TableCell>{row.gender}</TableCell>                                    
                                     <TableCell>{row.issue_district}</TableCell>
                                     <TableCell>{row.remarks}</TableCell>
                                     <TableCell>
                                         <div className="row">
-                                            <div className="col">
-                                                <div className="col-2 mb-3 btn btn-success" onClick={() => navigate(`/emp/3puste/${row.pmis}`)}>                                                    
-                                                    View
-                                                </div>
+                                            <div className="col mb-3 btn btn-success" onClick={() => navigate(`/emp/3puste/${row.pmis}`)}>
+                                                View
                                             </div>
-                                            {/* <div className="col">
+                                            <div className="col mb-3 btn btn-success" onClick={() => navigate(`/emp/edit_emp_from/${row.pmis}`)}>
+                                                Edit
+                                            </div>
+                                            <div className="col">
+                                            </div>
 
-                                                <DeleteConfirmationModal
-                                                    title={'Are you sure you want to delete this record?'}
-                                                    buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
-                                                    onConfirm={() => handleDelete(row.edu_id)}>
-                                                    <b>{row.edu_level}| {row.edu_faculty} | {row.institute}</b>
-                                                    <p>This action cannot be undone.</p>
-                                                </DeleteConfirmationModal>
-                                            </div> */}
                                         </div>
                                     </TableCell>
                                 </TableRow>

@@ -1,8 +1,21 @@
-import { Document, Packer, Table, TableRow, TableCell, Paragraph, WidthType, AlignmentType, TextRun, BorderStyle } from "docx";
+import { Document, Packer, Table, TableRow, TableCell, Paragraph, WidthType, AlignmentType, TextRun, BorderStyle, ImageRun } from "docx";
 import { saveAs } from "file-saver";
 
+// Function to fetch image and convert to ArrayBuffer
+// const response = await fetch(`http://localhost:5173/Images/np_police_logo.png`);
 
-const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
+const fetchImageAsBase64 = async (url) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+};
+
+const exportToWord = async (emp, edu, train, award, decor, punishment, jd) => {
     const convertToNepaliDate = (isoDate) => {
         const datePart = isoDate.split('T')[0]; // Extract just the date part
         const englishToNepaliMap = {
@@ -17,57 +30,122 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
             '8': '८',
             '9': '९',
         };
-
-        // return datePart; // Return in the format needed for the NepaliDatePicker
         return datePart.split('').map(char => englishToNepaliMap[char] || char).join('');
     };
 
+    const imageUrl = 'http://localhost:5173/Images/np_police_logo.png';  // Path to your image in the public folder
+    const imageBuffer = await fetchImageAsBase64(imageUrl); // Fetch the image and convert it to ArrayBuffer
+
     const doc = new Document({
+        styles: {
+            paragraphStyles: [
+                {
+                    id: "Normal",
+                    name: "Normal",
+                    run: {
+                        font: "Kokila", // Custom font
+                        size: 26,       // Default font size for the document
+                    },
+                },
+            ],
+        },
         sections: [
             {
                 children: [
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        children: [
-                            new TextRun({
-                                text: "नेपाल सरकार",
-                                size: 26,
-                            }),]
-                    }),
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        children: [
-                            new TextRun({
-                                text: "गृह मन्त्रालय",
-                                size: 26,
-                            }),]
-                    }),
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        children: [
-                            new TextRun({
-                                text: "नेपाल प्रहरी",
-                                size: 26,
-                            }),]
-                    }),
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        children: [
-                            new TextRun({
-                                text: "[Office Name]",
-                                size: 32,
-                            }),]
-                    }),
-                    new Paragraph({
-                        alignment: AlignmentType.CENTER,
-                        children: [
-                            new TextRun({
-                                text: "(कर्मचारी प्रशासन शाखा)",
-                                size: 26,
-                            }),
-                        ]
-                    }),
+                    // Office Details and Logo Table
+                    new Table({
+                        rows: [
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        width: { size: 2000, type: WidthType.DXA },
+                                        children: [
+                                            // new ImageRun({
+                                            //     data: imageBuffer,   // Use ArrayBuffer for image data
+                                            //     transformation: {
+                                            //         width: 300,
+                                            //         height: 150,
+                                            //     },
+                                            // }),
 
+                                            new Paragraph({
+                                                alignment: AlignmentType.CENTER,
+                                                children: [
+                                                    new TextRun({
+                                                        text: "नेपाल सरकार",
+                                                        size: 24,
+                                                    }),
+                                                ],
+                                            }),
+                                        ],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 5000, type: WidthType.DXA },
+                                        children: [
+                                            new Paragraph({
+                                                alignment: AlignmentType.CENTER,
+                                                children: [
+                                                    new TextRun({
+                                                        text: "नेपाल सरकार",
+                                                        size: 24,
+                                                    }),
+                                                ],
+                                            }),
+                                            new Paragraph({
+                                                alignment: AlignmentType.CENTER,
+                                                children: [
+                                                    new TextRun({
+                                                        text: "गृह मन्त्रालय",
+                                                        size: 24,
+                                                    }),
+                                                ],
+                                            }),
+                                            new Paragraph({
+                                                alignment: AlignmentType.CENTER,
+                                                children: [
+                                                    new TextRun({
+                                                        text: "नेपाल प्रहरी",
+                                                        size: 24,
+                                                    }),
+                                                ],
+                                            }),
+                                            new Paragraph({
+                                                alignment: AlignmentType.CENTER,
+                                                children: [
+                                                    new TextRun({
+                                                        text: "[Office Name]",
+                                                        size: 28,
+                                                    }),
+                                                ],
+                                            }),
+                                            new Paragraph({
+                                                alignment: AlignmentType.CENTER,
+                                                children: [
+                                                    new TextRun({
+                                                        text: "(कर्मचारी प्रशासन शाखा)",
+                                                        size: 24,
+                                                    }),
+                                                ],
+                                            }),
+                                        ],
+                                    }),
+                                    new TableCell({
+                                        width: { size: 2000, type: WidthType.DXA },
+                                        children: [new Paragraph('Office Contacts')],
+                                    }),
+                                ],
+                            }),
+                        ],
+                        borders: {
+                            top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            left: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            right: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            insideHorizontal: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                            insideVertical: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
+                        },
+                    }),
+                    
                     new Paragraph({ text: "व्यक्तिगत विवरणः" }),
                     // First Table
                     new Table({
@@ -297,11 +375,11 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                             new TableRow({
                                 children: [
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 500, type: WidthType.DXA },
                                         children: [new Paragraph(`सि.नं.`)],
                                     }),
                                     new TableCell({
-                                        width: { size: 2000, type: WidthType.DXA },
+                                        width: { size: 2500, type: WidthType.DXA },
                                         children: [new Paragraph('शैक्षिक योग्यता')],
                                     }),
                                     new TableCell({
@@ -351,7 +429,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                             new TableRow({
                                 children: [
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 500, type: WidthType.DXA },
                                         children: [new Paragraph(`सि.नं.`)],
                                     }),
                                     new TableCell({
@@ -371,11 +449,11 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                                         children: [new Paragraph('समुह')],
                                     }),
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 1250, type: WidthType.DXA },
                                         children: [new Paragraph('सुरु मिति')],
                                     }),
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 1250, type: WidthType.DXA },
                                         children: [new Paragraph('समाप्त मिति')],
                                     }),
                                 ],
@@ -419,7 +497,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                             new TableRow({
                                 children: [
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 500, type: WidthType.DXA },
                                         children: [new Paragraph(`सि.नं.`)],
                                     }),
                                     new TableCell({
@@ -435,7 +513,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                                         children: [new Paragraph('प्राप्त मिति')],
                                     }),
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 1500, type: WidthType.DXA },
                                         children: [new Paragraph('रकम(रु)/ग्रेड')],
                                     }),
                                     new TableCell({
@@ -481,7 +559,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                             new TableRow({
                                 children: [
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 500, type: WidthType.DXA },
                                         children: [new Paragraph(`सि.नं.`)],
                                     }),
                                     new TableCell({
@@ -497,7 +575,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                                         children: [new Paragraph('प्राप्त मिति')],
                                     }),
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 1500, type: WidthType.DXA },
                                         children: [new Paragraph('रकम(रु)/ग्रेड')],
                                     }),
                                     new TableCell({
@@ -543,7 +621,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                             new TableRow({
                                 children: [
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 500, type: WidthType.DXA },
                                         children: [new Paragraph(`सि.नं.`)],
                                     }),
                                     new TableCell({
@@ -551,7 +629,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                                         children: [new Paragraph('कारवाही गर्ने कार्यालय')],
                                     }),
                                     new TableCell({
-                                        width: { size: 2000, type: WidthType.DXA },
+                                        width: { size: 2500, type: WidthType.DXA },
                                         children: [new Paragraph('कारवाही किसिम')],
                                     }),
                                     new TableCell({
@@ -598,7 +676,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                             new TableRow({
                                 children: [
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 500, type: WidthType.DXA },
                                         children: [new Paragraph(`सि.नं.`)],
                                     }),
                                     new TableCell({
@@ -606,7 +684,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                                         children: [new Paragraph('सेवा समुह')],
                                     }),
                                     new TableCell({
-                                        width: { size: 1000, type: WidthType.DXA },
+                                        width: { size: 800, type: WidthType.DXA },
                                         children: [new Paragraph('दर्जा')],
                                     }),
                                     new TableCell({
@@ -614,7 +692,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                                         children: [new Paragraph('क्रियाकलाप')],
                                     }),
                                     new TableCell({
-                                        width: { size: 2000, type: WidthType.DXA },
+                                        width: { size: 2350, type: WidthType.DXA },
                                         children: [new Paragraph('न.नि. सरुवा/बढुवा गर्ने कार्यालय')],
                                     }),
                                     new TableCell({
@@ -622,7 +700,7 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
                                         children: [new Paragraph('मिति')],
                                     }),
                                     new TableCell({
-                                        width: { size: 2000, type: WidthType.DXA },
+                                        width: { size: 2350, type: WidthType.DXA },
                                         children: [new Paragraph('दरबन्दी')],
                                     }),
                                 ],
@@ -713,6 +791,9 @@ const exportToWord = (emp, edu, train, award, decor, punishment, jd) => {
             },
         ],
     });
+    // Save the document as a .docx file
+        // const buffer = await Packer.toBlob(doc);
+        // saveAs(buffer, "document_with_image.docx");
 
     Packer.toBlob(doc).then((blob) => {
         saveAs(blob, "tables.docx");
