@@ -12,7 +12,8 @@ import Icon from '../Utils/Icon';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
-import XportKasur from './XportKasur';
+
+import XportData from './XportData';
 
 const DailyKasurForm = () => {
     const { pmis } = useParams();
@@ -165,8 +166,8 @@ const DailyKasurForm = () => {
         fetchPunishment();
         fetchKasur();
         fetchOffice();
-
     }, [BASE_URL]);
+    const exp_office_name=localStorage.getItem('oid')
 
     return (
         <>
@@ -282,7 +283,7 @@ const DailyKasurForm = () => {
                                                 <TableCell>संख्या</TableCell>
                                                 <TableCell>राजस्व</TableCell>                                                
                                                 <TableCell>#
-                                                    <div onClick={()=>XportKasur(fetchedPunishment)}>Export</div>
+                                                    <div onClick={()=>XportData(fetchedPunishment, exp_office_name)}>Export</div>
                                                 </TableCell>
                                             </TableRow>
                                         </TableHead>

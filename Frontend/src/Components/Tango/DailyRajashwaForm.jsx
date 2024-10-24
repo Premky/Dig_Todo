@@ -51,7 +51,7 @@ const PunishmentActionForm = () => {
 
     const fetchPunishment = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/punishments_data`);
+            const result = await axios.get(`${BASE_URL}/tango/rajashwa_data`);
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
@@ -88,8 +88,8 @@ const PunishmentActionForm = () => {
         setLoading(true);
         try {
             const url = editing
-                ? `${BASE_URL}/tango/update_punishment/${currentPunishment.id}`
-                : `${BASE_URL}/tango/add_punishment`;
+                ? `${BASE_URL}/tango/update_rajashwa/${currentPunishment.id}`
+                : `${BASE_URL}/tango/add_rajashwa`;
             const method = editing ? 'PUT' : 'POST';
     
             const result = await axios({
@@ -175,7 +175,7 @@ const PunishmentActionForm = () => {
                     <div className="col-12">
                         <div className="p-2 justify-content shadow text-center">
                             <u>
-                                <h4> दैनिक विवरण</h4>
+                                <h4> दैनिक राजश्व विवरण</h4>
                             </u>
                         </div>
                     </div>
