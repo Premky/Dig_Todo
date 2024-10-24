@@ -1,10 +1,13 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    historyApiFallback: true, // Enable history API fallback for client-side routing
+  base: '/',  // Ensures the base path for routing
+  build: {
+    outDir: 'dist',  // Ensure the output directory is correct
   },
-})
+  server: {
+    historyApiFallback: true,  // This tells the dev server to fallback to index.html
+  },
+});
