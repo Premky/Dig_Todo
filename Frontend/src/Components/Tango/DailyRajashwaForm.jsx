@@ -136,7 +136,7 @@ const PunishmentActionForm = () => {
 
     const handleDelete = async (id) => {
         try {
-            const url = `${BASE_URL}/emp/delete_in_change/${id}`;
+            const url = `${BASE_URL}/tango/delete_rajashwa/${id}`;
             const result = await axios.delete(url);
             if (result.data.Status) {
                 alert('Record deleted successfully.');
@@ -306,7 +306,7 @@ const PunishmentActionForm = () => {
                                                                     title={'Are you sure you want to delete this record?'}
                                                                     buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
                                                                     onConfirm={() => handleDelete(row.id)}>
-                                                                    <b>{row.job_name} | {row.office_name} | 
+                                                                    <b>{row.name_np} = {row.count} = {row.fine} 
                                                                         {/* {convertToNepaliDate(row.date)} */}
                                                                         </b>
                                                                     <p>This action cannot be undone.</p>

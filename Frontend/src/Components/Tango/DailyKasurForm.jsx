@@ -34,7 +34,7 @@ const DailyKasurForm = () => {
 
     const fetchKasur = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/punishments`);
+            const result = await axios.get(`${BASE_URL}/tango/kashurs`);
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
@@ -137,7 +137,7 @@ const DailyKasurForm = () => {
 
     const handleDelete = async (id) => {
         try {
-            const url = `${BASE_URL}/emp/delete_in_change/${id}`;
+            const url = `${BASE_URL}/tango/delete_kasur/${id}`;
             const result = await axios.delete(url);
             if (result.data.Status) {
                 alert('Record deleted successfully.');
@@ -254,11 +254,7 @@ const DailyKasurForm = () => {
                                     {errors.fine && <span>{errors.fine.message}</span>}
                                 </div>
 
-
-
-
                                 <div className="col-12 row mt-2">
-
                                     <div className="col-4">
                                         <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
                                             {loading ? 'Submitting...' : editing ? 'Update' : 'Add'}
@@ -309,7 +305,7 @@ const DailyKasurForm = () => {
                                                                     title={'Are you sure you want to delete this record?'}
                                                                     buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
                                                                     onConfirm={() => handleDelete(row.id)}>
-                                                                    <b>{row.job_name} | {row.office_name} | 
+                                                                    <b>{row.name_np} | {row.count} | {row.fine}
                                                                         {/* {convertToNepaliDate(row.date)} */}
                                                                         </b>
                                                                     <p>This action cannot be undone.</p>
