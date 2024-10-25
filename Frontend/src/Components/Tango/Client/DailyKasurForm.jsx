@@ -7,14 +7,15 @@ import { useForm, Controller } from 'react-hook-form';
 import NepaliDate from 'nepali-datetime';
 import Select from 'react-select';
 
-import Icon from '../Utils/Icon';
+import Icon from '../../Utils/Icon';
 
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
-import XportRajaswa from './XportRajaswa';
+import DeleteConfirmationModal from '../../Utils/ConfirmDeleteModal';
 
-const VehicleForm = () => {
+import XportKasur from '../XportKasur';
+
+const DailyKasurForm = () => {
     const { pmis } = useParams();
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
@@ -26,19 +27,36 @@ const VehicleForm = () => {
 
     const [fetchedOffice, setFetchedOffice] = useState([]);
 
-        
-    const [fetchedVehicles, setFetchedVehicles] = useState([]);
-    const [currentVehicle, setCurrentVehicle] = useState([]);
+    const [fetchedPunishment, setFetchedPunishment] = useState([]);
+    const [currentPunishment, setCurrentPunishment] = useState([]);
+    const [fetchedKasur, setFetchedKasur] = useState([]);
 
-    const fetchvehicles = async () => {
+    const exp_office_name = localStorage.getItem('oid')
+    const [currnetOffice, setCurrentOffice] = useState([]);
+    const fetchCurrentOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/vehicles`);
+            const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
+            if (result.data.Status) {
+                setCurrentOffice(result.data.Result[0]);
+                // console.log(result.data.Result);
+            } else {
+                alert(result.data.Error);
+                console.error(result.data.Error);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const fetchKasur = async () => {
+        try {
+            const result = await axios.get(`${BASE_URL}/tango/kashurs`);
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
                     label: opt.name_np
                 }));
-                setFetchedVehicles(result.data.Result);
+                setFetchedKasur(options);
             } else {
                 alert(result.data.Error);
                 console.error(result.data.Error);
@@ -48,16 +66,30 @@ const VehicleForm = () => {
         }
     };
 
-
-
-
+    const fetchPunishment = async () => {
+        try {
+            const result = await axios.get(`${BASE_URL}/tango/kasur_data`);
+            if (result.data.Status) {
+                const options = result.data.Result.map(opt => ({
+                    value: opt.id,
+                    label: opt.name_np
+                }));
+                setFetchedPunishment(result.data.Result);
+            } else {
+                alert(result.data.Error);
+                console.error(result.data.Error);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     const onFormSubmit = async (data) => {
         setLoading(true);
         try {
             const url = editing
-                ? `${BASE_URL}/tango/update_vehicle/${currentVehicle.id}`
-                : `${BASE_URL}/tango/add_vehicle`;
+                ? `${BASE_URL}/tango/update_kasur/${currentPunishment.id}`
+                : `${BASE_URL}/tango/add_kasur`;
             const method = editing ? 'PUT' : 'POST';
 
             const result = await axios({
@@ -71,7 +103,7 @@ const VehicleForm = () => {
                 alert(`Record ${editing ? 'updated' : 'added'} successfully!`);
                 await reset(); // Clear the form after submission
                 setEditing(false);
-                fetchedVehicles();
+                fetchPunishment(); // Refresh the punishment list
             } else {
                 alert(result.data.Error || 'Failed to submit the form.');
             }
@@ -85,10 +117,15 @@ const VehicleForm = () => {
 
 
     const handleEdit = (data) => {
-        setCurrentVehicle(data); // Set the current punishment data
+        setCurrentPunishment(data); // Set the current punishment data
         setEditing(true); // Enable editing mode
-        setValue("vehicle_np", data.name_np); // Set the vehicle ID
-        setValue("vehicle_en", data.name_en); // Set the vehicle ID
+
+        // Use setValue to populate the form fields
+        setValue("date", convertToNepaliDate(data.date)); // Convert and set Nepali date
+        setValue("kasur_id", data.kasur_id); // Set the vehicle ID
+        setValue("count", data.count); // Set count value
+        setValue("fine", data.fine); // Set fine value
+
     };
 
 
@@ -99,7 +136,7 @@ const VehicleForm = () => {
 
     const handleDelete = async (id) => {
         try {
-            const url = `${BASE_URL}/tango/delete_vehicle/${id}`;
+            const url = `${BASE_URL}/tango/delete_kasur/${id}`;
             const result = await axios.delete(url);
             if (result.data.Status) {
                 alert('Record deleted successfully.');
@@ -125,10 +162,13 @@ const VehicleForm = () => {
     }
 
     useEffect(() => {
-        fetchvehicles();
+        fetchPunishment();
+        fetchKasur();
+        fetchCurrentOffice();
     }, [BASE_URL]);
 
-    const exp_office_name = localStorage.getItem('oid')
+
+
 
     return (
         <>
@@ -137,7 +177,7 @@ const VehicleForm = () => {
                     <div className="col-12">
                         <div className="p-2 justify-content shadow text-center">
                             <u>
-                                <h4> सवारी साधनहरु</h4>
+                                <h4> कसुर विवरण</h4>
                             </u>
                         </div>
                     </div>
@@ -146,31 +186,76 @@ const VehicleForm = () => {
                         <div className="d-flex flex-column px-3 pt-0">
                             <form className='row mt-1 g-3'>
 
-
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="vehicle_np"> सवारी साधन प्रकार </label>
-                                    <input
-                                        type='text'
-                                        {...register('vehicle_np', { required: "This field is required." })}
-                                        placeholder="कार/जिप/ट्रक"
-                                        className="form-control"
+                                    <label htmlFor="date">मिति<span>*</span></label>
+                                    <Controller
+                                        name="date"
+                                        control={control}
+                                        rules={{ required: "This field is required" }}
+                                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                                            <NepaliDatePicker
+                                                value={value || ""} // Ensure empty string when no date is selected
+                                                onChange={(date) => {
+                                                    onChange(date); // Update form state
+                                                }}
+                                                onBlur={onBlur} // Handle blur
+                                                dateFormat="YYYY-MM-DD" // Customize your date format
+                                                placeholder="Select Nepali Date"
+                                            // ref={ref} // Use ref from react-hook-form
+                                            />
+                                        )}
                                     />
-                                    {errors.vehicle_np && <span>{errors.vehicle_np.message}</span>}
+                                    {errors.date && <span>{errors.date.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="vehicle_en"> Vehicle Type </label>
+                                    <label htmlFor="kasur_id">कसुर<span>*</span></label>
+                                    <Controller
+                                        name="kasur_id"
+                                        control={control} // This should come from useForm() hook
+                                        rules={{ required: "This field is required" }}
+                                        defaultValue=""
+                                        render={({ field: { onChange, value, ref } }) => (
+                                            <Select
+                                                inputRef={ref} // Set ref to react-select input
+                                                className='basic-single'
+                                                classNamePrefix='select'
+                                                value={fetchedKasur.find(option => option.value === value) || null} // Match selected option
+                                                onChange={(selectedOption) => {
+                                                    onChange(selectedOption ? selectedOption.value : ""); // Update form value
+                                                }}
+                                                isClearable={true} // Correct boolean format
+                                                isSearchable={true}
+                                                options={fetchedKasur}
+                                            />
+                                        )}
+                                    />
+                                    {errors.kasur_id && <span>{errors.kasur_id.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="count"> संख्या </label>
                                     <input
-                                        type='text'
-                                        {...register('vehicle_en', { required: "This field is required." })}
-                                        placeholder="Car/Jeep/Truck"
+                                        type='number'
+                                        {...register('count', { required: "This field is required." })}
+                                        placeholder="संख्या"
                                         className="form-control"
                                     />
-                                    {errors.vehicle_en && <span>{errors.vehicle_en.message}</span>}
+                                    {errors.count && <span>{errors.count.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="fine"> राजस्व </label>
+                                    <input
+                                        type='number'
+                                        {...register('fine', { required: "This field is required." })}
+                                        placeholder="राजस्व"
+                                        className="form-control"
+                                    />
+                                    {errors.fine && <span>{errors.fine.message}</span>}
                                 </div>
 
                                 <div className="col-12 row mt-2">
-
                                     <div className="col-4">
                                         <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
                                             {loading ? 'Submitting...' : editing ? 'Update' : 'Add'}
@@ -190,17 +275,23 @@ const VehicleForm = () => {
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell>सि.नं.</TableCell>
-                                                <TableCell>गाडी</TableCell>
-                                                <TableCell>Vehicle</TableCell>
-                                                <TableCell># </TableCell>
+                                                <TableCell>मिति</TableCell>
+                                                <TableCell>कसुर</TableCell>
+                                                <TableCell>संख्या</TableCell>
+                                                <TableCell>राजस्व</TableCell>
+                                                <TableCell>#
+                                                    <div onClick={() => XportKasur(fetchedPunishment, currnetOffice)}>Export</div>
+                                                </TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {fetchedVehicles.map((row, index) => (
+                                            {fetchedPunishment.map((row, index) => (
                                                 <TableRow key={row.id}>
-                                                    <TableCell>{index + 1}</TableCell>                                                    
+                                                    <TableCell>{index + 1}</TableCell>
+                                                    <TableCell>{convertToNepaliDate(row.date)}</TableCell>
                                                     <TableCell>{row.name_np}</TableCell>
-                                                    <TableCell>{row.name_en}</TableCell>
+                                                    <TableCell>{row.count}</TableCell>
+                                                    <TableCell>{row.fine}</TableCell>
                                                     <TableCell>
                                                         <div className="row">
                                                             <div className="col">
@@ -215,7 +306,7 @@ const VehicleForm = () => {
                                                                     title={'Are you sure you want to delete this record?'}
                                                                     buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
                                                                     onConfirm={() => handleDelete(row.id)}>
-                                                                    <b>{row.name_np} = {row.count} = {row.fine}
+                                                                    <b>{row.name_np} | {row.count} | {row.fine}
                                                                         {/* {convertToNepaliDate(row.date)} */}
                                                                     </b>
                                                                     <p>This action cannot be undone.</p>
@@ -238,4 +329,4 @@ const VehicleForm = () => {
     )
 }
 
-export default VehicleForm
+export default DailyKasurForm;

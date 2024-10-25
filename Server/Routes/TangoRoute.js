@@ -53,9 +53,9 @@ const query = promisify(con.query).bind(con);
 // console.log(fy_date)
 
 //गाडीका विवरणहरुः नाम सुची
-router.post('/add_vehicle',verifyToken, async (req, res) => {
-    const active_office=req.userOffice;
-    const user_id=req.userId;
+router.post('/add_vehicle', verifyToken, async (req, res) => {
+    const active_office = req.userOffice;
+    const user_id = req.userId;
 
     const {
         vehicle_np, vehicle_en
@@ -81,8 +81,8 @@ router.post('/add_vehicle',verifyToken, async (req, res) => {
     }
 });
 
-router.put('/update_vehicle/:id', async (req, res) => {    
-    const id=req.params.id;    
+router.put('/update_vehicle/:id', async (req, res) => {
+    const id = req.params.id;
     const {
         vehicle_np, vehicle_en
     } = req.body;
@@ -100,15 +100,15 @@ router.put('/update_vehicle/:id', async (req, res) => {
     }
 })
 
-router.delete('/delete_vehicle/:id', async(req,res)=>{
-    const {id} = req.params;
+router.delete('/delete_vehicle/:id', async (req, res) => {
+    const { id } = req.params;
     console.log(id)
-    try{
+    try {
         const sql = `DELETE FROM tango_vehicles WHERE id=?`;
         const result = await query(sql, id);
         return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
-    } catch(err){
-        console.error('Error Deleting Record:',err);
+    } catch (err) {
+        console.error('Error Deleting Record:', err);
         return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
     }
 })
@@ -127,9 +127,9 @@ router.get('/rajashwa_data', async (req, res) => {
     })
 })
 
-router.post('/add_rajashwa',verifyToken, async (req, res) => {
-    const active_office=req.userOffice;
-    const user_id=req.userId;
+router.post('/add_rajashwa', verifyToken, async (req, res) => {
+    const active_office = req.userOffice;
+    const user_id = req.userId;
 
     const {
         date, vehicle_id, count, fine,
@@ -156,15 +156,15 @@ router.post('/add_rajashwa',verifyToken, async (req, res) => {
 });
 
 router.put('/update_rajashwa/:id', async (req, res) => {
-    const active_office=req.userOffice;
-    const id=req.params.id;    
+    const active_office = req.userOffice;
+    const id = req.params.id;
     const {
         vehicle_id, count, fine, date,
     } = req.body;
     const updated_by = 1;
     const sql = `UPDATE tango_punishment_data SET vehicle_id=?, count=?, fine=?,date=?, updated_by=? WHERE id=?`;
     const values = [
-        vehicle_id, count, fine,date, updated_by, id
+        vehicle_id, count, fine, date, updated_by, id
     ];
 
     try {
@@ -176,23 +176,23 @@ router.put('/update_rajashwa/:id', async (req, res) => {
     }
 })
 
-router.delete('/delete_rajashwa/:id', async(req,res)=>{
-    const {id} = req.params;
+router.delete('/delete_rajashwa/:id', async (req, res) => {
+    const { id } = req.params;
     console.log(id)
-    try{
+    try {
         const sql = `DELETE FROM tango_punishment_data WHERE id=?`;
         const result = await query(sql, id);
         return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
-    } catch(err){
-        console.error('Error Deleting Record:',err);
+    } catch (err) {
+        console.error('Error Deleting Record:', err);
         return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
     }
 })
 
 //कसुरका विवरणहरुः नाम सुची
-router.post('/add_kasur',verifyToken, async (req, res) => {
-    const active_office=req.userOffice;
-    const user_id=req.userId;
+router.post('/add_kasur', async (req, res) => {
+    const active_office = req.userOffice;
+    const user_id = req.userId;
 
     const {
         name_np, name_en
@@ -218,8 +218,8 @@ router.post('/add_kasur',verifyToken, async (req, res) => {
     }
 });
 
-router.put('/update_kasur/:id', async (req, res) => {    
-    const id=req.params.id;    
+router.put('/update_kasur/:id', async (req, res) => {
+    const id = req.params.id;
     const {
         name_np, name_en
     } = req.body;
@@ -237,15 +237,15 @@ router.put('/update_kasur/:id', async (req, res) => {
     }
 })
 
-router.delete('/delete_kasur/:id', async(req,res)=>{
-    const {id} = req.params;
+router.delete('/delete_kasur/:id', async (req, res) => {
+    const { id } = req.params;
     console.log(id)
-    try{
+    try {
         const sql = `DELETE FROM tango_punishment WHERE id=?`;
         const result = await query(sql, id);
         return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
-    } catch(err){
-        console.error('Error Deleting Record:',err);
+    } catch (err) {
+        console.error('Error Deleting Record:', err);
         return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
     }
 })
@@ -260,8 +260,8 @@ router.get('/kashurs', async (req, res) => {
     })
 })
 
-router.get('/kasur_data',verifyToken,  async (req, res) => {
-    const active_office=req.userOffice;
+router.get('/kasur_data', async (req, res) => {
+    const active_office = req.userOffice;
     const sql = `SELECT dk.*, tp.* 
             FROM tango_daily_kasur dk
             LEFT JOIN tango_punishment tp 
@@ -273,9 +273,9 @@ router.get('/kasur_data',verifyToken,  async (req, res) => {
     })
 })
 
-router.post('/add_kasur',verifyToken, async (req, res) => {
-    const active_office=req.userOffice;
-    const user_id=req.userId;
+router.post('/add_kasur', verifyToken, async (req, res) => {
+    const active_office = req.userOffice;
+    const user_id = req.userId;
 
     const {
         date, kasur_id, count, fine
@@ -289,7 +289,7 @@ router.post('/add_kasur',verifyToken, async (req, res) => {
     ) VALUES (?)`;
 
     const values = [
-        date, kasur_id, count, fine,active_office, created_by,
+        date, kasur_id, count, fine, active_office, created_by,
     ];
 
     try {
@@ -302,15 +302,15 @@ router.post('/add_kasur',verifyToken, async (req, res) => {
 });
 
 router.put('/update_kasur/:id', async (req, res) => {
-    const active_office=req.userOffice;
-    const id=req.params.id;    
+    const active_office = req.userOffice;
+    const id = req.params.id;
     const {
         kasur_id, count, fine, date
     } = req.body;
     const updated_by = 1;
     const sql = `UPDATE tango_daily_kasur SET kasur_id=?,count=?, fine=?, date=?, updated_by=? WHERE id=?`;
     const values = [
-        kasur_id, count, fine,date, updated_by, id
+        kasur_id, count, fine, date, updated_by, id
     ];
 
     try {
@@ -322,20 +322,53 @@ router.put('/update_kasur/:id', async (req, res) => {
     }
 })
 
-router.delete('/delete_kasur/:id', async(req,res)=>{
-    const {id} = req.params;
+router.delete('/delete_kasur/:id', async (req, res) => {
+    const { id } = req.params;
     console.log(id)
-    try{
+    try {
         const sql = `DELETE FROM tango_daily_kasur WHERE id=?`;
         const result = await query(sql, id);
         return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
-    } catch(err){
-        console.error('Error Deleting Record:',err);
+    } catch (err) {
+        console.error('Error Deleting Record:', err);
         return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
     }
 })
 
+// Define the search route
+router.get('/search/:query', (req, res) => {
+    const { date, otherParam } = req.query; // Destructure query parameters as needed
 
+    // Construct your SQL query based on the parameters received
+    let sql = 'SELECT * FROM tango_daily_kasur WHERE 1=1'; // Basic SQL template
+
+    // Add conditions based on received parameters
+    if (date) {
+        sql += ` AND date = ?`;
+    }
+    if (otherParam) {
+        sql += ` AND otherColumn = ?`; // Adjust according to your database schema
+    }
+
+    // Prepare the values to be used in the query
+    const values = [];
+    if (date) values.push(date);
+    if (otherParam) values.push(otherParam);
+
+    // Execute the query
+    con.query(sql, values, (error, results) => {
+        if (error) {
+            console.error('Database query error:', error);
+            return res.status(500).json({ Status: false, Error: 'Database query failed.' });
+        }
+        
+        if (results.length > 0) {
+            return res.json({ Status: true, Result: results });
+        } else {
+            return res.json({ Status: false, Error: 'No records found.' });
+        }
+    });
+});
 
 
 export { router as tangoRouter }

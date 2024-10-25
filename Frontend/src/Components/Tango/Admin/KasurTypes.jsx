@@ -7,12 +7,12 @@ import { useForm, Controller } from 'react-hook-form';
 import NepaliDate from 'nepali-datetime';
 import Select from 'react-select';
 
-import Icon from '../Utils/Icon';
+import Icon from '../../Utils/Icon';
 
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
-import XportRajaswa from './XportRajaswa';
+import DeleteConfirmationModal from '../../Utils/ConfirmDeleteModal';
+import XportRajaswa from '../XportRajaswa';
 
 const KasurForm = () => {
     const { pmis } = useParams();

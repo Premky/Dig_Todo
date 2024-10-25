@@ -1,86 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import * as icon from 'react-bootstrap-icons';
-import "bootstrap-icons/font/bootstrap-icons.css"
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import Header from '../Headers/Header';
 import Logout from '../Login/Logout';
-
 
 const TangoDashboard = () => {
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-    const navigate = useNavigate()
-    axios.defaults.withCredentials = true;
-    const usertype = localStorage.getItem('type')
+    const [currentOffice, setCurrentOffice] = useState({});
 
-    const exp_office_name=localStorage.getItem('oid')
-    const [currnetOffice, setCurrentOffice] = useState([]);
-    const fetchCurrentOffice = async()=>{        
-        try {
-            const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
-            if (result.data.Status) {
-                setCurrentOffice(result.data.Result[0]);
-                // console.log(result.data.Result);
-            } else {
-                alert(result.data.Error);
-                console.error(result.data.Error);
+    useEffect(() => {
+        const fetchCurrentOffice = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/display/currentoffice/${localStorage.getItem('oid')}`);
+                if (response.data.Status) {
+                    setCurrentOffice(response.data.Result[0]);
+                } else {
+                    console.error(response.data.Error);
+                }
+            } catch (err) {
+                console.error(err);
             }
-        } catch (err) {
-            console.log(err);
-        }
-    }
-    
-    useEffect(() => {  
+        };
         fetchCurrentOffice();
     }, [BASE_URL]);
+
     return (
-        <>
-            <div className='container-fluid'>
-                <div className='row flex-nowrap'>
-                    <div className='col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-primary'>
-                        <div className='d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100'>
-                            <Link to="/tango/"
-                                className='d-flex align-items-center pb-3 mb-md-1 mt-md-3 me-md-auto text-white text-decoration-none '>
-                                <span className='ms-2 d-none d-sm-inline fs-4 text-warning'> Admin Panel </span>
-                            </Link>
-                            <ul className='nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items'>
-                                <li className='W-100'>
-                                    <Link to="/tango/rajashwa-form/" className='nav-link text-white px-0 align-middle'>
-                                        {/* <i className='fs-4 bi-speedometer2 ms-2 '></i> */}
-                                        <i class="bi bi-person-badge fs-4 "></i>
-                                        <span className='ms-2 d-none d-sm-inline text-white'>दैनिक राजश्व</span>
-                                    </Link>
-                                </li>
-                                <li className='W-100'>
-                                    <Link to="/tango/kasur-form/" className='nav-link text-white px-0 align-middle'>
-                                        {/* <i className='fs-4 bi-speedometer2 ms-2 '></i> */}
-                                        <i class="bi bi-person-badge fs-4 "></i>
-                                        <span className='ms-2 d-none d-sm-inline text-white'>दैनिक कसुर</span>
-                                    </Link>
-                                </li>
-
-                                <li className='W-100' >
-                                    <div to="/dashboard/logout"
-                                        className='nav-link px-0 align-middle text-white'>
-                                        <i className='fs-4 bi-power ms-2'></i>
-                                        <span className='ms-2 d-none d-sm-inline text-white'><Logout /></span>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div className='col p-0 m-0'>
-                        <div className='p-2 d-flex justify-content-center shadow bg-info'>
-                            <h4>{currnetOffice.office_name}</h4>
-                        </div>
-                        <Outlet/>
-
+        <div className='container-fluid'>
+            <div className='row flex-nowrap'>
+                <div className='col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-primary'>
+                    <div className='d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100'>
+                        <Link to="/tango/" className='d-flex align-items-center pb-3 mb-md-1 mt-md-3 me-md-auto text-white text-decoration-none'>
+                            <span className='fs-4 text-warning'>Admin Panel</span>
+                        </Link>
+                        <ul className='nav flex-column mb-0'>
+                            <li><Link to="/tango/rajashwa-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>दैनिक राजश्व</span></Link></li>
+                            <li><Link to="/tango/kasur-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>दैनिक कसुर</span></Link></li>
+                            <li><div className='nav-link text-white'><i className="bi bi-power fs-4"></i><Logout /></div></li>
+                        </ul>
                     </div>
                 </div>
+                <div className='col p-0'>
+                    <div className='p-2 shadow bg-info text-center'>
+                        <h4>{currentOffice.office_name || "Loading..."}</h4>
+                    </div>
+                    <Outlet /> {/* Renders nested routes */}
+                </div>
             </div>
-        </>
-    )
-}
+        </div>
+    );
+};
 
-export default TangoDashboard
+export default TangoDashboard;

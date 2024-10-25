@@ -7,16 +7,15 @@ import { useForm, Controller } from 'react-hook-form';
 import NepaliDate from 'nepali-datetime';
 import Select from 'react-select';
 
-import Icon from '../Utils/Icon';
+import Icon from '../../Utils/Icon';
 
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
+import DeleteConfirmationModal from '../../Utils/ConfirmDeleteModal';
 
-import XportData from './XportData';
-import XportKasur from './XportKasur';
+import XportKasur from '../XportKasur';
 
-const DailyKasurForm = () => {
+const KasurReport = () => {
     const { pmis } = useParams();
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
@@ -25,16 +24,16 @@ const DailyKasurForm = () => {
     const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm();
     const [loading, setLoading] = useState(false);
     const [editing, setEditing] = useState(false);
-    
+
     const [fetchedOffice, setFetchedOffice] = useState([]);
 
     const [fetchedPunishment, setFetchedPunishment] = useState([]);
     const [currentPunishment, setCurrentPunishment] = useState([]);
     const [fetchedKasur, setFetchedKasur] = useState([]);
 
-    const exp_office_name=localStorage.getItem('oid')
+    const exp_office_name = localStorage.getItem('oid')
     const [currnetOffice, setCurrentOffice] = useState([]);
-    const fetchCurrentOffice = async()=>{        
+    const fetchCurrentOffice = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
             if (result.data.Status) {
@@ -86,27 +85,26 @@ const DailyKasurForm = () => {
     };
 
     const onFormSubmit = async (data) => {
+        // console.log(data.date);
         setLoading(true);
         try {
-            const url = editing
-                ? `${BASE_URL}/tango/update_kasur/${currentPunishment.id}`
-                : `${BASE_URL}/tango/add_kasur`;
-            const method = editing ? 'PUT' : 'POST';
-    
+            const queryString = new URLSearchParams(data).toString(); // Convert data object to query string
+            const url = `${BASE_URL}/tango/search/${queryString}`;
+            console.log(url)
+            const method = 'GET';
             const result = await axios({
                 method,
                 url,
-                data,
                 headers: { 'Content-Type': 'application/json' }
             });
     
             if (result.data.Status) {
-                alert(`Record ${editing ? 'updated' : 'added'} successfully!`);
-                await reset(); // Clear the form after submission
+                console.log(result.data.Result)
                 setEditing(false);
-                fetchPunishment(); // Refresh the punishment list
+                setFetchedPunishment(result.data.Result);
+                // fetchPunishment(); // Refresh the punishment list
             } else {
-                alert(result.data.Error || 'Failed to submit the form.');
+                alert(result.data.Error || 'Record Not Found.');
             }
         } catch (err) {
             console.error('Form submission error:', err);
@@ -117,40 +115,14 @@ const DailyKasurForm = () => {
     };
     
 
-    const handleEdit = (data) => {
-        setCurrentPunishment(data); // Set the current punishment data
-        setEditing(true); // Enable editing mode
-    
-        // Use setValue to populate the form fields
-        setValue("date", convertToNepaliDate(data.date)); // Convert and set Nepali date
-        setValue("kasur_id", data.kasur_id); // Set the vehicle ID
-        setValue("count", data.count); // Set count value
-        setValue("fine", data.fine); // Set fine value
-        
-    };
-    
+
+
 
     const convertToNepaliDate = (isoDate) => {
         const datePart = isoDate.split('T')[0]; // Extract just the date part
         return datePart; // Return in the format needed for the NepaliDatePicker
     };
 
-    const handleDelete = async (id) => {
-        try {
-            const url = `${BASE_URL}/tango/delete_kasur/${id}`;
-            const result = await axios.delete(url);
-            if (result.data.Status) {
-                alert('Record deleted successfully.');
-            } else {
-                alert('Failed to delete record.');
-            }
-        } catch (err) {
-            console.log(err);
-            alert('Error occurred while deleting the record.');
-        } finally {
-            fetchChange();
-        }
-    };
 
     const handleClear = (e) => {
         e.preventDefault();
@@ -164,12 +136,12 @@ const DailyKasurForm = () => {
 
     useEffect(() => {
         fetchPunishment();
-        fetchKasur();        
+        fetchKasur();
         fetchCurrentOffice();
     }, [BASE_URL]);
 
 
-    
+
 
     return (
         <>
@@ -178,7 +150,7 @@ const DailyKasurForm = () => {
                     <div className="col-12">
                         <div className="p-2 justify-content shadow text-center">
                             <u>
-                                <h4> कसुर विवरण</h4>
+                                <h4> कसुर रिपोर्ट</h4>
                             </u>
                         </div>
                     </div>
@@ -232,41 +204,12 @@ const DailyKasurForm = () => {
                                         )}
                                     />
                                     {errors.kasur_id && <span>{errors.kasur_id.message}</span>}
+
                                 </div>
-                              
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="count"> संख्या </label>
-                                    <input
-                                        type='number'
-                                        {...register('count', { required: "This field is required." })}
-                                        placeholder="संख्या"
-                                        className="form-control"
-                                    />
-                                    {errors.count && <span>{errors.count.message}</span>}
-                                </div>
-                             
-                                <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="fine"> राजस्व </label>
-                                    <input
-                                        type='number'
-                                        {...register('fine', { required: "This field is required." })}
-                                        placeholder="राजस्व"
-                                        className="form-control"
-                                    />
-                                    {errors.fine && <span>{errors.fine.message}</span>}
-                                </div>
-
-                                <div className="col-12 row mt-2">
-                                    <div className="col-4">
-                                        <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
-                                            {loading ? 'Submitting...' : editing ? 'Update' : 'Add'}
-                                        </button>
-                                    </div>
-                                    <div className="col-4 mb-3">
-                                        <button className='btn btn-danger' onClick={handleClear}>Clear</button>
-                                    </div>
-
-
+                                    <button type="Search" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
+                                        {loading ? 'Searching...' : 'Search'}
+                                    </button>
                                 </div>
                             </form>
 
@@ -279,19 +222,19 @@ const DailyKasurForm = () => {
                                                 <TableCell>मिति</TableCell>
                                                 <TableCell>कसुर</TableCell>
                                                 <TableCell>संख्या</TableCell>
-                                                <TableCell>राजस्व</TableCell>                                                
+                                                <TableCell>राजस्व</TableCell>
                                                 <TableCell>#
-                                                    <div onClick={()=>XportKasur(fetchedPunishment, currnetOffice)}>Export</div>
+                                                    <div onClick={() => XportKasur(fetchedPunishment, currnetOffice)}>Export</div>
                                                 </TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
                                             {fetchedPunishment.map((row, index) => (
                                                 <TableRow key={row.id}>
-                                                    <TableCell>{index+1}</TableCell>
+                                                    <TableCell>{index + 1}</TableCell>
                                                     <TableCell>{convertToNepaliDate(row.date)}</TableCell>
                                                     <TableCell>{row.name_np}</TableCell>
-                                                    <TableCell>{row.count}</TableCell>                                                    
+                                                    <TableCell>{row.count}</TableCell>
                                                     <TableCell>{row.fine}</TableCell>
                                                     <TableCell>
                                                         <div className="row">
@@ -309,7 +252,7 @@ const DailyKasurForm = () => {
                                                                     onConfirm={() => handleDelete(row.id)}>
                                                                     <b>{row.name_np} | {row.count} | {row.fine}
                                                                         {/* {convertToNepaliDate(row.date)} */}
-                                                                        </b>
+                                                                    </b>
                                                                     <p>This action cannot be undone.</p>
                                                                 </DeleteConfirmationModal>
                                                             </div>
@@ -330,4 +273,4 @@ const DailyKasurForm = () => {
     )
 }
 
-export default DailyKasurForm;
+export default KasurReport;

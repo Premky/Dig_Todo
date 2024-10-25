@@ -36,12 +36,16 @@ import JobDescriptionForm from './Components/Employee/JobDescriptionForm'
 import EmpChangeForm from './Components/Employee/EmpChangeForm'
 import FinalPreview from './Components/Employee/FinalPreview'
 import Employee from './Components/Employee/Employee'
-import TangoHome from './Components/Tango/TangoHome'
+import TangoHome from './Components/Tango/Admin/TangoHome'
 import TangoDashboard from './Components/Tango/TangoDashboard'
-import PunishmentActionForm from './Components/Tango/DailyRajashwaForm'
-import DailyKasurForm from './Components/Tango/DailyKasurForm'
-import VehicleForm from './Components/Tango/VehicleTypes'
-import KasurForm from './Components/Tango/KasurTypes'
+import PunishmentActionForm from './Components/Tango/Client/DailyRajashwaForm'
+import DailyKasurForm from './Components/Tango/Client/DailyKasurForm'
+import VehicleForm from './Components/Tango/Admin/VehicleTypes'
+import KasurForm from './Components/Tango/Admin/KasurTypes'
+import EmpRoute from './Components/PrivateRoute/EmpRoute'
+import TangoRoute from './Components/PrivateRoute/TangoRoute'
+import TangoAdminDashboard from './Components/Tango/Admin/TangoAdminDashboard'
+import KasurReport from './Components/Tango/Admin/DailyKasurReport'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -57,9 +61,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Login onLogin={handleLogin} />} />
           <Route path="/login" element={<Login onLogin={handleLogin} />} />
-          {/* <Route path="/super/login" element={<SuperLogin onLogin={handleLogin} />} /> */}
-          {/* Pass officeName to Header component */}
-          {/* <Route path="/*" element={<Header officeName={officeName} />} /> */}
 
 
           <Route path='/news' element={
@@ -121,25 +122,33 @@ function App() {
             </Route>
           </Route>
 
-          <Route path='/emp/' element={<Employee />} />
-          <Route path='/emp/addemp_form/' element={<AddEmployee />} />
-          <Route path='/emp/edit_emp_from/:pmis?' element={<AddEmployee />} />
-          <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom />} />
-          <Route path='/emp/training-form/:pmis?' element={<TrainingForm />} />
-          <Route path='/emp/award-form/:pmis?' element={<AwardForm />} />
-          <Route path='/emp/decoration-form/:pmis?' element={<DecorationForm />} />
-          <Route path='/emp/punishment-form/:pmis?' element={<PunishmentForm />} />
-          <Route path='/emp/job-description-form/:pmis?' element={<JobDescriptionForm />} />
-          <Route path='/emp/job-working-form/:pmis?' element={<EmpChangeForm />} />
-          <Route path='/emp/3puste/:pmis?' element={<FinalPreview />} />
+          <Route path='/emp' element={<EmpRoute />} >
+            <Route path='/emp/' element={<Employee />} />
+            <Route path='/emp/addemp_form/' element={<AddEmployee />} />
+            <Route path='/emp/edit_emp_from/:pmis?' element={<AddEmployee />} />
+            <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom />} />
+            <Route path='/emp/training-form/:pmis?' element={<TrainingForm />} />
+            <Route path='/emp/award-form/:pmis?' element={<AwardForm />} />
+            <Route path='/emp/decoration-form/:pmis?' element={<DecorationForm />} />
+            <Route path='/emp/punishment-form/:pmis?' element={<PunishmentForm />} />
+            <Route path='/emp/job-description-form/:pmis?' element={<JobDescriptionForm />} />
+            <Route path='/emp/job-working-form/:pmis?' element={<EmpChangeForm />} />
+            <Route path='/emp/3puste/:pmis?' element={<FinalPreview />} />
+          </Route>
 
-          <Route path='/tango/' element={<TangoDashboard />}>
-            <Route path='/tango/' element={<TangoHome/>} />
-            <Route path='/tango/rajashwa-form' element={<PunishmentActionForm />} />
-            <Route path='/tango/kasur-form' element={<DailyKasurForm />} />
+          <Route path='/tango' element={<TangoRoute />}> {/* Secured Route */}
+            <Route element={<TangoDashboard />}> {/* Common Layout */}
+              <Route index element={<TangoHome />} /> {/* Default Route */}
+              <Route path='rajashwa-form' element={<PunishmentActionForm />} />
+              <Route path='kasur-form' element={<DailyKasurForm />} />
+              <Route path='vehicle' element={<VehicleForm />} />
+              <Route path='kasur' element={<KasurForm />} />
+              <Route path='report' element={<TangoAdminDashboard />}>
 
-            <Route path='/tango/vehicle' element={<VehicleForm/>}/>
-            <Route path='/tango/kasur' element={<KasurForm/>}/>
+                <Route path='kasur-report' element={<KasurReport />} />
+                <Route path='rajashwa-report' element={<PunishmentActionForm />} />
+              </Route>
+            </Route>
           </Route>
         </Routes>
 
