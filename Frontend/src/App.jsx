@@ -40,6 +40,8 @@ import TangoHome from './Components/Tango/TangoHome'
 import TangoDashboard from './Components/Tango/TangoDashboard'
 import PunishmentActionForm from './Components/Tango/DailyRajashwaForm'
 import DailyKasurForm from './Components/Tango/DailyKasurForm'
+import VehicleForm from './Components/Tango/VehicleTypes'
+import KasurForm from './Components/Tango/KasurTypes'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -135,6 +137,9 @@ function App() {
             <Route path='/tango/' element={<TangoHome/>} />
             <Route path='/tango/rajashwa-form' element={<PunishmentActionForm />} />
             <Route path='/tango/kasur-form' element={<DailyKasurForm />} />
+
+            <Route path='/tango/vehicle' element={<VehicleForm/>}/>
+            <Route path='/tango/kasur' element={<KasurForm/>}/>
           </Route>
         </Routes>
 

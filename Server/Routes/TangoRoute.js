@@ -51,9 +51,70 @@ const upload = multer({ storage: storage });
 
 const query = promisify(con.query).bind(con);
 // console.log(fy_date)
+
+//गाडीका विवरणहरुः नाम सुची
+router.post('/add_vehicle',verifyToken, async (req, res) => {
+    const active_office=req.userOffice;
+    const user_id=req.userId;
+
+    const {
+        vehicle_np, vehicle_en
+    } = req.body;
+
+    const created_by = user_id; // Adjust this to dynamically handle creator if needed
+    console.log(created_by)
+
+    const sql = `INSERT INTO tango_vehicles (
+        name_np, name_en
+    ) VALUES (?)`;
+
+    const values = [
+        vehicle_np, vehicle_en
+    ];
+
+    try {
+        const result = await query(sql, [values]);
+        return res.json({ Status: true, Result: result });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
+
+router.put('/update_vehicle/:id', async (req, res) => {    
+    const id=req.params.id;    
+    const {
+        vehicle_np, vehicle_en
+    } = req.body;
+    const updated_by = 1;
+    const sql = `UPDATE tango_vehicles SET name_np=?, name_en=?  WHERE id=?`;
+    const values = [
+        vehicle_np, vehicle_en, id
+    ];
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.delete('/delete_vehicle/:id', async(req,res)=>{
+    const {id} = req.params;
+    console.log(id)
+    try{
+        const sql = `DELETE FROM tango_vehicles WHERE id=?`;
+        const result = await query(sql, id);
+        return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
+    } catch(err){
+        console.error('Error Deleting Record:',err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+
 //Rajashwa Sirshak hru
-
-
 router.get('/rajashwa_data', async (req, res) => {
     const sql = `SELECT tp.*, tv.* 
             FROM tango_punishment_data tp
@@ -120,6 +181,67 @@ router.delete('/delete_rajashwa/:id', async(req,res)=>{
     console.log(id)
     try{
         const sql = `DELETE FROM tango_punishment_data WHERE id=?`;
+        const result = await query(sql, id);
+        return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
+    } catch(err){
+        console.error('Error Deleting Record:',err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+//कसुरका विवरणहरुः नाम सुची
+router.post('/add_kasur',verifyToken, async (req, res) => {
+    const active_office=req.userOffice;
+    const user_id=req.userId;
+
+    const {
+        name_np, name_en
+    } = req.body;
+
+    const created_by = user_id; // Adjust this to dynamically handle creator if needed
+    console.log(created_by)
+
+    const sql = `INSERT INTO tango_punishment (
+        name_np, name_en
+    ) VALUES (?)`;
+
+    const values = [
+        name_np, name_en
+    ];
+
+    try {
+        const result = await query(sql, [values]);
+        return res.json({ Status: true, Result: result });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
+
+router.put('/update_kasur/:id', async (req, res) => {    
+    const id=req.params.id;    
+    const {
+        name_np, name_en
+    } = req.body;
+    const updated_by = 1;
+    const sql = `UPDATE tango_punishment SET name_np=?, name_en=?  WHERE id=?`;
+    const values = [
+        name_np, name_en, id
+    ];
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
+
+router.delete('/delete_kasur/:id', async(req,res)=>{
+    const {id} = req.params;
+    console.log(id)
+    try{
+        const sql = `DELETE FROM tango_punishment WHERE id=?`;
         const result = await query(sql, id);
         return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
     } catch(err){

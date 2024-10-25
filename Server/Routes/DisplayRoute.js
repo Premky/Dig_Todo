@@ -17,6 +17,14 @@ const currentdate = new NepaliDate().format('YYYY-MM-DD'); //Support for filter
 
 const router = express.Router()
 
+router.get('/currentoffice/:id', (req, res)=>{
+    const {id} = req.params;
+    const sql = "SELECT * FROM office WHERE o_id=?";
+    con.query(sql,id, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+});
 
 router.get('/leavetypes', (req, res) => {
     const sql = "SELECT * FROM leave_type";

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import * as icon from 'react-bootstrap-icons';
 import "bootstrap-icons/font/bootstrap-icons.css"
@@ -9,10 +9,31 @@ import Logout from '../Login/Logout';
 
 
 const TangoDashboard = () => {
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate()
     axios.defaults.withCredentials = true;
     const usertype = localStorage.getItem('type')
+
+    const exp_office_name=localStorage.getItem('oid')
+    const [currnetOffice, setCurrentOffice] = useState([]);
+    const fetchCurrentOffice = async()=>{        
+        try {
+            const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
+            if (result.data.Status) {
+                setCurrentOffice(result.data.Result[0]);
+                // console.log(result.data.Result);
+            } else {
+                alert(result.data.Error);
+                console.error(result.data.Error);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
     
+    useEffect(() => {  
+        fetchCurrentOffice();
+    }, [BASE_URL]);
     return (
         <>
             <div className='container-fluid'>
@@ -51,7 +72,7 @@ const TangoDashboard = () => {
                     </div>
                     <div className='col p-0 m-0'>
                         <div className='p-2 d-flex justify-content-center shadow bg-info'>
-                            <h4>Koshi Province Police Office</h4>
+                            <h4>{currnetOffice.office_name}</h4>
                         </div>
                         <Outlet/>
 
