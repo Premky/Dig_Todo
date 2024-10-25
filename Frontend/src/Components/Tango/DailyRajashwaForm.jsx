@@ -168,6 +168,8 @@ const PunishmentActionForm = () => {
 
     }, [BASE_URL]);
 
+    const exp_office_name=localStorage.getItem('oid')
+
     return (
         <>
             <div className="container-fluid p-0">
@@ -281,7 +283,7 @@ const PunishmentActionForm = () => {
                                                 <TableCell>गाडी</TableCell>
                                                 <TableCell>संख्या</TableCell>
                                                 <TableCell>राजस्व</TableCell>                                                
-                                                <TableCell>#  <div onClick={()=>XportRajaswa(fetchedPunishment)}>Export</div></TableCell>
+                                                <TableCell>#  <div onClick={()=>XportRajaswa(fetchedPunishment,exp_office_name)}>Export</div></TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>

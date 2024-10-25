@@ -1,57 +1,67 @@
 import ExcelJS from 'exceljs';
-import { saveAs } from 'file-saver'; // For saving the file on client-side
-import axios from 'axios';
+import { saveAs } from 'file-saver'; // For saving the file on the client side
 
-const XportRajaswa = async (data) => {
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL; // Assuming your API URL is stored in .env
+const XportRajashwa = async (data, office_name) => {
+  // Create a new workbook and add a worksheet
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sheet 1');
 
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Sheet 1');
+  // 1. Add the office name in the first row and merge across all vehicle columns
+  const totalColumns = data.length * 2 + 1; // Multiply by 2 (for count and tax) and add 1 for 'कार्यालय'
+  worksheet.mergeCells(1, 1, 1, totalColumns);
+  worksheet.getCell('A1').value = `${office_name}`; // Office name at the top
+  worksheet.getCell('A1').font = { size: 14, bold: true };
+  worksheet.getCell('A1').alignment = { vertical: 'middle', horizontal: 'center' };
 
-    // Define columns dynamically based on fetched vehicle data
-    const columnHeaders = [];
-    // data.forEach(vehicle => {
-    //     columnHeaders.push({ header: vehicle.name_np, key: vehicle.name_np, width: 15 });        
-    //     columnHeaders.push({ header: 'Count', key: `${vehicle.name_np}_count`, width: 10 });
-    //     columnHeaders.push({ header: 'Tax', key: `${vehicle.name_np}_tax`, width: 10 });
-    // });
+  // 2. Add the "कार्यालय" header in the second row
+  worksheet.getCell('A2').value = 'कार्यालय';
+  worksheet.getCell('A2').alignment = { vertical: 'middle', horizontal: 'center' };
 
-    data.forEach(vehicle => {
-        columnHeaders.push({ header: vehicle.name_np, key: vehicle.name_np, width: 15 });                
-        // columnHeaders.push({ header: vehicle.name_np, });                
-    });
-    columnHeaders.push({ header: 'Count', key: 'count', width: 10 });
-    columnHeaders.push({ header: 'Tax', key: 'tax', width: 10 });
+  // 3. Start adding vehicle names and merging cells for each vehicle name
+  let startCol = 2; // Starting from the second column (skip 'कार्यालय')
+  data.forEach((vehicle, index) => {
+    const vehicleStartCol = startCol;
+    const vehicleEndCol = startCol + 1; // Merge across 2 columns (Count, Tax/Fine)
 
-    worksheet.columns = columnHeaders;
+    // Merge vehicle name across two columns and align center (row 2)
+    worksheet.mergeCells(2, vehicleStartCol, 2, vehicleEndCol);
+    worksheet.getCell(2, vehicleStartCol).value = vehicle.name_np;
+    worksheet.getCell(2, vehicleStartCol).alignment = { vertical: 'middle', horizontal: 'center' };
 
-    worksheet.addRow(columnHeaders.map(header => header.header));
-    worksheet.addRow(['Count', 'Tax']); // Count and Tax headers row
+    // Add "Count" and "Tax/Fine" as sub-headers in the third row
+    worksheet.getCell(3, vehicleStartCol).value = 'संख्या';
+    worksheet.getCell(3, vehicleEndCol).value = 'राजश्व';
 
-    // Add rows (customize this to match your data structure)
-    data.forEach(vehicle => {
-        worksheet.addRow({            
-            // [vehicle.name_np]: vehicle.name_np,
-            [`${vehicle.name_np}_count`]: vehicle.count,
-            [`${vehicle.name_np}_tax`]: vehicle.tax,
-        });
-    });
+    // Adjust the columns' width
+    worksheet.getColumn(vehicleStartCol).width = 10;
+    worksheet.getColumn(vehicleEndCol).width = 10;
 
-    // Merge cells for vehicle names
-    // data.forEach((vehicle, index) => {
-    //     const columnIndex = index + 1; // Adjust to match Excel column indexing
-    //     worksheet.mergeCells(1, columnIndex, 1, columnIndex + 1); // Merging for the vehicle name
-    // });
+    startCol += 2; // Move to the next vehicle (2 columns for each vehicle)
+  });
+
+  // 4. Add data rows (starting from row 4) and populate office_id in the first column
+  data.forEach((vehicleRow, rowIndex) => {
+    const rowNumber = rowIndex + 4; // Start from row 4 (since rows 1-3 are headers)
     
+    // Add office_id in the first column (A)
+    worksheet.getCell(`A${rowNumber}`).value = vehicleRow.office_id;
 
-    // Generate the Excel file as a Blob
-    const buffer = await workbook.xlsx.writeBuffer();
+    // Add count and tax/fine values for each vehicle
+    data.forEach((vehicle, colIndex) => {
+      const countCol = 2 + colIndex * 2; // Skip 'कार्यालय' and find the count column
+      const fineCol = countCol + 1; // Tax/Fine column comes right after the count column
 
-    // Use FileSaver to save the file on the client side
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    saveAs(blob, 'PunishmentData.xlsx');
+      worksheet.getCell(rowNumber, countCol).value = vehicle.count; // Add count
+      worksheet.getCell(rowNumber, fineCol).value = vehicle.fine;   // Add fine
+    });
+  });
+
+  // 5. Generate the Excel file as a Blob
+  const buffer = await workbook.xlsx.writeBuffer();
+
+  // 6. Use FileSaver to save the file on the client side
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  saveAs(blob, 'PunishmentData.xlsx');
 };
 
-
-
-export default XportRajaswa;
+export default XportRajashwa;

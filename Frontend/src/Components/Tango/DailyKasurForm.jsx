@@ -14,6 +14,7 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
 
 import XportData from './XportData';
+import XportKasur from './XportKasur';
 
 const DailyKasurForm = () => {
     const { pmis } = useParams();
@@ -279,7 +280,7 @@ const DailyKasurForm = () => {
                                                 <TableCell>संख्या</TableCell>
                                                 <TableCell>राजस्व</TableCell>                                                
                                                 <TableCell>#
-                                                    <div onClick={()=>XportData(fetchedPunishment, exp_office_name)}>Export</div>
+                                                    <div onClick={()=>XportKasur(fetchedPunishment, exp_office_name)}>Export</div>
                                                 </TableCell>
                                             </TableRow>
                                         </TableHead>
