@@ -17,6 +17,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const router = express.Router()
+const currentDate = new NepaliDate().format('YYYY-MM-DD'); //Support for filter
 const fy = new NepaliDate().format('YYYY'); //Support for filter
 const fy_date = fy + '-4-1'
 
@@ -273,7 +274,7 @@ router.get('/kasur_data', async (req, res) => {
     })
 })
 
-router.post('/add_kasur', verifyToken, async (req, res) => {
+router.post('/add_kasurs', verifyToken, async (req, res) => {
     const active_office = req.userOffice;
     const user_id = req.userId;
 
@@ -301,7 +302,7 @@ router.post('/add_kasur', verifyToken, async (req, res) => {
     }
 });
 
-router.put('/update_kasur/:id', async (req, res) => {
+router.put('/update_kasurs/:id', async (req, res) => {
     const active_office = req.userOffice;
     const id = req.params.id;
     const {
@@ -322,7 +323,7 @@ router.put('/update_kasur/:id', async (req, res) => {
     }
 })
 
-router.delete('/delete_kasur/:id', async (req, res) => {
+router.delete('/delete_kasurs/:id', async (req, res) => {
     const { id } = req.params;
     console.log(id)
     try {
@@ -335,25 +336,38 @@ router.delete('/delete_kasur/:id', async (req, res) => {
     }
 })
 
-// Define the search route
-router.get('/search/:query', (req, res) => {
-    const { date, otherParam } = req.query; // Destructure query parameters as needed
-
-    // Construct your SQL query based on the parameters received
-    let sql = 'SELECT * FROM tango_daily_kasur WHERE 1=1'; // Basic SQL template
+router.get('/search_kasur', (req, res) => {
+    const todaydate=currentDate
+    // const todaydate='2081-07-08'
+    const { date, type } = req.query; // Extract query parameters
+    
+    // Base SQL query with joins
+    let sql = `
+        SELECT dk.*, tp.*, o.* 
+        FROM tango_daily_kasur dk 
+        LEFT JOIN tango_punishment tp ON dk.kasur_id = tp.id 
+        LEFT JOIN office o ON dk.office_id = o.o_id 
+        WHERE 1=1
+    `;
+    const values = [];
 
     // Add conditions based on received parameters
     if (date) {
-        sql += ` AND date = ?`;
-    }
-    if (otherParam) {
-        sql += ` AND otherColumn = ?`; // Adjust according to your database schema
+        sql += ' AND dk.date = ?';
+        values.push(date);
+    } else{
+        sql += ' AND dk.date = ?';
+        values.push(todaydate);
     }
 
-    // Prepare the values to be used in the query
-    const values = [];
-    if (date) values.push(date);
-    if (otherParam) values.push(otherParam);
+    if (type) {
+        sql += ' AND dk.punishment_id = ?'; // Adjust according to your schema
+        values.push(type);
+    }
+
+    // Log the final query for debugging
+    // console.log('Executing SQL:', sql);
+    // console.log('With Params:', values);
 
     // Execute the query
     con.query(sql, values, (error, results) => {
@@ -361,7 +375,7 @@ router.get('/search/:query', (req, res) => {
             console.error('Database query error:', error);
             return res.status(500).json({ Status: false, Error: 'Database query failed.' });
         }
-        
+
         if (results.length > 0) {
             return res.json({ Status: true, Result: results });
         } else {
@@ -369,6 +383,56 @@ router.get('/search/:query', (req, res) => {
         }
     });
 });
+
+router.get('/search_rajashwa', (req, res) => {
+    // const todaydate=currentDate
+    const todaydate='2081-07-15'
+    const { date, type } = req.query; // Extract query parameters
+    
+    // Base SQL query with joins
+    let sql = `
+        SELECT dk.*, tp.*, o.* 
+        FROM tango_punishment_data dk 
+        LEFT JOIN tango_vehicles tp ON dk.vehicle_id = tp.id 
+        LEFT JOIN office o ON dk.office_id = o.o_id 
+        WHERE 1=1
+    `;
+    const values = [];
+
+    // Add conditions based on received parameters
+    if (date) {
+        sql += ' AND dk.date = ?';
+        values.push(date);
+    } else{
+        sql += ' AND dk.date = ?';
+        values.push(todaydate);
+    }
+
+    if (type) {
+        sql += ' AND dk.vehicle_id = ?'; // Adjust according to your schema
+        values.push(type);
+    }
+
+    // Log the final query for debugging
+    // console.log('Executing SQL:', sql);
+    // console.log('With Params:', values);
+
+    // Execute the query
+    con.query(sql, values, (error, results) => {
+        if (error) {
+            console.error('Database query error:', error);
+            return res.status(500).json({ Status: false, Error: 'Database query failed.' });
+        }
+
+        if (results.length > 0) {
+            return res.json({ Status: true, Result: results });
+        } else {
+            return res.json({ Status: false, Error: 'No records found.' });
+        }
+    });
+});
+
+
 
 
 export { router as tangoRouter }

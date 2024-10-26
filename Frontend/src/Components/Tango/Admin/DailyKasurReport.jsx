@@ -14,6 +14,8 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import DeleteConfirmationModal from '../../Utils/ConfirmDeleteModal';
 
 import XportKasur from '../XportKasur';
+import XportData from '../XportKasurReport';
+import XportKasurReport from '../XportKasurReport';
 
 const KasurReport = () => {
     const { pmis } = useParams();
@@ -28,15 +30,18 @@ const KasurReport = () => {
     const [fetchedOffice, setFetchedOffice] = useState([]);
 
     const [fetchedPunishment, setFetchedPunishment] = useState([]);
+    const [fetchedPunishmentXport, setfetchedPunishmentXport] = useState([]);
     const [currentPunishment, setCurrentPunishment] = useState([]);
     const [fetchedKasur, setFetchedKasur] = useState([]);
 
     const exp_office_name = localStorage.getItem('oid')
     const [currnetOffice, setCurrentOffice] = useState([]);
+
     const fetchCurrentOffice = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
             if (result.data.Status) {
+                // console.log(currnetOffice,'office')
                 setCurrentOffice(result.data.Result[0]);
                 // console.log(result.data.Result);
             } else {
@@ -66,45 +71,82 @@ const KasurReport = () => {
         }
     };
 
+    // const fetchPunishment = async () => {
+    //     try {
+    //         const result = await axios.get(`${BASE_URL}/tango/search`);
+    //         if (result.data.Status) {
+    //             const options = result.data.Result.map(opt => ({
+    //                 id: opt.id,
+    //                 office_name: opt.office_name, // Assuming this field exists
+    //                 actions: [
+    //                     { count: opt.count, fine: opt.fine }, // Adjust according to your data
+    //                     // You can add more action objects if needed
+    //                 ],
+    //             }));
+    //             setFetchedPunishment(options);
+    //             setfetchedPunishmentXport(result.data.Result);
+    //             console.log(options)
+    //         } else {
+    //             alert(result.data.Error);
+    //             console.error(result.data.Error);
+    //         }
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // };
+
     const fetchPunishment = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/tango/kasur_data`);
+            const result = await axios.get(`${BASE_URL}/tango/search_kasur`);
             if (result.data.Status) {
-                const options = result.data.Result.map(opt => ({
-                    value: opt.id,
-                    label: opt.name_np
-                }));
-                setFetchedPunishment(result.data.Result);
+                const groupedData = {};
+
+                result.data.Result.forEach(item => {
+                    if (!groupedData[item.office_name]) {
+                        groupedData[item.office_name] = { office_name: item.office_name, vehicles: {} };
+                    }
+
+                    groupedData[item.office_name].vehicles[item.name_np] = {
+                        count: item.count,
+                        fine: item.fine,
+                    };
+                });
+
+                setFetchedPunishment(Object.values(groupedData));
+                setfetchedPunishmentXport(result.data.Result);
             } else {
                 alert(result.data.Error);
                 console.error(result.data.Error);
             }
         } catch (err) {
-            console.log(err);
+            console.error('Error fetching punishment data:', err);
         }
     };
 
+
     const onFormSubmit = async (data) => {
-        // console.log(data.date);
         setLoading(true);
         try {
-            const queryString = new URLSearchParams(data).toString(); // Convert data object to query string
-            const url = `${BASE_URL}/tango/search/${queryString}`;
-            console.log(url)
-            const method = 'GET';
-            const result = await axios({
-                method,
-                url,
-                headers: { 'Content-Type': 'application/json' }
-            });
-    
+            const result = await axios.get(`${BASE_URL}/tango/search_kasur`);
             if (result.data.Status) {
-                console.log(result.data.Result)
-                setEditing(false);
-                setFetchedPunishment(result.data.Result);
-                // fetchPunishment(); // Refresh the punishment list
+                const groupedData = {};
+
+                result.data.Result.forEach(item => {
+                    if (!groupedData[item.office_name]) {
+                        groupedData[item.office_name] = { office_name: item.office_name, vehicles: {} };
+                    }
+
+                    groupedData[item.office_name].vehicles[item.name_np] = {
+                        count: item.count,
+                        fine: item.fine,
+                    };
+                });
+                const formattedDataforexport = Object.values(groupedData);
+                setFetchedPunishment(Object.values(groupedData));
+                setfetchedPunishmentXport(result.data.Result);
             } else {
-                alert(result.data.Error || 'Record Not Found.');
+                alert(result.data.Error);
+                console.error(result.data.Error);
             }
         } catch (err) {
             console.error('Form submission error:', err);
@@ -113,7 +155,9 @@ const KasurReport = () => {
             setLoading(false);
         }
     };
-    
+
+
+
 
 
 
@@ -122,7 +166,6 @@ const KasurReport = () => {
         const datePart = isoDate.split('T')[0]; // Extract just the date part
         return datePart; // Return in the format needed for the NepaliDatePicker
     };
-
 
     const handleClear = (e) => {
         e.preventDefault();
@@ -186,7 +229,7 @@ const KasurReport = () => {
                                     <Controller
                                         name="kasur_id"
                                         control={control} // This should come from useForm() hook
-                                        rules={{ required: "This field is required" }}
+                                        // rules={{ required: "This field is required" }}
                                         defaultValue=""
                                         render={({ field: { onChange, value, ref } }) => (
                                             <Select
@@ -215,49 +258,58 @@ const KasurReport = () => {
 
                             <div className="row p-2 mt-3">
                                 <TableContainer component={Paper}>
-                                    <Table size="small">
+                                    <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>सि.नं.</TableCell>
-                                                <TableCell>मिति</TableCell>
-                                                <TableCell>कसुर</TableCell>
-                                                <TableCell>संख्या</TableCell>
-                                                <TableCell>राजस्व</TableCell>
-                                                <TableCell>#
-                                                    <div onClick={() => XportKasur(fetchedPunishment, currnetOffice)}>Export</div>
+                                                {/* "कार्यालय" header */}
+                                                <TableCell align="center" rowSpan={2} style={{ fontWeight: 'bold' }}>कार्यालय</TableCell>
+
+                                                {/* Vehicle Names (each spans 2 columns) */}
+                                                {fetchedPunishmentXport.map((vehicle, index) => (
+                                                    <TableCell key={index} colSpan={2} align="center" style={{ fontWeight: 'bold' }}>
+                                                        {vehicle.name_np}
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                            <TableRow>
+                                                {/* Sub-headers for Count and Tax/Fine under each vehicle */}
+                                                {fetchedPunishmentXport.map((x, index) => (
+                                                    <>
+                                                        <TableCell key={`${index}-count`} align="center" style={{ fontWeight: 'bold' }}>संख्या</TableCell>
+                                                        <TableCell key={`${index}-fine`} align="center" style={{ fontWeight: 'bold' }}>राजश्व</TableCell>
+                                                    </>
+                                                ))}
+                                                <TableCell rowSpan={2}>
+                                                    <div onClick={() => {
+                                                        if (fetchedPunishmentXport && fetchedPunishmentXport.length > 0 && currnetOffice?.office_name) {
+                                                            XportKasurReport(fetchedPunishment, currnetOffice.office_name);
+                                                        } else {
+                                                            console.warn("Export data or office name is missing!");
+                                                        }
+                                                    }}>
+                                                        Export
+                                                    </div>
+
                                                 </TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {fetchedPunishment.map((row, index) => (
-                                                <TableRow key={row.id}>
-                                                    <TableCell>{index + 1}</TableCell>
-                                                    <TableCell>{convertToNepaliDate(row.date)}</TableCell>
-                                                    <TableCell>{row.name_np}</TableCell>
-                                                    <TableCell>{row.count}</TableCell>
-                                                    <TableCell>{row.fine}</TableCell>
-                                                    <TableCell>
-                                                        <div className="row">
-                                                            <div className="col">
-                                                                <button name='edit' className='btn btn-sm bg-primary'
-                                                                    onClick={() => handleEdit(row)}>
-                                                                    <Icon iconName="Pencil" style={{ color: 'white', fontSize: '1em' }} />
-                                                                </button>
-                                                            </div>
-                                                            <div className="col">
+                                            {fetchedPunishment.map((office, rowIndex) => (
+                                                <TableRow key={rowIndex}>
+                                                    {/* Office Name */}
+                                                    <TableCell align="center">{office.office_name}</TableCell>
 
-                                                                <DeleteConfirmationModal
-                                                                    title={'Are you sure you want to delete this record?'}
-                                                                    buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
-                                                                    onConfirm={() => handleDelete(row.id)}>
-                                                                    <b>{row.name_np} | {row.count} | {row.fine}
-                                                                        {/* {convertToNepaliDate(row.date)} */}
-                                                                    </b>
-                                                                    <p>This action cannot be undone.</p>
-                                                                </DeleteConfirmationModal>
-                                                            </div>
-                                                        </div>
-                                                    </TableCell>
+                                                    {/* Render each vehicle's count and fine values */}
+                                                    {fetchedPunishmentXport.map((vehicle, colIndex) => {
+                                                        const vehicleData = office.vehicles[vehicle.name_np] || { count: '-', fine: '-' };
+                                                        return (
+                                                            <>
+                                                                <TableCell key={`${colIndex}-count`} align="center">{vehicleData.count}</TableCell>
+                                                                <TableCell key={`${colIndex}-fine`} align="center">{vehicleData.fine}</TableCell>
+                                                            </>
+                                                        );
+                                                    })}
+
                                                 </TableRow>
                                             ))}
                                         </TableBody>

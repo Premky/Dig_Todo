@@ -46,6 +46,7 @@ import EmpRoute from './Components/PrivateRoute/EmpRoute'
 import TangoRoute from './Components/PrivateRoute/TangoRoute'
 import TangoAdminDashboard from './Components/Tango/Admin/TangoAdminDashboard'
 import KasurReport from './Components/Tango/Admin/DailyKasurReport'
+import RajashwaReport from './Components/Tango/Admin/DailyRajashwaReport'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -146,7 +147,7 @@ function App() {
               <Route path='report' element={<TangoAdminDashboard />}>
 
                 <Route path='kasur-report' element={<KasurReport />} />
-                <Route path='rajashwa-report' element={<PunishmentActionForm />} />
+                <Route path='rajashwa-report' element={<RajashwaReport />} />
               </Route>
             </Route>
           </Route>

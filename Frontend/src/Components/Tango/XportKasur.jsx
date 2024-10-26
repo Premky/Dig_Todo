@@ -44,7 +44,7 @@ const XportKasur = async (data, office_name) => {
     const rowNumber = rowIndex + 4; // Start from row 4 (since rows 1-3 are headers)
     
     // Add office_id in the first column (A)
-    worksheet.getCell(`A${rowNumber}`).value = vehicleRow.office_id;
+    worksheet.getCell(`A${rowNumber}`).value = vehicleRow.office_name;
 
     // Add count and tax/fine values for each vehicle
     data.forEach((vehicle, colIndex) => {
