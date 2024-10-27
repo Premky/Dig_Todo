@@ -56,6 +56,7 @@ router.post('/login', (req, res) => {
 
                     return res.json({
                         loginStatus: true,
+                        token:token,
                         username: user.username,
                         usertype: user.usertype,
                         office: user.office_name,

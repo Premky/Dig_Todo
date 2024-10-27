@@ -54,7 +54,7 @@ const query = promisify(con.query).bind(con);
 // console.log(fy_date)
 
 //गाडीका विवरणहरुः नाम सुची
-router.post('/add_vehicle',  async (req, res) => {
+router.post('/add_vehicle', verifyToken, async (req, res) => {
     const active_office = req.userOffice;
     const user_id = req.userId;
     console.log(active_office, user_id)
