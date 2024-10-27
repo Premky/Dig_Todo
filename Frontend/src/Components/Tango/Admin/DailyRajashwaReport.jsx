@@ -133,12 +133,6 @@ const RajashwaReport = () => {
         }
     };
 
-
-
-
-
-
-
     const convertToNepaliDate = (isoDate) => {
         const datePart = isoDate.split('T')[0]; // Extract just the date part
         return datePart; // Return in the format needed for the NepaliDatePicker

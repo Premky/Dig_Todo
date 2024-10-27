@@ -67,6 +67,7 @@ const Login = ({ onLogin }) => {
                 .then(result => {
                     if (result.data.loginStatus) {
                         onLogin(result.data);
+                        localStorage.setItem("token", result.data.token)
                         localStorage.setItem("valid", true)
                         localStorage.setItem("type", result.data.usertype)
                         localStorage.setItem("user", result.data.username)

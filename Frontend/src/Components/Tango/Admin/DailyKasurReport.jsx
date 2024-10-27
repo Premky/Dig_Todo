@@ -115,14 +115,13 @@ const KasurReport = () => {
                 setFetchedPunishment(Object.values(groupedData));
                 setfetchedPunishmentXport(result.data.Result);
             } else {
-                alert(result.data.Error);
+                // alert(result.data.Error);
                 console.error(result.data.Error);
             }
         } catch (err) {
             console.error('Error fetching punishment data:', err);
         }
     };
-
 
     const onFormSubmit = async (data) => {
         setLoading(true);

@@ -50,7 +50,7 @@ const VehicleForm = () => {
 
 
 
-
+    const token = localStorage.getItem("token");
 
     const onFormSubmit = async (data) => {
         setLoading(true);
@@ -64,7 +64,7 @@ const VehicleForm = () => {
                 method,
                 url,
                 data,
-                headers: { 'Content-Type': 'application/json' }
+                headers: { 'Content-Type': 'application/json', Authorization:`Bearer ${token}` }
             });
 
             if (result.data.Status) {
