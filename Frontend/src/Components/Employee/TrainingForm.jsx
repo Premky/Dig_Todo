@@ -5,6 +5,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useForm, Controller } from 'react-hook-form';
 import NepaliDate from 'nepali-datetime';
+import Select from 'react-select';
 
 import Icon from '../Utils/Icon';
 import './formstyle.css'
@@ -26,12 +27,33 @@ const TrainingForm = () => {
 
   const [fetchedTraining, setFetchedTraining] = useState([]);
   const [currentTraining, setCurrentTraining] = useState([]);
+  const [fetchedTrainingList, setFetchedTrainingList] = useState([]);
 
   const fetchEmployee = async () => {
     try {
       const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
       if (result.data.Status) {
         setFetchedEmp(result.data.Result);
+      } else {
+        alert(result.data.Result);
+        console.error(result.data.Result);
+      }
+    } catch (err) {
+      console.error(err);
+      alert(err)
+    }
+  }
+
+  const fetchTrainingList = async () => {
+    try {
+      const result = await axios.get(`${BASE_URL}/emp/training_list`);
+      if (result.data.Status) {
+        const options = result.data.Result.map(opt => ({
+          value: opt.id,
+          label: opt.name_np
+      }));
+      // setFetchedOffice(options);
+        setFetchedTrainingList(options);
       } else {
         alert(result.data.Result);
         console.error(result.data.Result);
@@ -143,6 +165,7 @@ const TrainingForm = () => {
   useEffect(() => {
     fetchEmployee();
     fetchTraining();
+    fetchTrainingList();
   }, [BASE_URL]);
 
   return (
@@ -185,7 +208,7 @@ const TrainingForm = () => {
                   {errors.pmis && <span>{errors.pmis.message}</span>}
                 </div>
 
-                <div className="col-xl-3 col-md-4 col-sm-12">
+                {/* <div className="col-xl-3 col-md-4 col-sm-12">
                   <label htmlFor="training"> तालिमको नाम </label>
                   <input
                     {...register('training', { required: "This field is required." })}
@@ -193,6 +216,31 @@ const TrainingForm = () => {
                     className="form-control"
                   />
                   {errors.training && <span>{errors.training.message}</span>}
+                </div> */}
+
+                <div className="col-xl-3 col-md-4 col-sm-12">
+                  <label htmlFor="training_id">तालिमको नाम<span>*</span></label>
+                  <Controller
+                    name="training_id"
+                    control={control} // This should come from useForm() hook
+                    rules={{ required: "This field is required" }}
+                    defaultValue=""
+                    render={({ field: { onChange, value, ref } }) => (
+                      <Select
+                        inputRef={ref} // Set ref to react-select input
+                        className='basic-single'
+                        classNamePrefix='select'
+                        value={fetchedTrainingList.find(option => option.value === value) || null} // Match selected option
+                        onChange={(selectedOption) => {
+                          onChange(selectedOption ? selectedOption.value : ""); // Update form value
+                        }}
+                        isClearable={true} // Correct boolean format
+                        isSearchable={true}
+                        options={fetchedTrainingList}
+                      />
+                    )}
+                  />
+                  {errors.training_id && <span>{errors.training_id.message}</span>}
                 </div>
 
                 <div className="col-xl-3 col-md-4 col-sm-12">

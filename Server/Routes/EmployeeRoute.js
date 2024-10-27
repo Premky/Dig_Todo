@@ -574,6 +574,16 @@ router.delete('/delete_punishment/:id', async(req,res)=>{
     }
 })
 
+router.get('/training_list/', async (req, res) => {
+    // const sql = `SELECT * from emp_education`;
+    const { pmis } = req.params;
+    const sql = `SELECT * FROM trainings 
+            `;
+    con.query(sql, pmis, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
 
 
 // const exportTableToWord = (tableData, res) => {
