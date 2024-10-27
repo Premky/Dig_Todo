@@ -72,7 +72,7 @@ const Login = ({ onLogin }) => {
                         localStorage.setItem("user", result.data.username)
                         localStorage.setItem("uid", result.data.uid)
                         localStorage.setItem("oid", result.data.office_id)
-                        localStorage.setItem("bid", result.data.branch_id)
+                        localStorage.setItem("bid", result.data.branch)
                         // setOfficeName(result.data.office)                
                         // console.log("result:", result)
                         const path = navigateBasedOnUsertype(result.data.usertype, result.data.branch);
