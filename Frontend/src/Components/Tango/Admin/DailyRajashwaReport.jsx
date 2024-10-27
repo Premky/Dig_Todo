@@ -103,7 +103,8 @@ const RajashwaReport = () => {
     const onFormSubmit = async (data) => {
         setLoading(true);
         try {
-            const result = await axios.get(`${BASE_URL}/tango/search_rajashwa`);
+            const queryString = new URLSearchParams(data).toString();
+            const result = await axios.get(`${BASE_URL}/tango/search_rajashwa?${queryString};`);
             if (result.data.Status) {
                 const groupedData = {};
 

@@ -23,18 +23,37 @@ const TangoDashboard = () => {
         fetchCurrentOffice();
     }, [BASE_URL]);
 
+    const usertype = localStorage.getItem('type');
+
     return (
         <div className='container-fluid'>
             <div className='row flex-nowrap'>
                 <div className='col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-primary'>
                     <div className='d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100'>
                         <Link to="/tango/" className='d-flex align-items-center pb-3 mb-md-1 mt-md-3 me-md-auto text-white text-decoration-none'>
-                            <span className='fs-4 text-warning'>Admin Panel</span>
+                            <span className='fs-4 text-warning'>
+                                {usertype === 'Admin' ?
+                                    'Admin Panel' : 'User Panel'
+                                }
+                            </span>
                         </Link>
                         <ul className='nav flex-column mb-0'>
+                            {usertype === 'Admin' &&
+                                <>
+                                    <li><Link to="/tango/report/rajashwa-report" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>राजश्व Report</span></Link></li>
+                                    <li><Link to="/tango/report/kasur-report" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>कसुर Report</span></Link></li>
+                                </>
+                            }
                             <li><Link to="/tango/rajashwa-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>दैनिक राजश्व</span></Link></li>
                             <li><Link to="/tango/kasur-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>दैनिक कसुर</span></Link></li>
                             <li><div className='nav-link text-white'><i className="bi bi-power fs-4"></i><Logout /></div></li>
+
+                            {usertype === 'Admin' &&
+                                <>
+                                    <li><Link to="/tango/vehicle" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>सवारी साधन</span></Link></li>
+                                    <li><Link to="/tango/kasur" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>कसुर शिर्षक</span></Link></li>
+                                </>
+                            }
                         </ul>
                     </div>
                 </div>

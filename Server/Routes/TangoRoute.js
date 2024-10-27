@@ -385,8 +385,8 @@ router.get('/search_kasur', (req, res) => {
 });
 
 router.get('/search_rajashwa', (req, res) => {
-    // const todaydate=currentDate
-    const todaydate='2081-07-15'
+    const todaydate=currentDate
+    // const todaydate='2081-07-15'
     const { date, type } = req.query; // Extract query parameters
     
     // Base SQL query with joins
