@@ -145,7 +145,6 @@ function App() {
               <Route path='vehicle' element={<VehicleForm />} />
               <Route path='kasur' element={<KasurForm />} />
               <Route path='report' element={<TangoAdminDashboard />}>
-
                 <Route path='kasur-report' element={<KasurReport />} />
                 <Route path='rajashwa-report' element={<RajashwaReport />} />
               </Route>

@@ -24,21 +24,23 @@ const Login = ({ onLogin }) => {
     const navigate = useNavigate()
 
     const navigateBasedOnUsertype = (usertype, branch) => {
-        switch (usertype) {
-            case 'superuser':
+        switch (branch) {
+            case 'सुपरएडमिन':
                 return '/super/admin_dashboard';
             case 'संचार':
                 return '/sanchar';
             case 'प्रशासन':
                 return '/admin/officeleave';
-            case 'Display':
-                return branch === 'कार्यालय प्रमुख' ? '/display/chief' : '/display/dodisplay';
+            case 'कार्यालय प्रमुख':
+                return '/display/chief'; 
+            case 'सुचना पाटी':
+                return '/display/dodisplay';
             case 'डि.अ. प्रशासन':
                 return '/doadmin';
             case 'कर्मचारी प्रशासन':
                 return '/emp';
             case 'ट्राफिक':
-                return '/tango';
+                return '/tango';            
             default:
                 return '/';
         }
