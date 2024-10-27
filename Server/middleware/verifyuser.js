@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 const secret = 'jwt_prem_ko_secret_key'
 
 const verifyToken = (req, res, next) => {
+    console.log(req.headers['authorization'])
     const token = req.cookies.token || req.headers['authorization'];
 
     if (!token) return res.status(403).json({ Status: false, Error: "No token provided." });

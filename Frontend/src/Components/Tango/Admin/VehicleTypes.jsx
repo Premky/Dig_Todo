@@ -71,7 +71,7 @@ const VehicleForm = () => {
                 alert(`Record ${editing ? 'updated' : 'added'} successfully!`);
                 await reset(); // Clear the form after submission
                 setEditing(false);
-                fetchedVehicles();
+                fetchvehicles();
             } else {
                 alert(result.data.Error || 'Failed to submit the form.');
             }
@@ -110,7 +110,7 @@ const VehicleForm = () => {
             console.log(err);
             alert('Error occurred while deleting the record.');
         } finally {
-            fetchChange();
+            fetchvehicles();
         }
     };
 
