@@ -69,7 +69,7 @@ const VehicleForm = () => {
 
             if (result.data.Status) {
                 alert(`Record ${editing ? 'updated' : 'added'} successfully!`);
-                await reset(); // Clear the form after submission
+                reset(); // Clear the form after submission
                 setEditing(false);
                 fetchvehicles();
             } else {

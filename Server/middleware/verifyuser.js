@@ -1,22 +1,37 @@
-import jwt from 'jsonwebtoken'
-const secret = 'jwt_prem_ko_secret_key'
+import jwt from 'jsonwebtoken';
 
 const verifyToken = (req, res, next) => {
-    console.log(req.headers['authorization'])
-    const token = req.cookies.token || req.headers['authorization'];
+    let token = null;
 
-    if (!token) return res.status(403).json({ Status: false, Error: "No token provided." });
+    // Check for token in cookies
+    if (req.cookies.token) {
+        token = req.cookies.token;
+    }
 
-    jwt.verify(token, secret, (err, decoded) => {
-        if (err) return res.status(500).json({ Status: false, Error: "Failed to authenticate token." });
-        
-        // Save user ID and other details to request for use in other routes
+    // Check for token in Authorization header
+    if (req.headers['authorization']) {
+        token = req.headers['authorization'].split(' ')[1]; // Extract token from Bearer token
+    }
+
+    // If no token is provided
+    if (!token) {
+        return res.status(403).json({ Status: false, Error: "No token provided." });
+    }
+
+    // Verify the token
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            console.error(err);
+            return res.status(401).json({ Status: false, Error: "Failed to authenticate token." });
+        }
+
+        // Save user details to request object
         req.userId = decoded.id;
         req.userRole = decoded.role;
         req.userEmail = decoded.email;
         req.userOffice = decoded.office;
-        // console.log("office",req.userOffice)
-        next();
+
+        next(); // Proceed to the next middleware or route
     });
 };
 

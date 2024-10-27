@@ -37,6 +37,9 @@ const KasurReport = () => {
     const exp_office_name = localStorage.getItem('oid')
     const [currnetOffice, setCurrentOffice] = useState([]);
 
+    const token = localStorage.getItem("token");
+    
+
     const fetchCurrentOffice = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
@@ -54,8 +57,10 @@ const KasurReport = () => {
     }
 
     const fetchKasur = async () => {
-        try {
-            const result = await axios.get(`${BASE_URL}/tango/kashurs`);
+        try {            
+            const result = await axios.get(`${BASE_URL}/tango/kashurs`,
+                {headers: { 'Content-Type': 'application/json', Authorization:`Bearer ${token}` }}
+            );
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
@@ -70,30 +75,6 @@ const KasurReport = () => {
             console.log(err);
         }
     };
-
-    // const fetchPunishment = async () => {
-    //     try {
-    //         const result = await axios.get(`${BASE_URL}/tango/search`);
-    //         if (result.data.Status) {
-    //             const options = result.data.Result.map(opt => ({
-    //                 id: opt.id,
-    //                 office_name: opt.office_name, // Assuming this field exists
-    //                 actions: [
-    //                     { count: opt.count, fine: opt.fine }, // Adjust according to your data
-    //                     // You can add more action objects if needed
-    //                 ],
-    //             }));
-    //             setFetchedPunishment(options);
-    //             setfetchedPunishmentXport(result.data.Result);
-    //             console.log(options)
-    //         } else {
-    //             alert(result.data.Error);
-    //             console.error(result.data.Error);
-    //         }
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // };
 
     const fetchPunishment = async () => {
         try {

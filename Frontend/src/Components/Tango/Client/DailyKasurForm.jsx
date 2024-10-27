@@ -33,6 +33,7 @@ const DailyKasurForm = () => {
 
     const exp_office_name = localStorage.getItem('oid')
     const [currnetOffice, setCurrentOffice] = useState([]);
+
     const fetchCurrentOffice = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
@@ -68,7 +69,13 @@ const DailyKasurForm = () => {
 
     const fetchPunishment = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/tango/kasur_data`);
+            const result = await axios.get(`${BASE_URL}/tango/kasur_data`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`
+                    }
+                });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,

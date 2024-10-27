@@ -21,12 +21,16 @@ const fy_date = fy + '-4-1'
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
 
+    // Basic input validation
+    if (!username || !password) {
+        return res.status(400).json({ loginStatus: false, Error: "Username and password are required." });
+    }
+
     const sql = `SELECT DISTINCT u.*, ut.ut_name AS usertype, o.office_name AS office_name, b.branch_name AS branch_name
                  FROM users u
                  LEFT JOIN usertypes ut ON u.usertype = ut.utid
                  LEFT JOIN office o ON u.office_id = o.o_id
                  LEFT JOIN branch b ON u.branch_id = b.bid
-                 LEFT JOIN office_branch ob ON u.office_id = ob.office_id AND u.branch_id = ob.branch_id
                  WHERE u.username = ?;`;
 
     con.query(sql, [username], (err, result) => {
@@ -46,17 +50,17 @@ router.post('/login', (req, res) => {
 
                 if (isMatch) {
                     const token = jwt.sign({
+                        id: user.uid,
                         role: user.usertype,
                         email: user.username,
                         office: user.office_id,
-                        id: user.uid
-                    }, "jwt_prem_ko_secret_key", { expiresIn: '2d' });
+                    }, process.env.JWT_SECRET, { expiresIn: '2d' });
 
-                    res.cookie('token', token);
+                    res.cookie('token', token, { httpOnly: true, secure: true }); // Secure cookies
 
                     return res.json({
                         loginStatus: true,
-                        token:token,
+                        token,
                         username: user.username,
                         usertype: user.usertype,
                         office: user.office_name,
@@ -66,14 +70,15 @@ router.post('/login', (req, res) => {
                         branch: user.branch_name
                     });
                 } else {
-                    return res.json({ loginStatus: false, Error: "Wrong Email or Password" });
+                    return res.status(401).json({ loginStatus: false, Error: "Wrong email or password" });
                 }
             });
         } else {
-            return res.json({ loginStatus: false, Error: "Wrong email or password" });
+            return res.status(401).json({ loginStatus: false, Error: "Wrong email or password" });
         }
     });
 });
+
 
 router.get('/fetch_user_office/:user', (req, res) => {
     let user = req.params.user;

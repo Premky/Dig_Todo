@@ -262,14 +262,17 @@ router.get('/kashurs', async (req, res) => {
     })
 })
 
-router.get('/kasur_data', async (req, res) => {
+router.get('/kasur_data',verifyToken, async (req, res) => {
     const active_office = req.userOffice;
+    console.log('kasur_office', active_office)
+    
     const sql = `SELECT dk.*, tp.* 
             FROM tango_daily_kasur dk
             LEFT JOIN tango_punishment tp 
             ON dk.kasur_id= tp.id
+            WHERE office_id=?
             `;
-    con.query(sql, (err, result) => {
+    con.query(sql,active_office, (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
         return res.json({ Status: true, Result: result })
     })
