@@ -40,6 +40,26 @@ const FinalPreview = () => {
     const [fetchedDecoration, setFetchedDecoration] = useState([]);
     const [fetchedPunishment, setFetchedPunishment] = useState([]);
     const [fetchedJd, setFetchedJd] = useState([]);
+    const [currentOffice, setCurrentOffice] = useState({});
+
+    const fetchCurrentOffice = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/display/currentoffice/${localStorage.getItem('oid')}`);
+            if (response.data.Status) {
+                setCurrentOffice(response.data.Result[0]);
+                // console.log(localStorage.getItem('oid'), response.data.Result[0]); // Log the correct result immediately
+            } else {
+                console.error(response.data.Error);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    useEffect(() => {
+        if (Object.keys(currentOffice).length > 0) {
+            console.log("Updated currentOffice:",currentOffice.office_name);
+        }
+    }, [currentOffice]);
 
     const fetchEmployee = async () => {
         try {
@@ -203,7 +223,7 @@ const FinalPreview = () => {
 
         fetchChange();
         fetchOffice();
-
+        fetchCurrentOffice();
     }, [BASE_URL]);
 
     return (
@@ -224,7 +244,7 @@ const FinalPreview = () => {
                                     <h5> प्रहरी कर्मचारीको विवरण:</h5>
                                 </u>
                             </div>
-                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/qualification-form/${pmis}`)}>
+                            <div className="col-1 mb-3 mx-3  btn btn-success btn-sm" onClick={() => navigate(`/emp/edit_emp_from/${pmis}`)}>
                                 Edit
                             </div>
                         </div>
@@ -632,7 +652,7 @@ const FinalPreview = () => {
                                 Previous
                             </div> */}
 
-                            <div className="col-2 m-3 btn btn-warning" onClick={() => exportToWord(fetchedEmp, fetchedQualification, fetchedTraining, fetchedAward, fetchedDecoration, fetchedPunishment, fetchedJd)}>
+                            <div className="col-2 m-3 btn btn-warning" onClick={() => exportToWord(currentOffice, fetchedEmp, fetchedQualification, fetchedTraining, fetchedAward, fetchedDecoration, fetchedPunishment, fetchedJd)}>
                                 Export To Word
                             </div>
 

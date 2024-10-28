@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { useForm, Controller } from 'react-hook-form';
 import NepaliDate from 'nepali-datetime';
@@ -8,40 +8,41 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
 import Icon from '../Utils/Icon';
 
-import './formstyle.css'
+import './formstyle.css';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
-const AddEmployee = () => {
 
+const AddEmployee = () => {
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
     const npToday = new NepaliDate();
     const formattedDateNp = npToday.format('YYYY-MM-DD');
+    
     const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm();
+    
     const [loading, setLoading] = useState(false);
-
     const [editing, setEditing] = useState(false);
     const [currentEmp, setCurrentEmp] = useState(null);
     const [rank, setRank] = useState([]);
     const [rankOption, setRankOption] = useState([]);
     const [bloodGroups, setBloodGroups] = useState([]);
-
     const [filePreview, setFilePreview] = useState(null);
     const [fetchEmp, setFetchEmp] = useState([]);
     const [stateOption, setStateOption] = useState([]);
     const [districtOption, setDistrictOption] = useState([]);
     const [cityOption, setCityOption] = useState([]);
     const [empAddress, setEmpAddress] = useState({});
-
     const [selectedDay, setSelectedDay] = useState(null);
 
     const handleDate = ({ bsDate, adDate }) => {
-        setDate({ date: bsDate });
+        setSelectedDay({ date: bsDate });
     };
-    const errsapnStyle = {
+
+    const errorSpanStyle = {
         color: 'red',
-        verticalAlign: 'super'
-    }
-    // Fetching Ranks
+        verticalAlign: 'super',
+    };
+
+    // Fetching Initial Data
     useEffect(() => {
         fetchRank();
         fetchState();
@@ -49,7 +50,6 @@ const AddEmployee = () => {
         fetchBloodGroup();
     }, [BASE_URL]);
 
-    // Fetch employees
     const { pmis } = useParams();
 
     const fetchEmployees = async () => {
@@ -77,7 +77,7 @@ const AddEmployee = () => {
                 setRank(result.data.Result);
                 const options = result.data.Result.map(opt => ({
                     value: opt.rank_id,
-                    label: opt.rank_np
+                    label: opt.rank_np,
                 }));
                 setRankOption(options);
             } else {
@@ -89,18 +89,15 @@ const AddEmployee = () => {
         }
     };
 
-    //Fetching Blood Groups
     const fetchBloodGroup = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/display/blood`);
             if (result.data.Status) {
-                // setBlood(result.data.Result);
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
-                    label: opt.bloodgroup
+                    label: opt.bloodgroup,
                 }));
                 setBloodGroups(options);
-
             } else {
                 console.error(result.data.Error);
                 alert(result.data.Error);
@@ -110,15 +107,13 @@ const AddEmployee = () => {
         }
     };
 
-
-    // Fetching States
     const fetchState = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/super/states`);
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.state_id,
-                    label: opt.state_name
+                    label: opt.state_name,
                 }));
                 setStateOption(options);
             } else {
@@ -129,14 +124,12 @@ const AddEmployee = () => {
         }
     };
 
-    // Change handlers for state, district, city
     const changeState = (selectedOption) => {
         setEmpAddress({ ...empAddress, state: selectedOption.value });
         fetchDistrict(selectedOption.value);
     };
 
     const fetchDistrict = async (state_id) => {
-        console.log(state_id)
         try {
             const result = await axios.get(`${BASE_URL}/super/districts/${state_id}`);
             if (result.data.Status) {
@@ -169,7 +162,6 @@ const AddEmployee = () => {
         setEmpAddress({ ...empAddress, city: selectedOption.value });
     };
 
-    // Handling file change for preview
     const onFileChange = (e) => {
         const photo = e.target.files[0];
         if (photo) {
@@ -181,32 +173,30 @@ const AddEmployee = () => {
         }
     };
 
-
-
-    // Handling form submit
     const onFormSubmit = async (data) => {
         setLoading(true);
         try {
             const formData = new FormData();
-            formData.append('photo', data.photo[0])
-
+            formData.append('photo', data.photo[0]);
             Object.keys(data).forEach(key => formData.append(key, data[key]));
+
             if (data.file && data.file.length > 0) {
                 formData.append('file', data.file[0]);
             }
+
             const url = editing ? `${BASE_URL}/emp/update_emp/${currentEmp.pmis}` : `${BASE_URL}/emp/add_emp`;
             const method = editing ? 'PUT' : 'POST';
             const result = await axios({ method, url, data: formData, headers: { 'Content-Type': 'multipart/form-data' } });
+            console.log('aa', formData.pmis)
 
             if (result.data.Status) {
                 alert(`Employee ${editing ? 'updated' : 'added'} ${result.data.pmis} successfully!`);
-                // console.log(result.data.pmis)
                 reset();
                 setEditing(false);
                 setCurrentEmp(null);
                 setFilePreview(null);
                 fetchEmployees();
-                navigate(`/emp/qualification-form/${result.data.pmis}`)
+                navigate(`/emp/qualification-form/${result.data.pmis}`);
             }
         } catch (err) {
             console.error(err);
@@ -223,40 +213,14 @@ const AddEmployee = () => {
         setCurrentEmp(null);
         setFilePreview(null);
         fetchEmployees();
-    }
+    };
 
     const handleEdit = (emp) => {
         setCurrentEmp(emp);
         setEditing(true);
-        setValue("docr_no", emp.docr_no);
-        setValue("personal_no", emp.personal_no);
-        setValue("pmis", emp.pmis);
-        setValue("symbol_no", emp.symbol_no);
-        setValue("name_en", emp.name_en);
-        setValue("name_np", emp.name_np);
-        setValue("dob", emp.dob);
-        setValue("recruit_date", emp.recruit_date);
-        setValue("recruit_rank", emp.recruit_rank);
-        setValue("gender", emp.gender);
-        setValue("sanchay_kosh", emp.sanchay_kosh);
-        setValue("nalakosh", emp.nalakosh);
-        setValue("pan", emp.pan);
-        setValue("ctz_no", emp.ctz_no);
-        setValue("issue_district", emp.issue_district);
-        setValue("blood_group", emp.blood_group);
-        setValue("height", emp.height);
-        setValue("chest", emp.chest);
-        setValue("huliya", emp.huliya);
-        setValue("warna", emp.warna);
-        setValue("photo", emp.photo);
-        setValue("family", emp.family);        
-        if (emp.file) {
-            const fileUrl = `${BASE_URL}/${notice.file}`;
-            setFilePreview(fileUrl);
-        } else {
-            setFilePreview(null);
-        }
-    }
+        Object.keys(emp).forEach(key => setValue(key, emp[key] || ''));
+        setFilePreview(emp.file ? `${BASE_URL}/${emp.file}` : null);
+    };
 
     const handleDelete = async (id) => {
         try {
@@ -266,36 +230,28 @@ const AddEmployee = () => {
                 alert('Employee deleted successfully!');
             } else {
                 alert('Failed to delete employee');
-                console.error('Failed to delete employee')
+                console.error('Failed to delete employee');
             }
         } catch (err) {
             console.error(err);
-            alert('An error occured while deleting the employee record.');
+            alert('An error occurred while deleting the employee record.');
         } finally {
             fetchEmployees();
         }
     };
 
     const handleDateChange = (date) => {
-        setSelectedDay(date); // Update local state
-        setValue('dob', date); // Update the form state
+        setSelectedDay(date);
+        setValue('dob', date);
     };
 
     const convertToNepaliDate = (isoDate) => {
-        if (!isoDate) {
-            return 'null';
-        } else {
-            const datePart = isoDate.split('T')[0]; // Extract just the date part
-            return datePart; // Return in the format needed for the NepaliDatePicker)
-        }
-    }
-        ;
-
+        return isoDate ? isoDate.split('T')[0] : 'null';
+    };
 
     const clearImageUrl = () => {
-        setFilePreview(null)
-    }
-
+        setFilePreview(null);
+    };
 
 
     return (

@@ -293,7 +293,7 @@ router.get('/in_change/:pmis', async (req, res) => {
 
 router.get('/fetch_emp/:pmis', async (req, res) => {
     const { pmis } = req.params;    
-    const sql = `SELECT e.*, jd.*, r.*
+    const sql = `SELECT e.*, jd.rank_id, r.rank_np, r.rank_en
                 FROM 
                     employee e     
                 LEFT JOIN (
@@ -313,6 +313,7 @@ router.get('/fetch_emp/:pmis', async (req, res) => {
                 // WHERE pmis = ?
 
     con.query(sql, pmis, (err, result) => {
+        console.log(result)
         if (err) return res.json({ Status: false, Error: "Query Error" })
         return res.json({ Status: true, Result: result })
     })

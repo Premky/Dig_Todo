@@ -84,12 +84,13 @@ router.post('/add_emp', upload.single('photo'), async (req, res) => {
     }
 });
 
-router.put('/update_emp/:id', async (req, res) => {
+router.put('/update_emp/:id',upload.none(), async (req, res) => {
     const id=req.params.id;    
     const {
         docr_no, personal_no, pmis, symbol_no, name_en, name_np, dob, recruit_date, recruit_rank, gender,
         sanchay_kosh, nalakosh, pan, ctz_no, issue_district, blood_group, height, chest, huliya, warna, family
     } = req.body;
+
     
     const updated_by = 1;
     const sql = `UPDATE employee SET docr_no=?, personal_no=?, pmis=?, symbol_no=?, name_en=?, name_np=?, dob=?, recruit_date=?, recruit_rank=?, gender=?,

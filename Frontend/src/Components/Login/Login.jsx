@@ -22,8 +22,9 @@ const Login = ({ onLogin }) => {
     }, [BASE_URL]);
 
     const navigate = useNavigate()
+    const branch = localStorage.getItem("bid");
 
-    const navigateBasedOnUsertype = (usertype, branch) => {
+    const navigateBasedOnUsertype = (branch) => {
         switch (branch) {
             case 'सुपरएडमिन':
                 return '/super/admin_dashboard';
@@ -32,7 +33,7 @@ const Login = ({ onLogin }) => {
             case 'प्रशासन':
                 return '/admin/officeleave';
             case 'कार्यालय प्रमुख':
-                return '/display/chief'; 
+                return '/display/chief';
             case 'सुचना पाटी':
                 return '/display/dodisplay';
             case 'डि.अ. प्रशासन':
@@ -40,11 +41,15 @@ const Login = ({ onLogin }) => {
             case 'कर्मचारी प्रशासन':
                 return '/emp';
             case 'ट्राफिक':
-                return '/tango';            
+                return '/tango';
             default:
                 return '/';
         }
     };
+
+    if(branch){
+        navigateBasedOnUsertype(branch)
+    }
 
     //Object Method
     const [values, setValues] = useState({
@@ -77,7 +82,7 @@ const Login = ({ onLogin }) => {
                         localStorage.setItem("bid", result.data.branch)
                         // setOfficeName(result.data.office)                
                         // console.log("result:", result)
-                        const path = navigateBasedOnUsertype(result.data.usertype, result.data.branch);
+                        const path = navigateBasedOnUsertype(result.data.branch);
                         navigate(path);
                     } else {
                         setError(result.data.Error)

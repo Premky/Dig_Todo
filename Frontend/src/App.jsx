@@ -47,6 +47,7 @@ import TangoRoute from './Components/PrivateRoute/TangoRoute'
 import TangoAdminDashboard from './Components/Tango/Admin/TangoAdminDashboard'
 import KasurReport from './Components/Tango/Admin/DailyKasurReport'
 import RajashwaReport from './Components/Tango/Admin/DailyRajashwaReport'
+import EmpDashboard from './Components/Employee/EmpDashboard'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -124,17 +125,19 @@ function App() {
           </Route>
 
           <Route path='/emp' element={<EmpRoute />} >
-            <Route path='/emp/' element={<Employee />} />
-            <Route path='/emp/addemp_form/' element={<AddEmployee />} />
-            <Route path='/emp/edit_emp_from/:pmis?' element={<AddEmployee />} />
-            <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom />} />
-            <Route path='/emp/training-form/:pmis?' element={<TrainingForm />} />
-            <Route path='/emp/award-form/:pmis?' element={<AwardForm />} />
-            <Route path='/emp/decoration-form/:pmis?' element={<DecorationForm />} />
-            <Route path='/emp/punishment-form/:pmis?' element={<PunishmentForm />} />
-            <Route path='/emp/job-description-form/:pmis?' element={<JobDescriptionForm />} />
-            <Route path='/emp/job-working-form/:pmis?' element={<EmpChangeForm />} />
-            <Route path='/emp/3puste/:pmis?' element={<FinalPreview />} />
+            <Route element={<EmpDashboard />}>
+              <Route index element={<Employee />} />
+              <Route path='/emp/addemp_form/' element={<AddEmployee />} />
+              <Route path='/emp/edit_emp_from/:pmis?' element={<AddEmployee />} />
+              <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom />} />
+              <Route path='/emp/training-form/:pmis?' element={<TrainingForm />} />
+              <Route path='/emp/award-form/:pmis?' element={<AwardForm />} />
+              <Route path='/emp/decoration-form/:pmis?' element={<DecorationForm />} />
+              <Route path='/emp/punishment-form/:pmis?' element={<PunishmentForm />} />
+              <Route path='/emp/job-description-form/:pmis?' element={<JobDescriptionForm />} />
+              <Route path='/emp/job-working-form/:pmis?' element={<EmpChangeForm />} />
+              <Route path='/emp/3puste/:pmis?' element={<FinalPreview />} />
+            </Route>
           </Route>
 
           <Route path='/tango' element={<TangoRoute />}> {/* Secured Route */}

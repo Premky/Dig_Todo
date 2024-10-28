@@ -4,18 +4,7 @@ import { saveAs } from "file-saver";
 // Function to fetch image and convert to ArrayBuffer
 // const response = await fetch(`http://localhost:5173/Images/np_police_logo.png`);
 
-const fetchImageAsBase64 = async (url) => {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result.split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-};
-
-const exportToWord = async (emp, edu, train, award, decor, punishment, jd) => {
+const exportToWord = async (currentOffice, emp, edu, train, award, decor, punishment, jd) => {
     const convertToNepaliDate = (isoDate) => {
         const datePart = isoDate.split('T')[0]; // Extract just the date part
         const englishToNepaliMap = {
@@ -33,8 +22,26 @@ const exportToWord = async (emp, edu, train, award, decor, punishment, jd) => {
         return datePart.split('').map(char => englishToNepaliMap[char] || char).join('');
     };
 
+    // const imageUrl = 'http://localhost:5173/Images/np_police_logo.png';  // Path to your image in the public folder
+    // const imageBuffer = await fetchImageAsBase64(imageUrl); // Fetch the image and convert it to ArrayBuffer
+
     const imageUrl = 'http://localhost:5173/Images/np_police_logo.png';  // Path to your image in the public folder
-    const imageBuffer = await fetchImageAsBase64(imageUrl); // Fetch the image and convert it to ArrayBuffer
+    const downloadImage = (uri, filename) => {
+        return new Promise((resolve) => {
+            request.head(uri, (err, res, body) => {
+                if (err) {
+                    console.log("Image not found, proceeding without image.");
+                    return resolve(null);  // Resolve with null if the image doesn't exist
+                }
+                request(uri)
+                    .pipe(fs.createWriteStream(filename))
+                    .on('close', () => resolve(fs.readFileSync(filename))); // Resolve with image buffer
+            });
+        });
+    };
+
+    
+    // const imageBuffer = await downloadImage(imageUrl, 'logo.jpg');
 
     const doc = new Document({
         styles: {
@@ -113,7 +120,7 @@ const exportToWord = async (emp, edu, train, award, decor, punishment, jd) => {
                                                 alignment: AlignmentType.CENTER,
                                                 children: [
                                                     new TextRun({
-                                                        text: "[Office Name]",
+                                                        text: `${currentOffice.office_name}`,
                                                         size: 28,
                                                     }),
                                                 ],
@@ -136,6 +143,7 @@ const exportToWord = async (emp, edu, train, award, decor, punishment, jd) => {
                                 ],
                             }),
                         ],
+
                         borders: {
                             top: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
                             bottom: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
@@ -145,7 +153,7 @@ const exportToWord = async (emp, edu, train, award, decor, punishment, jd) => {
                             insideVertical: { style: BorderStyle.NONE, size: 0, color: "FFFFFF" },
                         },
                     }),
-                    
+
                     new Paragraph({ text: "व्यक्तिगत विवरणः" }),
                     // First Table
                     new Table({
@@ -209,7 +217,7 @@ const exportToWord = async (emp, edu, train, award, decor, punishment, jd) => {
                                         width: { size: 2000, type: WidthType.DXA }, // Set width to 3000 DXA for first column
                                     }),
                                     new TableCell({
-                                        children: [new Paragraph(convertToNepaliDate(row.dob))],
+                                        children: [new Paragraph(row.dob)],
                                         width: { size: 5000, type: WidthType.DXA }, // Set width to 3000 DXA for first column
                                     }),
                                 ],
@@ -771,7 +779,7 @@ const exportToWord = async (emp, edu, train, award, decor, punishment, jd) => {
                                             new Paragraph('मितिः')
                                         ]
                                     }),
-                                    
+
                                 ]
                             })
 
@@ -791,13 +799,15 @@ const exportToWord = async (emp, edu, train, award, decor, punishment, jd) => {
             },
         ],
     });
+
     // Save the document as a .docx file
-        // const buffer = await Packer.toBlob(doc);
-        // saveAs(buffer, "document_with_image.docx");
+    // const buffer = await Packer.toBlob(doc);
+    // saveAs(buffer, "document_with_image.docx");
 
     Packer.toBlob(doc).then((blob) => {
         saveAs(blob, "tables.docx");
     });
+
 };
 
 
