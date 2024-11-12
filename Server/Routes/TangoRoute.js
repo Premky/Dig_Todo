@@ -129,9 +129,10 @@ router.get('/rajashwa_data', async (req, res) => {
     })
 })
 
-router.post('/add_rajashwa', verifyToken, async (req, res) => {
-    const active_office = req.userOffice;
+router.post('/add_rajashwa', async (req, res) => {
+    //const active_office = req.userOffice;
     const user_id = req.userId;
+const active_office = 1;
 
     const {
         date, vehicle_id, count, fine,
