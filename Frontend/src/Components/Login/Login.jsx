@@ -9,17 +9,17 @@ import { getBaseUrl } from '../../Utilities/getBaseUrl'
 
 
 const Login = ({ onLogin }) => {
-    // const BASE_URL = import.meta.env.VITE_API_BASE_URL
-    const [BASE_URL, setBase_Url] = useState();
-    const getBaseURLFunc = async () => {
-        const url = await getBaseUrl();
-        setBase_Url(url)
-    }
-    // console.log(BASE_URL)
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL
+    // const [BASE_URL, setBase_Url] = useState();
+    // const getBaseURLFunc = async () => {
+    //     const url = await getBaseUrl();
+    //     setBase_Url(url)
+    // }
+    // // console.log(BASE_URL)
 
-    useEffect(() => {
-        getBaseURLFunc();
-    }, [BASE_URL]);
+    // useEffect(() => {
+    //     getBaseURLFunc();
+    // }, [BASE_URL]);
 
     const navigate = useNavigate()
     const branch = localStorage.getItem("bid");
