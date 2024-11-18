@@ -122,6 +122,7 @@ router.get('/rajashwa_data', async (req, res) => {
             FROM tango_punishment_data tp
             LEFT JOIN tango_vehicles tv 
             ON tp.vehicle_id= tv.id
+            ORDER BY tp.id desc
             `;
     con.query(sql, (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
@@ -129,17 +130,17 @@ router.get('/rajashwa_data', async (req, res) => {
     })
 })
 
-router.post('/add_rajashwa', async (req, res) => {
-    //const active_office = req.userOffice;
+router.post('/add_rajashwa', verifyToken, async (req, res) => {
+    const active_office = req.userOffice;
     const user_id = req.userId;
-const active_office = 1;
+    // const active_office = 1;
 
     const {
         date, vehicle_id, count, fine,
     } = req.body;
 
     const created_by = user_id; // Adjust this to dynamically handle creator if needed
-    console.log(created_by)
+    console.log('created_by', created_by)
 
     const sql = `INSERT INTO tango_punishment_data (
         date, vehicle_id, count, fine, office_id, created_by
@@ -158,13 +159,14 @@ const active_office = 1;
     }
 });
 
-router.put('/update_rajashwa/:id', async (req, res) => {
+router.put('/update_rajashwa/:id', verifyToken, async (req, res) => {
     const active_office = req.userOffice;
     const id = req.params.id;
     const {
         vehicle_id, count, fine, date,
     } = req.body;
-    const updated_by = 1;
+    const updated_by = active_office;
+    console.log('updated_by', updated_by)
     const sql = `UPDATE tango_punishment_data SET vehicle_id=?, count=?, fine=?,date=?, updated_by=? WHERE id=?`;
     const values = [
         vehicle_id, count, fine, date, updated_by, id
@@ -263,17 +265,18 @@ router.get('/kashurs', async (req, res) => {
     })
 })
 
-router.get('/kasur_data',verifyToken, async (req, res) => {
+router.get('/kasur_data', verifyToken, async (req, res) => {
     const active_office = req.userOffice;
-    console.log('kasur_office', active_office)
-    
-    const sql = `SELECT dk.*, tp.* 
+    // console.log('kasur_office', active_office)
+
+    const sql = `SELECT dk.*, tp.name_np, tp.name_en 
             FROM tango_daily_kasur dk
             LEFT JOIN tango_punishment tp 
             ON dk.kasur_id= tp.id
             WHERE office_id=?
+            ORDER BY dk.id desc
             `;
-    con.query(sql,active_office, (err, result) => {
+    con.query(sql, active_office, (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
         return res.json({ Status: true, Result: result })
     })
@@ -342,10 +345,10 @@ router.delete('/delete_kasurs/:id', async (req, res) => {
 })
 
 router.get('/search_kasur', (req, res) => {
-    const todaydate=currentDate
+    const todaydate = currentDate
     // const todaydate='2081-07-08'
     const { date, type } = req.query; // Extract query parameters
-    
+
     // Base SQL query with joins
     let sql = `
         SELECT dk.*, tp.*, o.* 
@@ -360,7 +363,7 @@ router.get('/search_kasur', (req, res) => {
     if (date) {
         sql += ' AND dk.date = ?';
         values.push(date);
-    } else{
+    } else {
         sql += ' AND dk.date = ?';
         values.push(todaydate);
     }
@@ -390,10 +393,10 @@ router.get('/search_kasur', (req, res) => {
 });
 
 router.get('/search_rajashwa', (req, res) => {
-    const todaydate=currentDate
+    const todaydate = currentDate
     // const todaydate='2081-07-15'
     const { date, type } = req.query; // Extract query parameters
-    
+
     // Base SQL query with joins
     let sql = `
         SELECT dk.*, tp.*, o.* 
@@ -408,7 +411,7 @@ router.get('/search_rajashwa', (req, res) => {
     if (date) {
         sql += ' AND dk.date = ?';
         values.push(date);
-    } else{
+    } else {
         sql += ' AND dk.date = ?';
         values.push(todaydate);
     }
@@ -437,7 +440,55 @@ router.get('/search_rajashwa', (req, res) => {
     });
 });
 
+router.post('/add_arrested_vehcile', verifyToken, async (req, res) => {
+    const active_office = req.userOffice;
+    const user_id = req.userId;
 
+    const {
+        date, rank_id, name, vehicle_no, kasur_id, owner, contact, voucher,
+        return_date, return_name, return_address, return_contact, remarks
+    } = req.body;
 
+    const created_by = user_id; // Adjust this to dynamically handle creator if needed
+    console.log(created_by)
+
+    const sql = `INSERT INTO tango_arrest_vehicle (
+        date, rank_id, name, vehicle_no, kasur_id, owner, contact, voucher,
+        return_date, return_name, return_address, return_contact, remarks, office_id, created_by
+    ) VALUES (?)`;
+
+    const values = [
+        date, rank_id, name, vehicle_no, kasur_id, owner, contact, voucher,
+        return_date, return_name, return_address, return_contact, remarks, active_office, created_by
+    ];
+
+    try {
+        const result = await query(sql, [values]);
+        return res.json({ Status: true, Result: result });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
+
+router.get('/arrest_vehicle', verifyToken, async (req, res) => {
+    const active_office = req.userOffice;
+    // console.log('kasur_office', active_office)
+
+    // const sql = `SELECT dk.*, tp.name_np, tp.name_en 
+    //         FROM tango_daily_kasur dk
+    //         LEFT JOIN tango_punishment tp 
+    //         ON dk.kasur_id= tp.id
+    //         WHERE office_id=?
+    //         ORDER BY dk.id desc
+    //         `;
+    const sql = `SELECT * FROM tango_arrest_vehicle 
+                WHERE office_id=?                
+                `;
+    con.query(sql, active_office, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
 
 export { router as tangoRouter }

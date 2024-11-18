@@ -192,7 +192,7 @@ const RajashwaReport = () => {
                                     {errors.date && <span>{errors.date.message}</span>}
                                 </div>
 
-                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                {/* <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="kasur_id">कसुर<span>*</span></label>
                                     <Controller
                                         name="kasur_id"
@@ -216,7 +216,7 @@ const RajashwaReport = () => {
                                     />
                                     {errors.kasur_id && <span>{errors.kasur_id.message}</span>}
 
-                                </div>
+                                </div> */}
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <button type="Search" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
                                         {loading ? 'Searching...' : 'Search'}

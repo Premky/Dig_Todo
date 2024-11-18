@@ -15,7 +15,7 @@ import DeleteConfirmationModal from '../../Utils/ConfirmDeleteModal';
 
 import XportKasur from '../XportKasur';
 
-const DailyKasurForm = () => {
+const ArrestedVehicleForm = () => {
     const { pmis } = useParams();
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
@@ -28,7 +28,7 @@ const DailyKasurForm = () => {
     const [fetchedOffice, setFetchedOffice] = useState([]);
 
     const [fetchedPunishment, setFetchedPunishment] = useState([]);
-    const [currentPunishment, setCurrentPunishment] = useState([]);
+    const [currentData, setCurrentData] = useState([]);
     const [fetchedKasur, setFetchedKasur] = useState([]);
 
     const exp_office_name = localStorage.getItem('oid')
@@ -49,6 +49,22 @@ const DailyKasurForm = () => {
         }
     }
 
+    const [fetchedRank, setFetchedRank] = useState([]);
+    const fetchRank = async () => {
+        try {
+            const result = await axios.get(`${BASE_URL}/display/ranks`);
+            if (result.data.Status) {
+                const options = result.data.Result.map(opt => ({
+                    value: opt.id,
+                    label: opt.rank_np
+                }));
+                setFetchedRank(options);
+            }
+        } catch (error) {
+            console.error("Error fetching ranks:", error);
+        }
+    };
+
     const fetchKasur = async () => {
         try {
             const result = await axios.get(`${BASE_URL}/tango/kashurs`);
@@ -67,9 +83,9 @@ const DailyKasurForm = () => {
         }
     };
 
-    const fetchPunishment = async () => {
+    const fetchArrestVehicle = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/tango/kasur_data`,
+            const result = await axios.get(`${BASE_URL}/tango/arrest_vehicle`,
                 {
                     headers: {
                         'Content-Type': 'application/json',
@@ -95,8 +111,8 @@ const DailyKasurForm = () => {
         setLoading(true);
         try {
             const url = editing
-                ? `${BASE_URL}/tango/update_kasurs/${currentPunishment.id}`
-                : `${BASE_URL}/tango/add_kasurs`;
+                ? `${BASE_URL}/tango/update_arrest_vehicle/${currentData.id}`
+                : `${BASE_URL}/tango/add_arrested_vehcile`;
             const method = editing ? 'PUT' : 'POST';
 
             const result = await axios({
@@ -113,7 +129,7 @@ const DailyKasurForm = () => {
                 alert(`Record ${editing ? 'updated' : 'added'} successfully!`);
                 reset(); // Clear the form after submission
                 setEditing(false);
-                fetchPunishment(); // Refresh the punishment list
+                fetchArrestVehicle(); // Refresh the punishment list
             } else {
                 alert(result.data.Error || 'Failed to submit the form.');
             }
@@ -127,10 +143,10 @@ const DailyKasurForm = () => {
 
 
     const handleEdit = (data) => {
-        setCurrentPunishment(data); // Set the current punishment data
+        setCurrentData(data); // Set the current punishment data
         // console.log(currentPunishment, currentPunishment.id)
         setEditing(true); // Enable editing mode
-        
+
         // Use setValue to populate the form fields
         setValue("date", convertToNepaliDate(data.date)); // Convert and set Nepali date
         setValue("kasur_id", data.kasur_id); // Set the vehicle ID
@@ -173,9 +189,10 @@ const DailyKasurForm = () => {
     }
 
     useEffect(() => {
-        fetchPunishment();
+        fetchArrestVehicle();
         fetchKasur();
         fetchCurrentOffice();
+        fetchRank();
     }, [BASE_URL]);
 
 
@@ -188,7 +205,7 @@ const DailyKasurForm = () => {
                     <div className="col-12">
                         <div className="p-2 justify-content shadow text-center">
                             <u>
-                                <h4> कसुर विवरण</h4>
+                                <h4> पक्राउ सवारी साधन रजिष्टर</h4>
                             </u>
                         </div>
                     </div>
@@ -220,6 +237,42 @@ const DailyKasurForm = () => {
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="rank_id">दर्जा<span>*</span></label>
+
+                                    <select {...register('rank_id')} className="form-select" placeholder="Select Rank">
+                                        <option value="">दर्जा छान्नुहोस्</option>
+                                        {fetchedRank.map((rank) => (
+                                            <option key={rank.value} value={rank.value}>
+                                                {rank.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.rank_id && <span>{errors.rank_id.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="name"> नामथर </label>
+                                    <input
+                                        type='name'
+                                        {...register('name', { required: "This field is required." })}
+                                        placeholder="प्रहरी कर्मचारीको नामथर"
+                                        className="form-control"
+                                    />
+                                    {errors.name && <span>{errors.name.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="vehicle_no"> सवारी नं. </label>
+                                    <input
+                                        type='text'
+                                        {...register('vehicle_no', { required: "This field is required." })}
+                                        placeholder="सवारी नं."
+                                        className="form-control"
+                                    />
+                                    {errors.vehicle_no && <span>{errors.vehicle_no.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="kasur_id">कसुर<span>*</span></label>
                                     <Controller
                                         name="kasur_id"
@@ -245,25 +298,104 @@ const DailyKasurForm = () => {
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="count"> संख्या </label>
+                                    <label htmlFor="owner"> चालक/धनी </label>
                                     <input
-                                        type='number'
-                                        {...register('count', { required: "This field is required." })}
-                                        placeholder="संख्या"
+                                        type='text'
+                                        {...register('owner', { required: "This field is required." })}
+                                        placeholder="चालक/धनी"
                                         className="form-control"
                                     />
-                                    {errors.count && <span>{errors.count.message}</span>}
+                                    {errors.owner && <span>{errors.owner.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="fine"> राजस्व </label>
+                                    <label htmlFor="contact"> सम्पर्क नं. </label>
                                     <input
                                         type='number'
-                                        {...register('fine', { required: "This field is required." })}
-                                        placeholder="राजस्व"
+                                        {...register('contact', { required: "This field is required." })}
+                                        placeholder="सम्पर्क नं."
                                         className="form-control"
                                     />
-                                    {errors.fine && <span>{errors.fine.message}</span>}
+                                    {errors.contact && <span>{errors.contact.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="voucher"> चिट नं. </label>
+                                    <input
+                                        type='number'
+                                        {...register('voucher', { required: "This field is required." })}
+                                        placeholder="चिट नं."
+                                        className="form-control"
+                                    />
+                                    {errors.voucher && <span>{errors.voucher.message}</span>}
+                                </div>
+
+                                <div className='bg-warning'>फर्ता लग्ने भए</div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="return_date">फिर्ता मिति<span>*</span></label>
+                                    <Controller
+                                        name="return_date"
+                                        control={control}
+
+                                        render={({ field: { onChange, onBlur, value, ref } }) => (
+                                            <NepaliDatePicker
+                                                value={value || ""} // Ensure empty string when no date is selected
+                                                onChange={(date) => {
+                                                    onChange(date); // Update form state
+                                                }}
+                                                onBlur={onBlur} // Handle blur
+                                                dateFormat="YYYY-MM-DD" // Customize your date format
+                                                placeholder="Select Nepali Date"
+                                            // ref={ref} // Use ref from react-hook-form
+                                            />
+                                        )}
+                                    />
+                                    {errors.return_date && <span>{errors.return_date.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="return_name"> फिर्ता लग्नेको नामथर </label>
+                                    <input
+                                        type='text'
+                                        {...register('return_name')}
+                                        placeholder=""
+                                        className="form-control"
+                                    />
+                                    {errors.return_name && <span>{errors.return_name.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="return_address"> फिर्ता लग्नेको ठेगाना </label>
+                                    <input
+                                        type='text'
+                                        {...register('return_address')}
+                                        placeholder=""
+                                        className="form-control"
+                                    />
+                                    {errors.return_address && <span>{errors.return_address.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="return_contact"> फिर्ता लग्नेको सम्पर्क नं. </label>
+                                    <input
+                                        type='number'
+                                        {...register('return_contact')}
+                                        placeholder=""
+                                        className="form-control"
+                                    />
+                                    {errors.return_contact && <span>{errors.return_contact.message}</span>}
+                                </div>
+
+                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                    <label htmlFor="remarks"> कैफियत </label>
+                                    <input
+                                        type='text'
+                                        {...register('remarks')}
+                                        placeholder=""
+                                        className="form-control"
+                                    />
+                                    {errors.remarks && <span>{errors.remarks.message}</span>}
                                 </div>
 
                                 <div className="col-12 row mt-2">
@@ -282,13 +414,28 @@ const DailyKasurForm = () => {
                                 <TableContainer component={Paper}>
                                     <Table size="small">
                                         <TableHead>
+                                            <TableRow>                                                
+                                                <TableCell className='text-center bg-success' colSpan={9}>सवारी विवरण</TableCell>
+                                                <TableCell className='text-center'></TableCell>
+                                                <TableCell className='text-center bg-warning' colSpan={4}>सवारी फिर्ता लग्नेको विवरण</TableCell>
+                                                <TableCell className='text-center' colSpan={2}>#</TableCell>
+                                            </TableRow>
                                             <TableRow>
                                                 <TableCell>सि.नं.</TableCell>
                                                 <TableCell>मिति</TableCell>
+                                                <TableCell>दर्जा</TableCell>
+                                                <TableCell>नामथर</TableCell>
+                                                <TableCell>सवारी नं.</TableCell>
                                                 <TableCell>कसुर</TableCell>
-                                                <TableCell>संख्या</TableCell>
-                                                <TableCell>राजस्व</TableCell>
-                                                <TableCell>#
+                                                <TableCell>सवारी चाल/धनी</TableCell>
+                                                <TableCell>सम्पर्क नं.</TableCell>
+                                                <TableCell>चिट नं.</TableCell>
+                                                <TableCell>कैफियत</TableCell>
+                                                <TableCell>मिति</TableCell>
+                                                <TableCell>नामथर</TableCell>
+                                                <TableCell>ठेगाना</TableCell>
+                                                <TableCell>सम्पर्क</TableCell>
+                                                <TableCell>
                                                     <div onClick={() => XportKasur(fetchedPunishment, currnetOffice)}>Export</div>
                                                 </TableCell>
                                             </TableRow>
@@ -297,10 +444,19 @@ const DailyKasurForm = () => {
                                             {fetchedPunishment.map((row, index) => (
                                                 <TableRow key={row.id}>
                                                     <TableCell>{index + 1}</TableCell>
-                                                    <TableCell>{convertToNepaliDate(row.date)}</TableCell>
-                                                    <TableCell>{row.name_np}</TableCell>
-                                                    <TableCell>{row.count}</TableCell>
-                                                    <TableCell>{row.fine}</TableCell>
+                                                    <TableCell>{convertToNepaliDate(row.date)}</TableCell>                                                    
+                                                    <TableCell>{row.rank_id}</TableCell>
+                                                    <TableCell>{row.name}</TableCell>
+                                                    <TableCell>{row.vehicle_no}</TableCell>
+                                                    <TableCell>{row.kasur_id}</TableCell>
+                                                    <TableCell>{row.owner}</TableCell>
+                                                    <TableCell>{row.contact}</TableCell>
+                                                    <TableCell>{row.voucher}</TableCell>
+                                                    <TableCell>{row.remarks}</TableCell>
+                                                    <TableCell>{row.return_date}</TableCell>
+                                                    <TableCell>{row.return_name}</TableCell>
+                                                    <TableCell>{row.return_address}</TableCell>
+                                                    <TableCell>{row.return_contact}</TableCell>                                                    
                                                     <TableCell>
                                                         <div className="row">
                                                             <div className="col">
@@ -338,4 +494,4 @@ const DailyKasurForm = () => {
     )
 }
 
-export default DailyKasurForm;
+export default ArrestedVehicleForm;

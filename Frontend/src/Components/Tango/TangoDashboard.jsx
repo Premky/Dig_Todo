@@ -40,18 +40,19 @@ const TangoDashboard = () => {
                         <ul className='nav flex-column mb-0'>
                             {usertype === 'Admin' &&
                                 <>
-                                    <li><Link to="/tango/report/rajashwa-report" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>राजश्व Report</span></Link></li>
-                                    <li><Link to="/tango/report/kasur-report" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>कसुर Report</span></Link></li>
+                                    <li><Link to="/tango/report/rajashwa-report" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>राजश्व Report</span></Link></li>
+                                    <li><Link to="/tango/report/kasur-report" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>कसुर Report</span></Link></li>
                                 </>
                             }
-                            <li><Link to="/tango/rajashwa-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>दैनिक राजश्व</span></Link></li>
-                            <li><Link to="/tango/kasur-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>दैनिक कसुर</span></Link></li>
+                            <li><Link to="/tango/arrestedvehicle-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>पक्राउ सवारी साधन</span></Link></li>
+                            <li><Link to="/tango/rajashwa-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>दैनिक राजश्व</span></Link></li>
+                            <li><Link to="/tango/kasur-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>दैनिक कसुर</span></Link></li>
                             <li><div className='nav-link text-white'><i className="bi bi-power fs-4"></i><Logout /></div></li>
 
                             {usertype === 'Admin' &&
                                 <>
-                                    <li><Link to="/tango/vehicle" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>सवारी साधन</span></Link></li>
-                                    <li><Link to="/tango/kasur" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span>कसुर शिर्षक</span></Link></li>
+                                    <li><Link to="/tango/vehicle" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>सवारी साधन</span></Link></li>
+                                    <li><Link to="/tango/kasur" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>कसुर शिर्षक</span></Link></li>
                                 </>
                             }
                         </ul>
@@ -66,6 +67,7 @@ const TangoDashboard = () => {
             </div>
         </div>
     );
+    
 };
 
 export default TangoDashboard;
