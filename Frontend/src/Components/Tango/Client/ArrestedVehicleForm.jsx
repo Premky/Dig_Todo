@@ -98,6 +98,7 @@ const ArrestedVehicleForm = () => {
                     label: opt.name_np
                 }));
                 setFetchedPunishment(result.data.Result);
+                console.log(fetchedPunishment);
             } else {
                 alert(result.data.Error);
                 console.error(result.data.Error);
@@ -149,11 +150,19 @@ const ArrestedVehicleForm = () => {
 
         // Use setValue to populate the form fields
         setValue("date", convertToNepaliDate(data.date)); // Convert and set Nepali date
-        setValue("kasur_id", data.kasur_id); // Set the vehicle ID
-        setValue("count", data.count); // Set count value
-        setValue("fine", data.fine); // Set fine value
-
-    };
+        setValue("rank_id", data.rank_id); // Convert and set Nepali date
+        setValue("name", data.name); // Convert and set Nepali date
+        setValue("vehicle_no", data.vehicle_no); // Convert and set Nepali date        
+        setValue("kasur_id", data.kasur_id); 
+        setValue("owner", data.owner); 
+        setValue("contact", data.contact); 
+        setValue("voucher", data.voucher); 
+        setValue("return_date", data.return_date); 
+        setValue("return_name", data.return_name); 
+        setValue("return_address", data.return_address); 
+        setValue("return_contact", data.return_contact); 
+        setValue("return_remarks", data.return_remarks); 
+     };
 
 
     const convertToNepaliDate = (isoDate) => {
@@ -448,7 +457,7 @@ const ArrestedVehicleForm = () => {
                                                     <TableCell>{row.rank_id}</TableCell>
                                                     <TableCell>{row.name}</TableCell>
                                                     <TableCell>{row.vehicle_no}</TableCell>
-                                                    <TableCell>{row.kasur_id}</TableCell>
+                                                    <TableCell>{row.name_np}</TableCell>
                                                     <TableCell>{row.owner}</TableCell>
                                                     <TableCell>{row.contact}</TableCell>
                                                     <TableCell>{row.voucher}</TableCell>

@@ -475,14 +475,10 @@ router.get('/arrest_vehicle', verifyToken, async (req, res) => {
     const active_office = req.userOffice;
     // console.log('kasur_office', active_office)
 
-    // const sql = `SELECT dk.*, tp.name_np, tp.name_en 
-    //         FROM tango_daily_kasur dk
-    //         LEFT JOIN tango_punishment tp 
-    //         ON dk.kasur_id= tp.id
-    //         WHERE office_id=?
-    //         ORDER BY dk.id desc
-    //         `;
-    const sql = `SELECT * FROM tango_arrest_vehicle 
+    const sql = `SELECT tav.*, tp.*
+                FROM tango_arrest_vehicle tav
+                LEFT JOIN tango_punishment tp 
+                ON tav.kasur_id = tp.id
                 WHERE office_id=?                
                 `;
     con.query(sql, active_office, (err, result) => {
@@ -490,5 +486,37 @@ router.get('/arrest_vehicle', verifyToken, async (req, res) => {
         return res.json({ Status: true, Result: result })
     })
 })
+
+router.put('/update_arrest_vehicle/:id', verifyToken, async (req, res) => {
+    const user_id = req.userId;
+    const id = req.params.id;
+
+    const {
+        date, rank_id, name, vehicle_no, kasur_id, owner, contact, voucher,
+        return_date, return_name, return_address, return_contact, remarks
+    } = req.body;
+
+    const sql = `UPDATE tango_arrest_vehicle 
+                 SET 
+                     date = ?, rank_id = ?, name = ?, vehicle_no = ?, 
+                     kasur_id = ?, owner = ?, contact = ?, voucher = ?, 
+                     return_date = ?, return_name = ?, return_address = ?, 
+                     return_contact = ?, remarks = ?, updated_by = ? 
+                 WHERE sn = ?`;
+
+    const values = [
+        date, rank_id, name, vehicle_no, kasur_id, owner, contact, voucher,
+        return_date, return_name, return_address, return_contact, remarks,
+        user_id, id
+    ];
+
+    try {
+        const result = await query(sql, values);
+        return res.json({ Status: true, Result: result });
+    } catch (err) {
+        console.error('Database error', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+});
 
 export { router as tangoRouter }
