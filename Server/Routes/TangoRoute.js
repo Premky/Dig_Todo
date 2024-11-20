@@ -489,20 +489,21 @@ router.get('/arrest_vehicle', verifyToken, async (req, res) => {
 
 router.put('/update_arrest_vehicle/:id', verifyToken, async (req, res) => {
     const user_id = req.userId;
-    const id = req.params.id;
-
+    const id = req.params.id;  //Received Via URL
+    // console.log('id:',id, 'user',user_id)
+    
     const {
         date, rank_id, name, vehicle_no, kasur_id, owner, contact, voucher,
         return_date, return_name, return_address, return_contact, remarks
     } = req.body;
 
     const sql = `UPDATE tango_arrest_vehicle 
-                 SET 
-                     date = ?, rank_id = ?, name = ?, vehicle_no = ?, 
-                     kasur_id = ?, owner = ?, contact = ?, voucher = ?, 
-                     return_date = ?, return_name = ?, return_address = ?, 
-                     return_contact = ?, remarks = ?, updated_by = ? 
-                 WHERE sn = ?`;
+        SET 
+        date = ?, rank_id = ?, name = ?, vehicle_no = ?, 
+        kasur_id = ?, owner = ?, contact = ?, voucher = ?, 
+        return_date = ?, return_name = ?, return_address = ?, 
+        return_contact = ?, remarks = ?, updated_by = ? 
+    WHERE sn = ?`;
 
     const values = [
         date, rank_id, name, vehicle_no, kasur_id, owner, contact, voucher,
@@ -512,11 +513,25 @@ router.put('/update_arrest_vehicle/:id', verifyToken, async (req, res) => {
 
     try {
         const result = await query(sql, values);
+        console.log(result)
         return res.json({ Status: true, Result: result });
     } catch (err) {
         console.error('Database error', err);
         return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
     }
-});
+})
+
+router.delete('/delete_arrest_vehicle/:id', async (req, res) => {
+    const { id } = req.params;
+    console.log(id)
+    try {
+        const sql = `DELETE FROM tango_arrest_vehicle WHERE sn=?`;
+        const result = await query(sql, id);
+        return res.json({ Status: true, Result: 'Record Deleted Successfully!' });
+    } catch (err) {
+        console.error('Error Deleting Record:', err);
+        return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
+    }
+})
 
 export { router as tangoRouter }

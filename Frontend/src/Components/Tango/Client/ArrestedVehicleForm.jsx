@@ -98,7 +98,7 @@ const ArrestedVehicleForm = () => {
                     label: opt.name_np
                 }));
                 setFetchedPunishment(result.data.Result);
-                console.log(fetchedPunishment);
+                // console.log(fetchedPunishment);
             } else {
                 alert(result.data.Error);
                 console.error(result.data.Error);
@@ -112,7 +112,7 @@ const ArrestedVehicleForm = () => {
         setLoading(true);
         try {
             const url = editing
-                ? `${BASE_URL}/tango/update_arrest_vehicle/${currentData.id}`
+                ? `${BASE_URL}/tango/update_arrest_vehicle/${currentData.sn}`
                 : `${BASE_URL}/tango/add_arrested_vehcile`;
             const method = editing ? 'PUT' : 'POST';
 
@@ -126,11 +126,12 @@ const ArrestedVehicleForm = () => {
                 }
             });
 
+
             if (result.data.Status) {
                 alert(`Record ${editing ? 'updated' : 'added'} successfully!`);
                 reset(); // Clear the form after submission
                 setEditing(false);
-                fetchArrestVehicle(); // Refresh the punishment list
+                fetchArrestVehicle(); // Refresh the list
             } else {
                 alert(result.data.Error || 'Failed to submit the form.');
             }
@@ -153,16 +154,17 @@ const ArrestedVehicleForm = () => {
         setValue("rank_id", data.rank_id); // Convert and set Nepali date
         setValue("name", data.name); // Convert and set Nepali date
         setValue("vehicle_no", data.vehicle_no); // Convert and set Nepali date        
-        setValue("kasur_id", data.kasur_id); 
-        setValue("owner", data.owner); 
-        setValue("contact", data.contact); 
-        setValue("voucher", data.voucher); 
-        setValue("return_date", data.return_date); 
-        setValue("return_name", data.return_name); 
-        setValue("return_address", data.return_address); 
-        setValue("return_contact", data.return_contact); 
-        setValue("return_remarks", data.return_remarks); 
-     };
+        setValue("kasur_id", data.kasur_id);
+        setValue("owner", data.owner);
+        setValue("contact", data.contact);
+        setValue("voucher", data.voucher);
+        setValue("return_date", data.return_date);
+        setValue("return_name", data.return_name);
+        setValue("return_address", data.return_address);
+        setValue("return_contact", data.return_contact);
+        setValue("return_remarks", data.return_remarks);
+        setValue("remarks", data.remarks);
+    };
 
 
     const convertToNepaliDate = (isoDate) => {
@@ -172,7 +174,7 @@ const ArrestedVehicleForm = () => {
 
     const handleDelete = async (id) => {
         try {
-            const url = `${BASE_URL}/tango/delete_kasurs/${id}`;
+            const url = `${BASE_URL}/tango/delete_arrest_vehicle/${id}`;
             const result = await axios.delete(url);
             if (result.data.Status) {
                 alert('Record deleted successfully.');
@@ -183,7 +185,7 @@ const ArrestedVehicleForm = () => {
             console.log(err);
             alert('Error occurred while deleting the record.');
         } finally {
-            fetchChange();
+            fetchArrestVehicle();
         }
     };
 
@@ -339,7 +341,7 @@ const ArrestedVehicleForm = () => {
                                     {errors.voucher && <span>{errors.voucher.message}</span>}
                                 </div>
 
-                                <div className='bg-warning'>फर्ता लग्ने भए</div>
+                                <div className='bg-warning'>फिर्ता लग्ने भए</div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="return_date">फिर्ता मिति<span>*</span></label>
@@ -396,16 +398,19 @@ const ArrestedVehicleForm = () => {
                                     {errors.return_contact && <span>{errors.return_contact.message}</span>}
                                 </div>
 
+                                <div className='bg-warning'>केही कैफियत भए</div>
                                 <div className="col-xl-3 col-md-4 col-sm-12">
-                                    <label htmlFor="remarks"> कैफियत </label>
-                                    <input
-                                        type='text'
-                                        {...register('remarks')}
-                                        placeholder=""
-                                        className="form-control"
+                                    <label htmlFor="remarks">कैफियत</label>
+                                    <textarea
+                                        {...register('remarks', {
+                                            maxLength: { value: 500, message: 'कैफियत ५०० अक्षर भित्र हुनुपर्छ।' }, // Example validation
+                                        })}
+                                        placeholder="कैफियत लेख्नुहोस्"
+                                        className={`form-control ${errors.remarks ? 'is-invalid' : ''}`}
                                     />
-                                    {errors.remarks && <span>{errors.remarks.message}</span>}
+                                    {errors.remarks && <span className="text-danger">{errors.remarks.message}</span>}
                                 </div>
+
 
                                 <div className="col-12 row mt-2">
                                     <div className="col-4">
@@ -423,7 +428,7 @@ const ArrestedVehicleForm = () => {
                                 <TableContainer component={Paper}>
                                     <Table size="small">
                                         <TableHead>
-                                            <TableRow>                                                
+                                            <TableRow>
                                                 <TableCell className='text-center bg-success' colSpan={9}>सवारी विवरण</TableCell>
                                                 <TableCell className='text-center'></TableCell>
                                                 <TableCell className='text-center bg-warning' colSpan={4}>सवारी फिर्ता लग्नेको विवरण</TableCell>
@@ -445,7 +450,7 @@ const ArrestedVehicleForm = () => {
                                                 <TableCell>ठेगाना</TableCell>
                                                 <TableCell>सम्पर्क</TableCell>
                                                 <TableCell>
-                                                    <div onClick={() => XportKasur(fetchedPunishment, currnetOffice)}>Export</div>
+                                                    {/* <div onClick={() => XportKasur(fetchedPunishment, currnetOffice)}>Export</div> */}
                                                 </TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -453,7 +458,7 @@ const ArrestedVehicleForm = () => {
                                             {fetchedPunishment.map((row, index) => (
                                                 <TableRow key={row.id}>
                                                     <TableCell>{index + 1}</TableCell>
-                                                    <TableCell>{convertToNepaliDate(row.date)}</TableCell>                                                    
+                                                    <TableCell>{convertToNepaliDate(row.date)}</TableCell>
                                                     <TableCell>{row.rank_id}</TableCell>
                                                     <TableCell>{row.name}</TableCell>
                                                     <TableCell>{row.vehicle_no}</TableCell>
@@ -465,7 +470,7 @@ const ArrestedVehicleForm = () => {
                                                     <TableCell>{row.return_date}</TableCell>
                                                     <TableCell>{row.return_name}</TableCell>
                                                     <TableCell>{row.return_address}</TableCell>
-                                                    <TableCell>{row.return_contact}</TableCell>                                                    
+                                                    <TableCell>{row.return_contact}</TableCell>
                                                     <TableCell>
                                                         <div className="row">
                                                             <div className="col">
@@ -479,7 +484,7 @@ const ArrestedVehicleForm = () => {
                                                                 <DeleteConfirmationModal
                                                                     title={'Are you sure you want to delete this record?'}
                                                                     buttonText={<span><Icon iconName="Trash" style={{ color: 'red', fontSize: '1em' }} /></span>}
-                                                                    onConfirm={() => handleDelete(row.id)}>
+                                                                    onConfirm={() => handleDelete(row.sn)}>
                                                                     <b>{row.name_np} | {row.count} | {row.fine}
                                                                         {/* {convertToNepaliDate(row.date)} */}
                                                                     </b>
