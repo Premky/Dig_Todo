@@ -399,7 +399,7 @@ const ArrestedVehicleForm = () => {
                                 </div>
 
                                 <div className='bg-warning'>केही कैफियत भए</div>
-                                <div className="col-xl-3 col-md-4 col-sm-12">
+                                <div className="col-xl-6 col-md-6 col-sm-12">
                                     <label htmlFor="remarks">कैफियत</label>
                                     <textarea
                                         {...register('remarks', {
