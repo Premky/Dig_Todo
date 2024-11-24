@@ -42,6 +42,7 @@ const TangoDashboard = () => {
                                 <>
                                     <li><Link to="/tango/report/rajashwa-report" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>राजश्व Report</span></Link></li>
                                     <li><Link to="/tango/report/kasur-report" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>कसुर Report</span></Link></li>
+                                    <li><Link to="/tango/report/arrest_vehicle-report" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>पक्राउ सवारी साधन Report</span></Link></li>
                                 </>
                             }
                             <li><Link to="/tango/arrestedvehicle-form" className='nav-link text-white'><i className="bi bi-person-badge fs-4"></i><span className='text-white'>पक्राउ सवारी साधन</span></Link></li>

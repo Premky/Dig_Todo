@@ -49,6 +49,7 @@ import KasurReport from './Components/Tango/Admin/DailyKasurReport'
 import RajashwaReport from './Components/Tango/Admin/DailyRajashwaReport'
 import EmpDashboard from './Components/Employee/EmpDashboard'
 import ArrestedVehicleForm from './Components/Tango/Client/ArrestedVehicleForm'
+import ArrestVehicleReport from './Components/Tango/Admin/ArrestVehicleReport'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -152,6 +153,7 @@ function App() {
               <Route path='report' element={<TangoAdminDashboard />}>
                 <Route path='kasur-report' element={<KasurReport />} />
                 <Route path='rajashwa-report' element={<RajashwaReport />} />
+                <Route path='arrest_vehicle-report' element={<ArrestVehicleReport />} />
               </Route>
             </Route>
           </Route>

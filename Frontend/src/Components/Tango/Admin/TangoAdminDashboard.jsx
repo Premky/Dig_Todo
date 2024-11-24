@@ -6,10 +6,10 @@ const TangoAdminDashboard = () => {
     return (
         <>
             <div className='col p-0'>
-                <div className='p-2 shadow bg-danger text-center'>
+                {/* <div className='p-2 shadow bg-danger text-center'> */}
                     {/* <h4>{currentOffice.office_name || "Loading..."}</h4> */}
-                    <h4>{ "Loading..."}</h4>
-                </div>
+                    {/* <h4>{ "Loading..."}</h4> */}
+                {/* </div> */}
                 <Outlet /> {/* Renders nested routes */}
             </div>
         </>

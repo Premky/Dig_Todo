@@ -83,6 +83,14 @@ router.post('/add_vehicle', verifyToken, async (req, res) => {
     }
 });
 
+router.get('/vehicles', async (req, res) => {
+    const sql = `SELECT * FROM tango_vehicles`;
+    con.query(sql, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
 router.put('/update_vehicle/:id', async (req, res) => {
     const id = req.params.id;
     const {
@@ -532,6 +540,37 @@ router.delete('/delete_arrest_vehicle/:id', async (req, res) => {
         console.error('Error Deleting Record:', err);
         return res.status(500).json({ Status: false, Error: 'Internal Server Error' });
     }
+})
+
+router.get('/search_arrest_vehicle', verifyToken, async (req, res) => {
+    const active_office = req.userOffice;
+    const { date, type } = req.query;
+    console.log('kasur_office', date)
+
+    let sql = `SELECT tav.*, tp.*
+                FROM tango_arrest_vehicle tav
+                LEFT JOIN tango_punishment tp 
+                ON tav.kasur_id = tp.id
+                WHERE 1=1
+                `;
+                // WHERE office_id=?                
+    const values=[]
+
+    //Add Conditions based on received parameters
+    if (date) {
+        sql += ` AND tav.date = ?`;
+        values.push(date);
+    } else {
+        sql += ` AND tp.date = ?`;
+        values.push(todaydate);
+    }
+
+    console.log(sql)
+    
+    con.query(sql,values, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
 })
 
 export { router as tangoRouter }
