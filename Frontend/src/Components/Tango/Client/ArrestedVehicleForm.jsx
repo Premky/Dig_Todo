@@ -341,7 +341,7 @@ const ArrestedVehicleForm = () => {
                                     {errors.voucher && <span>{errors.voucher.message}</span>}
                                 </div>
 
-                                <div className='bg-warning'>फिर्ता लग्ने भए</div>
+                                <div className='bg-warning'>फिर्ता लग्नेको विवरण</div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="return_date">फिर्ता मिति<span>*</span></label>
