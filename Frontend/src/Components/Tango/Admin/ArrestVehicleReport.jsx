@@ -152,7 +152,7 @@ const ArrestVehicleReport = () => {
                             {errors.date && <span>{errors.date.message}</span>}
                         </div>
 
-                        <div className="col-xl-3 col-md-4 col-sm-12">
+                        {/* <div className="col-xl-3 col-md-4 col-sm-12">
                             <label htmlFor="vehicle">सवारी साधन<span>*</span></label>
                             <Controller
                                 name="vehicle"
@@ -166,7 +166,7 @@ const ArrestVehicleReport = () => {
                                     />
                                 )}
                             />
-                        </div>
+                        </div> */}
 
                         <div className="col-xl-3 col-md-4 col-sm-12">
                             <button type="submit" className="btn btn-primary" disabled={loading}>
