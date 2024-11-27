@@ -544,28 +544,37 @@ router.delete('/delete_arrest_vehicle/:id', async (req, res) => {
 
 router.get('/search_arrest_vehicle', verifyToken, async (req, res) => {
     const active_office = req.userOffice;
-    const { date, type } = req.query;
-    console.log('kasur_office', date)
+    const { srh_date, srh_voucher, srh_contact } = req.query;
+    
 
     let sql = `SELECT tav.*, tp.*
                 FROM tango_arrest_vehicle tav
                 LEFT JOIN tango_punishment tp 
                 ON tav.kasur_id = tp.id
-                WHERE 1=1
+                WHERE 1=1 AND office_id=?
                 `;
                 // WHERE office_id=?                
-    const values=[]
+    const values=[active_office]
 
     //Add Conditions based on received parameters
-    if (date) {
+    if (srh_date) {
         sql += ` AND tav.date = ?`;
-        values.push(date);
-    } else {
-        sql += ` AND tp.date = ?`;
-        values.push(todaydate);
+        values.push(srh_date);
+    } 
+    // else {
+    //     sql += ` AND tav.date = ?`;
+    //     values.push(todaydate);
+    // }
+    if(srh_voucher){
+        sql += ` AND tav.voucher = ?`;
+        values.push(srh_voucher);        
+    }
+    if(srh_contact){
+        sql += ` AND tav.contact = ?`;
+        values.push(srh_contact);        
     }
 
-    console.log(sql)
+    // console.log(sql)
     
     con.query(sql,values, (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })

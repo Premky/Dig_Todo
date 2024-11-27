@@ -21,7 +21,21 @@ const ArrestedVehicleForm = () => {
     const navigate = useNavigate();
     const npToday = new NepaliDate();
     const formattedDateNp = npToday.format('YYYY-MM-DD');
-    const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm();
+    // const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm();
+    const { register: registerCrud,
+        handleSubmit: handleSubmitCrud,
+        reset: resetCrud,
+        setValue: setValueCrud,
+        formState: { errors: errorsCrud },
+        control: controlCrud } = useForm();
+
+    const { register: registerSearch,
+        handleSubmit: handleSubmitSearch,
+        reset: resetSearch,
+        setValue: setValueSearch,
+        formState: { errors: errorsSearch },
+        control: controlSearch } = useForm();
+
     const [loading, setLoading] = useState(false);
     const [editing, setEditing] = useState(false);
 
@@ -85,6 +99,7 @@ const ArrestedVehicleForm = () => {
 
     const fetchArrestVehicle = async () => {
         try {
+            // console.log(localStorage.getItem("token"))
             const result = await axios.get(`${BASE_URL}/tango/arrest_vehicle`,
                 {
                     headers: {
@@ -129,7 +144,7 @@ const ArrestedVehicleForm = () => {
 
             if (result.data.Status) {
                 alert(`Record ${editing ? 'updated' : 'added'} successfully!`);
-                reset(); // Clear the form after submission
+                resetCrud(); // Clear the form after submission
                 setEditing(false);
                 fetchArrestVehicle(); // Refresh the list
             } else {
@@ -150,20 +165,20 @@ const ArrestedVehicleForm = () => {
         setEditing(true); // Enable editing mode
 
         // Use setValue to populate the form fields
-        setValue("date", convertToNepaliDate(data.date)); // Convert and set Nepali date
-        setValue("rank_id", data.rank_id); // Convert and set Nepali date
-        setValue("name", data.name); // Convert and set Nepali date
-        setValue("vehicle_no", data.vehicle_no); // Convert and set Nepali date        
-        setValue("kasur_id", data.kasur_id);
-        setValue("owner", data.owner);
-        setValue("contact", data.contact);
-        setValue("voucher", data.voucher);
-        setValue("return_date", data.return_date);
-        setValue("return_name", data.return_name);
-        setValue("return_address", data.return_address);
-        setValue("return_contact", data.return_contact);
-        setValue("return_remarks", data.return_remarks);
-        setValue("remarks", data.remarks);
+        setValueCrud("date", convertToNepaliDate(data.date)); // Convert and set Nepali date
+        setValueCrud("rank_id", data.rank_id); // Convert and set Nepali date
+        setValueCrud("name", data.name); // Convert and set Nepali date
+        setValueCrud("vehicle_no", data.vehicle_no); // Convert and set Nepali date        
+        setValueCrud("kasur_id", data.kasur_id);
+        setValueCrud("owner", data.owner);
+        setValueCrud("contact", data.contact);
+        setValueCrud("voucher", data.voucher);
+        setValueCrud("return_date", data.return_date);
+        setValueCrud("return_name", data.return_name);
+        setValueCrud("return_address", data.return_address);
+        setValueCrud("return_contact", data.return_contact);
+        setValueCrud("return_remarks", data.return_remarks);
+        setValueCrud("remarks", data.remarks);
     };
 
 
@@ -194,11 +209,59 @@ const ArrestedVehicleForm = () => {
         if (loading) {
             setLoading(false);
         } else {
-            reset();
+            resetCrud();
             setEditing(false);
         }
     }
 
+    const onSearch = async (data) => {
+        setLoading(true);
+        console.log(data)
+        try {
+            // Filter out undefined or null values from `data`
+            const filteredData = Object.fromEntries(
+                Object.entries(data).filter(([_, value]) => value != null && value !== '')
+            );
+            
+            // Convert filtered data to query string
+            const queryString = new URLSearchParams(filteredData).toString();
+            console.log(queryString)
+
+            // Make GET request to the backend
+            const result = await axios.get(`${BASE_URL}/tango/search_arrest_vehicle?${queryString}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem("token")}`
+                },
+            });
+
+            if (result.data.Status) {
+                console.log(result.data.Result);
+                // Update state with fetched data
+                setFetchedPunishment(result.data.Result);
+                // setFetchedArrestedVehicleXport(result.data.Result); // Optional: Combine these if identical
+            } else {
+                console.error('API Error:', result.data.Error);
+                alert(`Error: ${result.data.Error}`); // User-friendly message
+            }
+        } catch (err) {
+            console.error('Form submission error:', err);
+            alert('An error occurred while submitting the form. Please try again.');
+        } finally {
+            setLoading(false); // Always reset loading state
+        }
+    };
+
+    const handleSearchClear = (e) => {
+        e.preventDefault();
+        if (loading) {
+            setLoading(false);
+        } else {
+            resetSearch();
+            fetchArrestVehicle();
+            setEditing(false);
+        }
+    }
     useEffect(() => {
         fetchArrestVehicle();
         fetchKasur();
@@ -214,22 +277,25 @@ const ArrestedVehicleForm = () => {
             <div className="container-fluid p-0">
                 <div className="row">
                     <div className="col-12">
-                        <div className="p-2 justify-content shadow text-center">
-                            <u>
-                                <h4> पक्राउ सवारी साधन रजिष्टर</h4>
-                            </u>
+                        <div className="col-12">
+                            <div className="p-2 justify-content shadow text-center">
+                                <u>
+                                    <h4> पक्राउ सवारी साधन रजिष्टर</h4>
+                                </u>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="col-12">
                         <div className="d-flex flex-column px-3 pt-0">
-                            <form className='row mt-1 g-3'>
+                            
+                            <div className='bg-warning'>नया रेकर्ड थप्नुहोस्</div>
 
+                            <form className='row mt-1 g-3'>
+                                
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="date">मिति<span>*</span></label>
-                                    <Controller
+                                     <Controller
                                         name="date"
-                                        control={control}
+                                        control={controlCrud}
                                         rules={{ required: "This field is required" }}
                                         render={({ field: { onChange, onBlur, value, ref } }) => (
                                             <NepaliDatePicker
@@ -244,50 +310,50 @@ const ArrestedVehicleForm = () => {
                                             />
                                         )}
                                     />
-                                    {errors.date && <span>{errors.date.message}</span>}
+                                    {errorsCrud.date && <span>{errorsCrud.date.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="rank_id">दर्जा<span>*</span></label>
 
-                                    <select {...register('rank_id')} className="form-select" placeholder="Select Rank">
+                                    <select {...registerCrud('rank_id')} className="form-select" placeholder="Select Rank">
                                         <option value="">दर्जा छान्नुहोस्</option>
                                         {fetchedRank.map((rank) => (
-                                            <option key={rank.value} value={rank.value}>
+                                            <option key={rank.rank_id} value={rank.value}>
                                                 {rank.label}
                                             </option>
                                         ))}
                                     </select>
-                                    {errors.rank_id && <span>{errors.rank_id.message}</span>}
+                                    {errorsCrud.rank_id && <span>{errorsCrud.rank_id.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="name"> नामथर </label>
                                     <input
                                         type='name'
-                                        {...register('name', { required: "This field is required." })}
+                                        {...registerCrud('name', { required: "This field is required." })}
                                         placeholder="प्रहरी कर्मचारीको नामथर"
                                         className="form-control"
                                     />
-                                    {errors.name && <span>{errors.name.message}</span>}
+                                    {errorsCrud.name && <span>{errorsCrud.name.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="vehicle_no"> सवारी नं. </label>
                                     <input
                                         type='text'
-                                        {...register('vehicle_no', { required: "This field is required." })}
+                                        {...registerCrud('vehicle_no', { required: "This field is required." })}
                                         placeholder="सवारी नं."
                                         className="form-control"
                                     />
-                                    {errors.vehicle_no && <span>{errors.vehicle_no.message}</span>}
+                                    {errorsCrud.vehicle_no && <span>{errorsCrud.vehicle_no.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="kasur_id">कसुर<span>*</span></label>
                                     <Controller
                                         name="kasur_id"
-                                        control={control} // This should come from useForm() hook
+                                        control={controlCrud} // This should come from useForm() hook
                                         rules={{ required: "This field is required" }}
                                         defaultValue=""
                                         render={({ field: { onChange, value, ref } }) => (
@@ -305,40 +371,40 @@ const ArrestedVehicleForm = () => {
                                             />
                                         )}
                                     />
-                                    {errors.kasur_id && <span>{errors.kasur_id.message}</span>}
+                                    {errorsCrud.kasur_id && <span>{errorsCrud.kasur_id.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="owner"> चालक/धनी </label>
                                     <input
                                         type='text'
-                                        {...register('owner', { required: "This field is required." })}
+                                        {...registerCrud('owner', { required: "This field is required." })}
                                         placeholder="चालक/धनी"
                                         className="form-control"
                                     />
-                                    {errors.owner && <span>{errors.owner.message}</span>}
+                                    {errorsCrud.owner && <span>{errorsCrud.owner.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="contact"> सम्पर्क नं. </label>
                                     <input
                                         type='number'
-                                        {...register('contact', { required: "This field is required." })}
+                                        {...registerCrud('contact', { required: "This field is required." })}
                                         placeholder="सम्पर्क नं."
                                         className="form-control"
                                     />
-                                    {errors.contact && <span>{errors.contact.message}</span>}
+                                    {errorsCrud.contact && <span>{errorsCrud.contact.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="voucher"> चिट नं. </label>
                                     <input
                                         type='number'
-                                        {...register('voucher', { required: "This field is required." })}
+                                        {...registerCrud('voucher', { required: "This field is required." })}
                                         placeholder="चिट नं."
                                         className="form-control"
                                     />
-                                    {errors.voucher && <span>{errors.voucher.message}</span>}
+                                    {errorsCrud.voucher && <span>{errorsCrud.voucher.message}</span>}
                                 </div>
 
                                 <div className='bg-warning'>फिर्ता लग्नेको विवरण</div>
@@ -347,7 +413,7 @@ const ArrestedVehicleForm = () => {
                                     <label htmlFor="return_date">फिर्ता मिति<span>*</span></label>
                                     <Controller
                                         name="return_date"
-                                        control={control}
+                                        control={controlCrud}
 
                                         render={({ field: { onChange, onBlur, value, ref } }) => (
                                             <NepaliDatePicker
@@ -362,59 +428,59 @@ const ArrestedVehicleForm = () => {
                                             />
                                         )}
                                     />
-                                    {errors.return_date && <span>{errors.return_date.message}</span>}
+                                    {errorsCrud.return_date && <span>{errorsCrud.return_date.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="return_name"> फिर्ता लग्नेको नामथर </label>
                                     <input
                                         type='text'
-                                        {...register('return_name')}
+                                        {...registerCrud('return_name')}
                                         placeholder=""
                                         className="form-control"
                                     />
-                                    {errors.return_name && <span>{errors.return_name.message}</span>}
+                                    {errorsCrud.return_name && <span>{errorsCrud.return_name.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="return_address"> फिर्ता लग्नेको ठेगाना </label>
                                     <input
                                         type='text'
-                                        {...register('return_address')}
+                                        {...registerCrud('return_address')}
                                         placeholder=""
                                         className="form-control"
                                     />
-                                    {errors.return_address && <span>{errors.return_address.message}</span>}
+                                    {errorsCrud.return_address && <span>{errorsCrud.return_address.message}</span>}
                                 </div>
 
                                 <div className="col-xl-3 col-md-4 col-sm-12">
                                     <label htmlFor="return_contact"> फिर्ता लग्नेको सम्पर्क नं. </label>
                                     <input
                                         type='number'
-                                        {...register('return_contact')}
+                                        {...registerCrud('return_contact')}
                                         placeholder=""
                                         className="form-control"
                                     />
-                                    {errors.return_contact && <span>{errors.return_contact.message}</span>}
+                                    {errorsCrud.return_contact && <span>{errorsCrud.return_contact.message}</span>}
                                 </div>
 
                                 <div className='bg-warning'>केही कैफियत भए</div>
                                 <div className="col-xl-6 col-md-6 col-sm-12">
                                     <label htmlFor="remarks">कैफियत</label>
                                     <textarea
-                                        {...register('remarks', {
+                                        {...registerCrud('remarks', {
                                             maxLength: { value: 500, message: 'कैफियत ५०० अक्षर भित्र हुनुपर्छ।' }, // Example validation
                                         })}
                                         placeholder="कैफियत लेख्नुहोस्"
-                                        className={`form-control ${errors.remarks ? 'is-invalid' : ''}`}
+                                        className={`form-control ${errorsCrud.remarks ? 'is-invalid' : ''}`}
                                     />
-                                    {errors.remarks && <span className="text-danger">{errors.remarks.message}</span>}
+                                    {errorsCrud.remarks && <span className="text-danger">{errorsCrud.remarks.message}</span>}
                                 </div>
 
 
                                 <div className="col-12 row mt-2">
                                     <div className="col-4">
-                                        <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmit(onFormSubmit)} >
+                                        <button type="submit" className="btn btn-primary" disabled={loading} onClick={handleSubmitCrud(onFormSubmit)} >
                                             {loading ? 'Submitting...' : editing ? 'Update' : 'Add'}
                                         </button>
                                     </div>
@@ -423,6 +489,51 @@ const ArrestedVehicleForm = () => {
                                     </div>
                                 </div>
                             </form>
+
+                            <div className='bg-warning'>खोज्नुहोस्</div>
+                            <div className="col-12">
+                                <form className="row mt-1 g-3" onSubmit={handleSubmitSearch(onSearch)}>
+                                    <div className="col-xl-3 col-md-4 col-sm-12">
+                                        <label htmlFor="srh_date">मिति<span>*</span></label>
+                                        <Controller
+                                            name="srh_date"
+                                            control={controlSearch}
+                                            // rules={{ required: "This field is required" }}
+                                            render={({ field }) => (
+                                                <NepaliDatePicker
+                                                    {...field}
+                                                    value={field.value || null}
+                                                    dateFormat="YYYY-MM-DD"
+                                                    placeholder="Select Nepali Date"
+                                                />
+                                            )}
+                                        />
+                                        {/* {searchForm.errors.srh_date && <span>{searchForm.errors.srh_date.message}</span>} */}
+                                    </div>
+
+                                    <div className="col-xl-3 col-md-4 col-sm-12">
+                                        <label htmlFor="srh_voucher">चिट नं.<span>*</span></label>
+                                        <input type="number" name='srh_voucher' className="form-control"
+                                            {...registerSearch("srh_voucher")} />
+                                        {errorsSearch.srh_voucher && <span>{errorsSearch.srh_voucher.message}</span>}
+                                    </div>
+
+                                    <div className="col-xl-3 col-md-4 col-sm-12">
+                                        <label htmlFor="srh_contact">सम्पर्क नं.<span>*</span></label>
+                                        <input type="number" name='srh_contact' className="form-control"
+                                            {...registerSearch("srh_contact")} />
+                                        {errorsSearch.srh_contact && <span>{errorsSearch.srh_contact.message}</span>}
+                                    </div>
+                                    <div className="col-xl-3 col-md-4 col-sm-12">
+                                        <button type="submit" className="btn btn-primary" disabled={loading}>
+                                            {loading ? 'Searching...' : 'Search'}
+                                        </button>
+                                        <button className='btn btn-danger' onClick={handleSearchClear}>
+                                            Reset
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
 
                             <div className="row p-2 mt-3">
                                 <TableContainer component={Paper}>

@@ -34,6 +34,11 @@ const verifyToken = (req, res, next) => {
         req.userEmail = decoded.email;
         req.userOffice = decoded.office;
 
+        // console.log('USER:', req.userId, 
+        //             'ROLE:', req.userRole, 
+        //             'USER:', req.userEmail, 
+        //             'OFFICE:', req.userOffice
+        //         )
         next(); // Proceed to the next middleware or route
     });
 };
