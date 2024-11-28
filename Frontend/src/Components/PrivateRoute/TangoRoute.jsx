@@ -3,7 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 
 const TangoRoute = () => {
     const userType = localStorage.getItem('bid');
-    console.log(userType)
+    // console.log(userType)
     const isValidUser = localStorage.getItem("valid") && (userType === 'ट्राफिक');
     return isValidUser ? <Outlet /> : <Navigate to="/" />;
 };

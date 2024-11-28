@@ -259,15 +259,6 @@ const AddUsers = () => {
                                         value={branches.find(option => option.value === user.branch)}
                                         onChange={(selectedOption) => setUser({ ...user, branch: selectedOption.value })}
                                     />
-                                
-
-
-                                {/* <select name="branch" id="branch" className='form-select' value={user.branch}
-                                    onChange={(e) => setUser({ ...user, branch: e.target.value })} >
-                                    {branches.map(b => {
-                                        return <option value={b.bid} key={b.bid}>{b.branch_name}</option>
-                                    })}
-                                </select> */}
                             </div>
 
                             <div className="mb-3">

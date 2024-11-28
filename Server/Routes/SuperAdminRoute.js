@@ -331,6 +331,18 @@ router.get('/branches', (req, res) => {
     })
 })
 
+//Fetch Individual Branche
+router.get('/branches/:branch', (req, res) => {
+    const branch = req.params.branch;
+    // console.log(branch)
+    const sql = "SELECT * FROM branch WHERE branch_name=?";
+    con.query(sql,
+        branch, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
 //Fetch Users
 router.get('/users', (req, res) => {
     // "SELECT * FROM users";
@@ -349,7 +361,25 @@ router.get('/users', (req, res) => {
     })
 })
 
-// Fetch Users
+//Fetch Individual User
+router.get('/users/:bid', (req, res) => {
+    const bid = req.params.bid;
+    const sql =
+        `SELECT u.*, ut.ut_name AS usertype, o.office_name AS office_name, b.branch_name, o.o_id as office_id
+        FROM users u
+        JOIN usertypes ut ON u.usertype = ut.utid
+        INNER JOIN office o ON u.office_id = o.o_id
+        INNER JOIN branch b ON u.branch_id = b.bid
+        WHERE branch_id = ?
+        `;
+    // INNER JOIN office_branch ob ON u.branch=ob.bid
+    con.query(sql, bid, (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error" })
+        return res.json({ Status: true, Result: result })
+    })
+})
+
+// Fetch employees
 router.get('/employees', (req, res) => {
     const sql =
         `SELECT * FROM employee`;

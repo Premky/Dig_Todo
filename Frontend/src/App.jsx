@@ -50,6 +50,7 @@ import RajashwaReport from './Components/Tango/Admin/DailyRajashwaReport'
 import EmpDashboard from './Components/Employee/EmpDashboard'
 import ArrestedVehicleForm from './Components/Tango/Client/ArrestedVehicleForm'
 import ArrestVehicleReport from './Components/Tango/Admin/ArrestVehicleReport'
+import Users from './Components/Tango/SuperAdmin/Users'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -145,12 +146,13 @@ function App() {
           <Route path='/tango' element={<TangoRoute />}> {/* Secured Route */}
             <Route element={<TangoDashboard />}> {/* Common Layout */}
               <Route index element={<TangoHome />} /> {/* Default Route */}
-              <Route path='rajashwa-form' element={<PunishmentActionForm />} />
               <Route path='kasur-form' element={<DailyKasurForm />} />
+              <Route path='rajashwa-form' element={<PunishmentActionForm />} />
               <Route path='arrestedvehicle-form' element={<ArrestedVehicleForm />} />
               <Route path='vehicle' element={<VehicleForm />} />
               <Route path='kasur' element={<KasurForm />} />
               <Route path='report' element={<TangoAdminDashboard />}>
+                <Route path='tango-user' element={<Users/>} />
                 <Route path='kasur-report' element={<KasurReport />} />
                 <Route path='rajashwa-report' element={<RajashwaReport />} />
                 <Route path='arrest_vehicle-report' element={<ArrestVehicleReport />} />
