@@ -48,12 +48,13 @@ router.post('/login', (req, res) => {
                     return res.status(500).json({ loginStatus: false, Error: "Password comparison error" });
                 }
 
-                if (isMatch) {
+                if (isMatch) {                    
                     const token = jwt.sign({
                         id: user.uid,
                         role: user.usertype,
                         email: user.username,
                         office: user.office_id,
+                        branch: user.branch_id,
                     }, process.env.JWT_SECRET, { expiresIn: '2d' });
 
                     res.cookie('token', token, { httpOnly: true, secure: true }); // Secure cookies

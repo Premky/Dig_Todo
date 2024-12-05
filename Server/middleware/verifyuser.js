@@ -33,14 +33,16 @@ const verifyToken = (req, res, next) => {
         req.userRole = decoded.role;
         req.userEmail = decoded.email;
         req.userOffice = decoded.office;
+        req.userBranch = decoded.branch;
 
         // console.log('USER:', req.userId, 
         //             'ROLE:', req.userRole, 
         //             'USER:', req.userEmail, 
-        //             'OFFICE:', req.userOffice
+        //             'OFFICE:', req.userOffice,
+        //             'Branch:', req.userBranch
         //         )
+
         next(); // Proceed to the next middleware or route
     });
 };
-
 export default verifyToken;

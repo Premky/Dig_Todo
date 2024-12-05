@@ -364,6 +364,7 @@ router.get('/users', (req, res) => {
 //Fetch Individual User
 router.get('/users/:bid', (req, res) => {
     const bid = req.params.bid;
+    const active_branch = req.userOffice;
     const sql =
         `SELECT u.*, ut.ut_name AS usertype, o.office_name AS office_name, b.branch_name, o.o_id as office_id
         FROM users u

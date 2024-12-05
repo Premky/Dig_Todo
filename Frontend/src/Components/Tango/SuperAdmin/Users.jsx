@@ -180,11 +180,16 @@ const Users = () => {
 
     const [fetchedUser, setFetchedUser] = useState([])
     const [editUser, setEditUser] = useState([])
-
+    const token = localStorage.getItem("token");
     const fetchUsers = async () => {
         console.log(fetchedBranch.bid)
         try {
-            const result = await axios.get(`${BASE_URL}/super/users/${fetchedBranch.bid}`);
+            const result = await axios.get(`${BASE_URL}/tango/users`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             if (result.data.Status) {
                 console.log(result.data.Result)
                 setFetchedUser(result.data.Result);
