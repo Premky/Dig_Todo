@@ -42,7 +42,7 @@ const Footer = () => {
                             <span className="show">                                
                                     <a className="f2 view" >
                                        {news.map((n) => (
-                                        <span className='display-5' key={n.news_id}> 
+                                        <span className='display-5 text-white' key={n.news_id} > 
                                         <i className="bi bi-arrow-right text-danger"> * </i> 
                                             
                                         {n.news} &nbsp;</span> 

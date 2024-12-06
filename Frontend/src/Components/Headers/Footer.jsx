@@ -48,8 +48,8 @@ const Footer = () => {
                             <span className="show">
                                 <a className="f2 view" >
                                     {news.map((n) => (
-                                        <span style={{ fontSize: 'calc(1vw + 1.30rem)' }} key={n.news_id}>
-                                            <i className="bi bi-arrow-right" ></i>
+                                        <span style={{ fontSize: 'calc(1vw + 1.30rem)' }} className='text-white' key={n.news_id}>
+                                            <i className="bi bi-arrow-right " ></i>
                                             {/* &#xF138; */} &nbsp;
                                             {n.news} &nbsp;</span>
                                     ))}
