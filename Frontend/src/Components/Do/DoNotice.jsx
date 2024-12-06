@@ -6,6 +6,8 @@ import './doNotice.css';
 import { getBaseUrl } from '../../Utilities/getBaseUrl'
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Ensure this is imported
 
+const token = localStorage.getItem("token");
+
 const DoNotice = () => {
   // const BASE_URL = import.meta.env.VITE_API_BASE_URL
   const [BASE_URL, setBase_Url] = useState();
@@ -22,7 +24,9 @@ const DoNotice = () => {
 
   const fetchDoNotices = () => {
     axios
-      .get(`${BASE_URL}/auth/display_do_notice`)
+      .get(`${BASE_URL}/auth/display_do_notice`, 
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    })
       .then((result) => {
         if (result.data.Status) {
           // console.log(result.data.Result);
