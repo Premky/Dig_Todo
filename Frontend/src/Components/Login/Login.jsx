@@ -63,7 +63,7 @@ const Login = ({ onLogin }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-
+        console.log(BASE_URL)
         if (BASE_URL) {
             axios.post(`${BASE_URL}/auth/login`, values)
                 // const {loginStatus, usertype, token, ut} = res.data
