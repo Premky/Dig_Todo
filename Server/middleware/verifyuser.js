@@ -6,13 +6,13 @@ const verifyToken = (req, res, next) => {
     // Check for token in cookies
     if (req.cookies.token) {
         token = req.cookies.token;
-        console.log('cookies')
+        // console.log('cookies')
     }
 
     // Check for token in Authorization header
     if (req.headers['authorization']) {
         token = req.headers['authorization'].split(' ')[1]; // Extract token from Bearer token
-        console.log('header')
+        // console.log('header')
     }
 
     // If no token is provided
