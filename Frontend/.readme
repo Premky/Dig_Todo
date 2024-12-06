@@ -1,0 +1,4 @@
+before sending to kppo server check:
+- check both of the .env files
+- check utils>db.js
+- check index.js
