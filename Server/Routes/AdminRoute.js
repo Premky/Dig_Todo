@@ -319,28 +319,33 @@ router.get('/doduty', verifyToken, (req, res) => {
 })
 
 router.post('/add_doduty', (req, res) => {
-
     const sql = `INSERT INTO doduty(start_date, start_time, end_date, end_time,
-                do_name, contact, dutytype, remarks, user_id, office_id,branch_id) values(?)`;
+                  do_name, contact, dutytype, remarks, user_id, office_id, branch_id) VALUES (?)`;
     const values = [
-        req.body.start_date,
-        req.body.start_time,
-        req.body.end_date,
-        req.body.end_time,
-        req.body.name,
-        req.body.contact,
-        req.body.dutytype,
-        req.body.remarks,
-        req.body.user_id,
-        req.body.office_id,
-        req.body.branch_id,
-    ]
-    // console.log(values)
+      req.body.start_date,
+      req.body.start_time,
+      req.body.end_date,
+      req.body.end_time,
+      req.body.name,
+      req.body.contact,
+      req.body.dutytype,
+      req.body.remarks,
+      req.body.user_id,
+      req.body.office_id,
+      req.body.branch_id,
+    ];
+  
+    console.log("Insert Values:", values);
+  
     con.query(sql, [values], (err, result) => {
-        if (err) return res.json({ Status: false, Error: "Query Error" })
-        return res.json({ Status: true })
-    })
-})
+      if (err) {
+        console.error("SQL Error:", err);
+        return res.status(500).json({ Status: false, Error: "Query Error", Details: err.message });
+      }
+      return res.status(200).json({ Status: true, Result: result });
+    });
+  });
+  
 
 router.delete('/delete_doduty/:id', verifyToken, (req, res) => {
     const officeid = req.userOffice;
