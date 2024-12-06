@@ -7,6 +7,8 @@ import np_logo from '/Images/np_police_logo.png';
 import Logout from '../Login/Logout';
 import { getBaseUrl } from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token");
+
 const Header = () => {
 
   const [nepaliTime, setNepaliTime] = useState();
@@ -55,7 +57,9 @@ const Header = () => {
   const [branch, setBranch] = useState('')
 
   const fetch_user_office = () => {
-    axios.get(`${BASE_URL}/auth/fetch_user_office/` + user)
+    axios.get(`${BASE_URL}/auth/fetch_user_office/` + user, 
+      {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+  })
       .then(result => {
         if (result.data.Status) {
           setOffice(result.data.Result[0])

@@ -5,6 +5,8 @@ import reactSelect from 'react-select'
 import Select from 'react-select';
 import { getBaseUrl } from '../Utilities/getBaseUrl';
 
+const token = localStorage.getItem("token");
+
 const CreateAddress = () => {
     const navigate = useNavigate();
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -39,7 +41,9 @@ const CreateAddress = () => {
     const [stateOption, setStateOption] = useState([])
     const fetchState = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/states`);
+            const result = await axios.get(`${BASE_URL}/super/states`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setState(result.data.Result);
                 const options = result.data.Result.map(opt => ({
@@ -67,7 +71,9 @@ const CreateAddress = () => {
     const [districtOption, setDistrictOption] = useState([])
     const fetchDistrict = async (state_id) => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/districts/${state_id}`);
+            const result = await axios.get(`${BASE_URL}/super/districts/${state_id}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const optionDistrict = result.data.Result.map(d => ({ value: d.did, label: d.district_name }));
                 setDistrict(result.data.Result);
@@ -88,7 +94,9 @@ const CreateAddress = () => {
     const [cityOption, setCityOption] = useState([])
     const fetchCity = async (state_id) => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/local_level/${state_id}`);
+            const result = await axios.get(`${BASE_URL}/super/local_level/${state_id}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const optionCity = result.data.Result.map(d => ({ value: d.cid, label: d.city_name }));
                 setCity(result.data.Result);

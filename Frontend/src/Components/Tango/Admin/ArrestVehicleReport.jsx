@@ -62,7 +62,9 @@ const ArrestVehicleReport = () => {
 
     const fetchCurrentOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/currentoffice/${localStorage.getItem('oid')}`);
+            const result = await axios.get(`${BASE_URL}/display/currentoffice/${localStorage.getItem('oid')}`, 
+            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        });
             if (result.data.Status) {
                 setCurrentOffice(result.data.Result[0])
                 // console.log(currentOffice)

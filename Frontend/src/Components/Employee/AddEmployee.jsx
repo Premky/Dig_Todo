@@ -11,6 +11,8 @@ import Icon from '../Utils/Icon';
 import './formstyle.css';
 import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 
+const token = localStorage.getItem("token");
+
 const AddEmployee = () => {
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const navigate = useNavigate();
@@ -55,7 +57,9 @@ const AddEmployee = () => {
     const fetchEmployees = async () => {
         try {
             setLoading(true);
-            const result = await axios.get(`${BASE_URL}/display/fetch_emp/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/fetch_emp/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchEmp(result.data.Result);
             } else {
@@ -72,7 +76,9 @@ const AddEmployee = () => {
 
     const fetchRank = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/ranks`);
+            const result = await axios.get(`${BASE_URL}/display/ranks`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setRank(result.data.Result);
                 const options = result.data.Result.map(opt => ({
@@ -91,7 +97,9 @@ const AddEmployee = () => {
 
     const fetchBloodGroup = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/blood`);
+            const result = await axios.get(`${BASE_URL}/display/blood`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
@@ -109,7 +117,9 @@ const AddEmployee = () => {
 
     const fetchState = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/states`);
+            const result = await axios.get(`${BASE_URL}/super/states`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.state_id,
@@ -131,7 +141,9 @@ const AddEmployee = () => {
 
     const fetchDistrict = async (state_id) => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/districts/${state_id}`);
+            const result = await axios.get(`${BASE_URL}/super/districts/${state_id}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const optionDistrict = result.data.Result.map(d => ({ value: d.did, label: d.district_name }));
                 setDistrictOption(optionDistrict);
@@ -148,7 +160,9 @@ const AddEmployee = () => {
 
     const fetchCity = async (district_id) => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/local_level/${district_id}`);
+            const result = await axios.get(`${BASE_URL}/super/local_level/${district_id}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const optionCity = result.data.Result.map(d => ({ value: d.cid, label: d.city_name }));
                 setCityOption(optionCity);

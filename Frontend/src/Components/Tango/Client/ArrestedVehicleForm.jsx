@@ -50,7 +50,9 @@ const ArrestedVehicleForm = () => {
 
     const fetchCurrentOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
+            const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setCurrentOffice(result.data.Result[0]);
                 // console.log(result.data.Result);
@@ -66,7 +68,9 @@ const ArrestedVehicleForm = () => {
     const [fetchedRank, setFetchedRank] = useState([]);
     const fetchRank = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/ranks`);
+            const result = await axios.get(`${BASE_URL}/display/ranks`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
@@ -81,7 +85,9 @@ const ArrestedVehicleForm = () => {
 
     const fetchKasur = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/tango/kashurs`);
+            const result = await axios.get(`${BASE_URL}/tango/kashurs`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,

@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import config from "../../config";
 import { getBaseUrl } from "../../Utilities/getBaseUrl";
 
+const token = localStorage.getItem("token");
 
 const ProgramList = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -33,7 +34,9 @@ const ProgramList = () => {
     useEffect(() => {
         if (BASE_URL) {
             // if (org_id) {
-            axios.get(`${BASE_URL}/auth/programs/${org_id}`)
+            axios.get(`${BASE_URL}/auth/programs/${org_id}`, {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            })
                 .then(result => {
                     if (result.data.Status) {
                         setProgramList(result.data.Result);

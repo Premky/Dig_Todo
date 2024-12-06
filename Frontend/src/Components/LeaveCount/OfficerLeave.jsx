@@ -9,6 +9,8 @@ import ReactPaginate from 'react-paginate';
 import { Link } from 'react-bootstrap-icons';
 import {getBaseUrl} from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token");
+
 const OfficerLeave = () => {
     const navigate = useNavigate();
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -90,7 +92,9 @@ const OfficerLeave = () => {
 
     const fetchEmployees = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/employees`);
+            const result = await axios.get(`${BASE_URL}/super/employees`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const empOptions = result.data.Result.map(emp => ({ label: emp.name_np, value: emp.emp_id }));
                 setEmployee(empOptions);
@@ -105,7 +109,9 @@ const OfficerLeave = () => {
     useEffect(() => {
         const fetchLeaveTypes = async () => {
             try {
-                const result = await axios.get(`${BASE_URL}/display/leavetypes`);
+                const result = await axios.get(`${BASE_URL}/display/leavetypes`, 
+                    {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+                });
                 if (result.data.Status) {
                     setLeaveTypes(result.data.Result);
                 } else {
@@ -119,7 +125,9 @@ const OfficerLeave = () => {
 
         const fetchOffices = async () => {
             try {
-                const result = await axios.get(`${BASE_URL}/super/offices`);
+                const result = await axios.get(`${BASE_URL}/super/offices`, 
+                    {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+                });
                 if (result.data.Status) {
                     setOffices(result.data.Result);
                 } else {
@@ -132,7 +140,9 @@ const OfficerLeave = () => {
 
         const fetchLeaveEmployees = async () => {
             try {
-                const result = await axios.get(`${BASE_URL}/auth/all_officer_leave`);
+                const result = await axios.get(`${BASE_URL}/auth/all_officer_leave`, 
+                    {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+                });
                 if (result.data.Status) {
                     setAllLeave(result.data.Result);
                 } else {
@@ -175,7 +185,9 @@ const OfficerLeave = () => {
     const handleSearch = async (e) => {
         e.preventDefault();
         try {
-            const result = await axios.get(`${BASE_URL}/display/search_pmis`, { params: { pmis } });
+            const result = await axios.get(`${BASE_URL}/display/search_pmis`, { params: { pmis } }, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
 
                 const emp_data = result.data.Result[0];
@@ -200,7 +212,9 @@ const OfficerLeave = () => {
                 }));
                 // console.log(leaveEmp)
                 try {
-                    const leave_result = await axios.get(`${BASE_URL}/auth/office_leave`, { params: { pmis } });
+                    const leave_result = await axios.get(`${BASE_URL}/auth/office_leave`, { params: { pmis } }, 
+                        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+                    });
                     if (leave_result.data.Status) {
                         setSearchLeave(leave_result.data.Result);
                     } else {
@@ -221,7 +235,9 @@ const OfficerLeave = () => {
 
     const handleEdit = async (id) => {
         try {
-            const result = await axios.get(`${BASE_URL}/auth/get_officer_leave/${id}`);
+            const result = await axios.get(`${BASE_URL}/auth/get_officer_leave/${id}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const emp_data = result.data.Result;
                 setLeaveEmp((leaveEmp) => ({

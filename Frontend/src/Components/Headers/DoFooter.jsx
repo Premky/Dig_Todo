@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './style.css'
 import axios from 'axios'
 
+const token = localStorage.getItem("token");
 
 const Footer = () => {
             // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -16,7 +17,9 @@ const Footer = () => {
             },[]);
     const [news, setNews] = useState([])
     useEffect(() => {
-        axios.get(`${BASE_URL}/auth/news`)
+        axios.get(`${BASE_URL}/auth/news`, 
+            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        })
             .then(result => {
                 if (result.data.Status) {
                     setNews(result.data.Result)

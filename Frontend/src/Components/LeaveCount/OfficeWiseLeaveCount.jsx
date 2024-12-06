@@ -8,6 +8,8 @@ import LeaveCount from '../LeaveCount';
 import axios from 'axios';
 import {getBaseUrl} from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token");
+
 const OfficeWiseLeaveCount = () => {
   // const BASE_URL = import.meta.env.VITE_API_BASE_URL
   const [BASE_URL, setBase_Url] = useState();
@@ -88,7 +90,9 @@ const OfficeWiseLeaveCount = () => {
   const [allLeave, setAllLeave] = useState()
   useEffect(() => {
     if(BASE_URL){
-    axios.get(`${BASE_URL}/auth/leave_count_office`)
+    axios.get(`${BASE_URL}/auth/leave_count_office`, 
+      {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+  })
       .then(result => {
         if (result.data.Status) {
           // setAllLeave(result.data.Result)

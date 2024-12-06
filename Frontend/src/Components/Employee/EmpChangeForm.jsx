@@ -29,9 +29,13 @@ const EmpChangeForm = () => {
     const [currentInChange, setCurrentInChange] = useState([]);
     const [fetchedOffice, setFetchedOffice] = useState([]);
 
+    const token = localStorage.getItem("token");
+
     const fetchEmployee = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchedEmp(result.data.Result);
             } else {
@@ -46,7 +50,9 @@ const EmpChangeForm = () => {
 
     const fetchChange = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/in_change/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/in_change/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchedInChange(result.data.Result);
             } else {
@@ -61,7 +67,9 @@ const EmpChangeForm = () => {
 
     const fetchOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/offices`);
+            const result = await axios.get(`${BASE_URL}/super/offices`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.o_id,

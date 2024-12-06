@@ -29,9 +29,13 @@ const TrainingForm = () => {
   const [currentTraining, setCurrentTraining] = useState([]);
   const [fetchedTrainingList, setFetchedTrainingList] = useState([]);
 
+  const token = localStorage.getItem("token");
+
   const fetchEmployee = async () => {
     try {
-      const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
+      const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
       if (result.data.Status) {
         setFetchedEmp(result.data.Result);
       } else {
@@ -46,7 +50,9 @@ const TrainingForm = () => {
 
   const fetchTrainingList = async () => {
     try {
-      const result = await axios.get(`${BASE_URL}/emp/training_list`);
+      const result = await axios.get(`${BASE_URL}/emp/training_list`, 
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    });
       if (result.data.Status) {
         const options = result.data.Result.map(opt => ({
           value: opt.id,
@@ -66,7 +72,9 @@ const TrainingForm = () => {
 
   const fetchTraining = async () => {
     try {
-      const result = await axios.get(`${BASE_URL}/display/training/${pmis}`);
+      const result = await axios.get(`${BASE_URL}/display/training/${pmis}`, 
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    });
       if (result.data.Status) {
         setFetchedTraining(result.data.Result);
       } else {

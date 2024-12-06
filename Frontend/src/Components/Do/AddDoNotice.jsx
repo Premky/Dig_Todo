@@ -7,6 +7,8 @@ import Header from '../Headers/Header';
 import Footer from '../Headers/Footer';
 import { getBaseUrl } from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token");
+
 const AddDoNotice = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
     const [BASE_URL, setBase_Url] = useState();
@@ -100,7 +102,8 @@ const AddDoNotice = () => {
 
     const fetchDoNotices = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/auth/uploaded_do_notice`);
+            const result = await axios.get(`${BASE_URL}/auth/uploaded_do_notice`, {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setDoNotice(result.data.Result);
             } else {

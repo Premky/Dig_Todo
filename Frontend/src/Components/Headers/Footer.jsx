@@ -3,6 +3,8 @@ import './style.css'
 import axios from 'axios'
 import { getBaseUrl } from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token");
+
 const Footer = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
     const [BASE_URL, setBase_Url] = useState();
@@ -16,7 +18,9 @@ const Footer = () => {
     }, []);
     const [news, setNews] = useState([])
     const Fetch_News = () => {
-        axios.get(`${BASE_URL}/auth/news`)
+        axios.get(`${BASE_URL}/auth/news`, 
+            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        })
             .then(result => {
                 if (result.data.Status) {
                     setNews(result.data.Result)

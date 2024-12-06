@@ -34,7 +34,9 @@ const KasurReport = () => {
 
     const fetchCurrentOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/currentoffice/${localStorage.getItem('oid')}`);
+            const result = await axios.get(`${BASE_URL}/display/currentoffice/${localStorage.getItem('oid')}`, 
+            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        });
             if (result.data.Status) setCurrentOffice(result.data.Result[0]);
             else console.error(result.data.Error);
         } catch (err) {
@@ -60,7 +62,9 @@ const KasurReport = () => {
 
     const fetchPunishment = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/tango/search_kasur`);
+            const result = await axios.get(`${BASE_URL}/tango/search_kasur`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const groupedData = result.data.Result.reduce((acc, item) => {
                     if (!acc[item.office_name]) acc[item.office_name] = { office_name: item.office_name, vehicles: {} };
@@ -81,7 +85,9 @@ const KasurReport = () => {
         setLoading(true);
         try {
             const queryString = new URLSearchParams(data).toString();
-            const result = await axios.get(`${BASE_URL}/tango/search_kasur?${queryString}`);
+            const result = await axios.get(`${BASE_URL}/tango/search_kasur?${queryString}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const groupedData = result.data.Result.reduce((acc, item) => {
                     if (!acc[item.office_name]) acc[item.office_name] = { office_name: item.office_name, vehicles: {} };

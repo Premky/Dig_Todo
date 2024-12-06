@@ -7,6 +7,8 @@ import { format } from 'date-fns';
 import axios from 'axios'
 import {getBaseUrl} from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token");
+
 const DoLeaveCount = () => {
             // const BASE_URL = import.meta.env.VITE_API_BASE_URL
             const [BASE_URL, setBase_Url]= useState();
@@ -24,7 +26,8 @@ const DoLeaveCount = () => {
     const [calculatedSum, setCalculatedSum] = useState();
 
     const fetchLeaveCount = () => {
-        axios.get(`${BASE_URL}/auth/leave_count_self`)
+        axios.get(`${BASE_URL}/auth/leave_count_self`, {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        })
             .then(result => {
                 if (result.data.Status) {
                     const data = result.data.Result[0]

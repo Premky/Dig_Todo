@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { getBaseUrl } from '../../Utilities/getBaseUrl';
 
+const token = localStorage.getItem("token");
+
 const AddOffice = () => {
   const navigate = useNavigate();
   // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -53,7 +55,9 @@ const AddOffice = () => {
 
   const fetchHeadOffice = async () => {
     try {
-      const result = await axios.get(`${BASE_URL}/super/offices`);
+      const result = await axios.get(`${BASE_URL}/super/offices`, 
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    });
       if (result.data.Status) {
         const headoffice_options = result.data.Result.map(ho => ({ value: ho.o_id, label: ho.office_name }));
         setHeadOffice(headoffice_options);
@@ -128,7 +132,9 @@ const AddOffice = () => {
 
   const fetchState = async () => {
     try {
-      const result = await axios.get(`${BASE_URL}/super/states`);
+      const result = await axios.get(`${BASE_URL}/super/states`, 
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    });
       if (result.data.Status) {
         const state_options = result.data.Result.map(s => ({ value: s.state_id, label: s.state_name }));
         setState(state_options);
@@ -142,7 +148,9 @@ const AddOffice = () => {
 
   const fetchDistrict = async (state_id) => {
     try {
-      const result = await axios.get(`${BASE_URL}/super/districts/${state_id}`);
+      const result = await axios.get(`${BASE_URL}/super/districts/${state_id}`, 
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    });
       if (result.data.Status) {
         const district_options = result.data.Result.map(d => ({ value: d.did, label: d.district_name }));
         setDistrict(district_options);
@@ -154,7 +162,9 @@ const AddOffice = () => {
 
   const fetchLocalLevel = async (districtId) => {
     try {
-      const result = await axios.get(`${BASE_URL}/super/local_level/${districtId}`);
+      const result = await axios.get(`${BASE_URL}/super/local_level/${districtId}`, 
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    });
       if (result.data.Status) {
         const local_level_options = result.data.Result.map(l => ({ value: l.cid, label: l.city_name }));
         setLocalLevel(local_level_options);

@@ -12,6 +12,7 @@ import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
 
+const token = localStorage.getItem("token");
 
 const QualificationFrom = () => {
     const { pmis } = useParams();
@@ -43,7 +44,9 @@ const QualificationFrom = () => {
 
     const fetchEmployee = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchEmp(result.data.Result);
             } else {
@@ -58,7 +61,9 @@ const QualificationFrom = () => {
 
     const fetchQualification = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/qualification/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/qualification/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchedQualification(result.data.Result);
             } else {
@@ -73,7 +78,9 @@ const QualificationFrom = () => {
 
     const fetchLevel = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/edu_level/`);
+            const result = await axios.get(`${BASE_URL}/display/edu_level/`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 // setFetchedEduLvl(result.data.Result);
                 const options = result.data.Result.map(opt => ({
@@ -94,7 +101,9 @@ const QualificationFrom = () => {
 
     const fetchFaculty = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/edu_faculty/`);
+            const result = await axios.get(`${BASE_URL}/display/edu_faculty/`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 // setFetchedEduFaculty(result.data.Result);
                 const options = result.data.Result.map(opt => ({

@@ -9,6 +9,8 @@ import ReactPaginate from 'react-paginate';
 import { Link } from 'react-bootstrap-icons';
 import {getBaseUrl} from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token")
+
 const CurrentOfficerLeave = () => {
     const navigate = useNavigate();
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -25,7 +27,9 @@ const CurrentOfficerLeave = () => {
     const [currentOfficerLeave, setCurrentOfficerLeave] = useState([])
     const fetchCurrentOfficerLeave = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/currentofficerleave`);
+            const result = await axios.get(`${BASE_URL}/display/currentofficerleave`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const empOptions = result.data.Result;
                 console.log(empOptions)

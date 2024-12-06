@@ -36,10 +36,12 @@ const RajashwaReport = () => {
 
     const exp_office_name = localStorage.getItem('oid')
     const [currnetOffice, setCurrentOffice] = useState([]);
-
+    const token = localStorage.getItem("token");
     const fetchCurrentOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
+            const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 // console.log(currnetOffice,'office')
                 setCurrentOffice(result.data.Result[0]);
@@ -55,7 +57,9 @@ const RajashwaReport = () => {
 
     const fetchKasur = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/tango/kashurs`);
+            const result = await axios.get(`${BASE_URL}/tango/kashurs`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
@@ -73,7 +77,9 @@ const RajashwaReport = () => {
 
        const fetchPunishment = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/tango/search_rajashwa`);
+            const result = await axios.get(`${BASE_URL}/tango/search_rajashwa`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const groupedData = {};
 
@@ -104,7 +110,9 @@ const RajashwaReport = () => {
         setLoading(true);
         try {
             const queryString = new URLSearchParams(data).toString();
-            const result = await axios.get(`${BASE_URL}/tango/search_rajashwa?${queryString};`);
+            const result = await axios.get(`${BASE_URL}/tango/search_rajashwa?${queryString};`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const groupedData = {};
 

@@ -12,6 +12,8 @@ import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
 
+const token = localStorage.getItem("token");
+
 const JobDescriptionForm = () => {
     const { pmis } = useParams();
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -33,7 +35,9 @@ const JobDescriptionForm = () => {
 
     const fetchEmployee = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchedEmp(result.data.Result);
             } else {
@@ -48,7 +52,9 @@ const JobDescriptionForm = () => {
 
     const fetchJd = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/jd/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/jd/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchedJd(result.data.Result);
             } else {
@@ -63,7 +69,9 @@ const JobDescriptionForm = () => {
 
     const fetchOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/offices`);
+            const result = await axios.get(`${BASE_URL}/super/offices`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.o_id,
@@ -80,7 +88,9 @@ const JobDescriptionForm = () => {
 
     const fetchRank = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/ranks`);
+            const result = await axios.get(`${BASE_URL}/display/ranks`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.rank_id,
@@ -98,7 +108,9 @@ const JobDescriptionForm = () => {
 
     const fetchgroups = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/emp_groups`);
+            const result = await axios.get(`${BASE_URL}/display/emp_groups`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
@@ -116,7 +128,9 @@ const JobDescriptionForm = () => {
 
     const fetchJobs = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/jobs`);
+            const result = await axios.get(`${BASE_URL}/display/jobs`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,

@@ -5,6 +5,8 @@ import '../Dashboard/scroll-table.css'
 import { format } from 'date-fns';
 import { getBaseUrl } from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token");
+
 const DoDuties = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
     const [BASE_URL, setBase_Url] = useState();
@@ -21,7 +23,8 @@ const DoDuties = () => {
     const [usertype, setUsertype] = useState(localStorage.getItem('type'))
     useEffect(() => {
         if (BASE_URL) {
-            axios.get(`${BASE_URL}/auth/doduty`)
+            axios.get(`${BASE_URL}/auth/doduty`, {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            })
                 .then(result => {
                     if (result.data.Status) {
                         setAllDuty(result.data.Result)

@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 import { getBaseUrl } from '../../Utilities/getBaseUrl';
 
+const token = localStorage.getItem("token");
+
 const AddBranch = () => {
     const navigate = useNavigate();
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -152,7 +154,9 @@ const AddBranch = () => {
 
     const fetchBranches = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/branches`);
+            const result = await axios.get(`${BASE_URL}/super/branches`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setBranches(result.data.Result);
                 const options = result.data.Result.map(opt => ({
@@ -170,7 +174,9 @@ const AddBranch = () => {
 
     const fetchOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/offices`);
+            const result = await axios.get(`${BASE_URL}/super/offices`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.o_id,
@@ -187,7 +193,9 @@ const AddBranch = () => {
 
     const fetchOfficeBranch = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/officebranch`);
+            const result = await axios.get(`${BASE_URL}/super/officebranch`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setListOfficeBranch(result.data.Result);
             } else {
@@ -211,7 +219,9 @@ const AddBranch = () => {
 
         const fetchOfficeBranch = async () => {
             try {
-                const result = await axios.get(`${BASE_URL}/super/officebranch/${selectedOption.value}`);
+                const result = await axios.get(`${BASE_URL}/super/officebranch/${selectedOption.value}`, 
+                    {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+                });
                 if (result.data.Status) {
                     setListOfficeBranch(result.data.Result);
                 } else {

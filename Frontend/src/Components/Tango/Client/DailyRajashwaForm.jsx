@@ -28,7 +28,9 @@ const PunishmentActionForm = () => {
 
     const fetchCurrentOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`);
+            const result = await axios.get(`${BASE_URL}/display/currentoffice/${exp_office_name}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setCurrentOffice(result.data.Result[0]);
             } else {
@@ -41,7 +43,9 @@ const PunishmentActionForm = () => {
 
     const fetchVehicles = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/vehicles`);
+            const result = await axios.get(`${BASE_URL}/display/vehicles`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.id,
@@ -76,7 +80,9 @@ const PunishmentActionForm = () => {
 
     const fetchOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/offices`);
+            const result = await axios.get(`${BASE_URL}/super/offices`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.o_id,

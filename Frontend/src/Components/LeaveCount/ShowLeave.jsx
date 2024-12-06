@@ -4,6 +4,8 @@ import { Link } from 'react-bootstrap-icons'
 import { useNavigate } from 'react-router-dom'
 import {getBaseUrl} from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token");
+
 const ShowLeave = () => {
     const navigate = useNavigate();
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -29,7 +31,9 @@ const ShowLeave = () => {
 
     const fetchUsers = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/users`);
+            const result = await axios.get(`${BASE_URL}/super/users`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 // console.log(result.data.Result)
                 setUser(result.data.Result);
@@ -46,7 +50,9 @@ const ShowLeave = () => {
         // Implement your edit logic here
         console.log(`Editing user with ID: ${id}`);
         try {
-            const result = await axios.get(`${BASE_URL}/super/edit_user/` + id);
+            const result = await axios.get(`${BASE_URL}/super/edit_user/` + id, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 // console.log(result.data.EditResult)
                 setUser(result.data.EditResult);

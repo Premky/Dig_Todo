@@ -23,6 +23,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 //*******************This is closing for Modal */
 
+const token = localStorage.getItem("token");
+
 const SancharProgram = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
     const [BASE_URL, setBase_Url] = useState();
@@ -145,7 +147,9 @@ const SancharProgram = () => {
     }, []);
 
     const fetch_programs = () => {
-        axios.get(`${BASE_URL}/auth/programs/${localStorage.getItem('oid')}`)
+        axios.get(`${BASE_URL}/auth/programs/${localStorage.getItem('oid')}`, 
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    })
             .then(result => {
                 if (result.data.Status) {
                     setProgramList(result.data.Result);
@@ -214,7 +218,9 @@ const SancharProgram = () => {
     const [open, setOpen] = React.useState(false);
     const [delProgram, setDelProgram] = useState();
     const handleClickOpen = (id) => {
-        axios.get(`${BASE_URL}/auth/fetch_delete_program/${id}`)
+        axios.get(`${BASE_URL}/auth/fetch_delete_program/${id}`, 
+            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        })
             .then(result => {
                 if (result.data.Status) {
                     console.log(result.data.Result[0].pid)

@@ -85,6 +85,7 @@ router.get('/search_pmis', (req, res) => {
     const chk_usr_sql = `SELECT * FROM users WHERE username=?`;
     con.query(chk_usr_sql, [pmis], (err, result) => {
         if (err) {
+            console.log(err)
             return handleResponse(err, null, "chk usr Query Error");
         }
 

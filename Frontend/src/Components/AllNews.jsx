@@ -2,6 +2,8 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { getBaseUrl } from '../Utilities/getBaseUrl';
 
+const token = localStorage.getItem("token");
+
 const AllNews = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
     const [BASE_URL, setBase_Url] = useState();
@@ -16,7 +18,9 @@ const AllNews = () => {
     
     const [news, setNews] = useState([])
     const fetch_news=()=>{
-        axios.get(`${BASE_URL}/auth/news`)
+        axios.get(`${BASE_URL}/auth/news`, 
+            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        })
             .then(result => {
                 if (result.data.Status) {
                     setNews(result.data.Result)

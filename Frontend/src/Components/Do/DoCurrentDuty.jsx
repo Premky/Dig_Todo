@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 import NepaliDate from 'nepali-datetime'
 import { getBaseUrl } from '../../Utilities/getBaseUrl'
 
+const token = localStorage.getItem("token");
+
 const DoCurrentDuty = () => {
   // const BASE_URL = import.meta.env.VITE_API_BASE_URL
   const [BASE_URL, setBase_Url] = useState();
@@ -19,7 +21,8 @@ const DoCurrentDuty = () => {
   const [currentDuties, setCurrentDuties] = useState([]);
   useEffect(() => {
     if (BASE_URL) {
-      axios.get(`${BASE_URL}/auth/docurrentduty`)
+      axios.get(`${BASE_URL}/auth/docurrentduty`, {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      })
         .then(response => {
           const duties = response.data.Result;
           const filteredDuties = filterCurrentDuties(duties);

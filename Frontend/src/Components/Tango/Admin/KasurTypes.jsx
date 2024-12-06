@@ -30,9 +30,13 @@ const KasurForm = () => {
     const [fetchedDatas, setFetchedDatas] = useState([]);
     const [currentData, setCurrentData] = useState([]);
 
+    const token = localStorage.getItem("token");
+
     const fetchvehicles = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/tango/kashurs`);
+            const result = await axios.get(`${BASE_URL}/tango/kashurs`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 // const options = result.data.Result.map(opt => ({
                 //     value: opt.id,

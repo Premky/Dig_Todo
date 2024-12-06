@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import axios from 'axios';
 import Logout from '../Login/Logout';
-
+const token = localStorage.getItem("toekn");
 const TangoDashboard = () => {
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const [currentOffice, setCurrentOffice] = useState({});
@@ -10,7 +10,9 @@ const TangoDashboard = () => {
     useEffect(() => {
         const fetchCurrentOffice = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/display/currentoffice/${localStorage.getItem('oid')}`);
+                const response = await axios.get(`${BASE_URL}/display/currentoffice/${localStorage.getItem('oid')}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
                 if (response.data.Status) {
                     setCurrentOffice(response.data.Result[0]);
                 } else {

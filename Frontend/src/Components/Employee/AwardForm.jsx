@@ -12,6 +12,8 @@ import { NepaliDatePicker } from 'nepali-datepicker-reactjs';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import DeleteConfirmationModal from '../Utils/ConfirmDeleteModal';
 
+const token = localStorage.getItem("token");
+
 const AwardForm = () => {
     const { pmis } = useParams();
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -30,7 +32,9 @@ const AwardForm = () => {
 
     const fetchEmployee = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchedEmp(result.data.Result);
             } else {
@@ -45,7 +49,9 @@ const AwardForm = () => {
 
     const fetchAward = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/award/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/award/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchedAward(result.data.Result);
             } else {
@@ -60,7 +66,9 @@ const AwardForm = () => {
 
     const fetchOffice = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/offices`);
+            const result = await axios.get(`${BASE_URL}/super/offices`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const options = result.data.Result.map(opt => ({
                     value: opt.o_id,

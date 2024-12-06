@@ -6,7 +6,7 @@ import getGender from '../../Utilities/getGender';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import Icon from '../Utils/Icon';
 
-
+const token = localStorage.getItem("token");
 
 const Employee = () => {
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -16,7 +16,9 @@ const Employee = () => {
     const [gender, setGender] = useState('');
     const fetchEmployee = async (pmis) => {
         try {
-            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`);
+            const result = await axios.get(`${BASE_URL}/display/employee/${pmis}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setFetchedEmp(result.data.Result);
             } else {

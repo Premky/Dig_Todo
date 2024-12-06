@@ -5,6 +5,8 @@ import axios from 'axios';
 
 import np_logo from '/Images/np_police_logo.png';
 
+const token = localStorage.getItem("token");
+
 const Header = () => {
   // const BASE_URL = import.meta.env.VITE_API_BASE_URL
   const [BASE_URL, setBase_Url] = useState();
@@ -52,7 +54,9 @@ const Header = () => {
   const [office, setOffice] = useState('')
 
   const fetch_user_office=()=>{
-    axios.get(`${BASE_URL}/auth/fetch_user_office/` + user)
+    axios.get(`${BASE_URL}/auth/fetch_user_office/` + user, 
+      {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+  })
       .then(result => {
         if (result.data.Status) {
           setOffice(result.data.Result[0])
@@ -70,7 +74,9 @@ const Header = () => {
   }, [])
 
   const handleLogout = () => {
-    axios.get(`${BASE_URL}/auth/logout`)
+    axios.get(`${BASE_URL}/auth/logout`, 
+      {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+  })
       .then(() => {
         navigate('/');
       })

@@ -53,7 +53,9 @@ const Users = () => {
 
     const fetchEmployees = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/employees`);
+            const result = await axios.get(`${BASE_URL}/super/employees`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 const empOptions = result.data.Result.map(emp => ({ label: emp.name_np, value: emp.emp_id }))
                 setEmployee(empOptions);
@@ -68,7 +70,9 @@ const Users = () => {
 
     const fetchUserTypes = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/usertypes`);
+            const result = await axios.get(`${BASE_URL}/super/usertypes`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setUserTypes(result.data.Result);
             } else {
@@ -81,7 +85,9 @@ const Users = () => {
 
     const fetchOffices = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/offices`);
+            const result = await axios.get(`${BASE_URL}/super/offices`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 setOffices(result.data.Result);
             } else {
@@ -95,7 +101,9 @@ const Users = () => {
 
     const fetchBranches = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/branches`);
+            const result = await axios.get(`${BASE_URL}/super/branches`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 //This is for normal select
                 // setBranches(result.data.Result);  
@@ -114,7 +122,9 @@ const Users = () => {
     const [fetchedBranch, setFetchedBranch] = useState([]);
     const fetchCurrentBranche = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/super/branches/${userType}`);
+            const result = await axios.get(`${BASE_URL}/super/branches/${userType}`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             // console.log("API Response:", result.data);
 
             if (result.data.Status) {
@@ -150,7 +160,9 @@ const Users = () => {
     const handleSearch = async (e) => {
         e.preventDefault()
         try {
-            const result = await axios.get(`${BASE_URL}/super/search_pmis`, { params: { pmis } });
+            const result = await axios.get(`${BASE_URL}/super/search_pmis`, { params: { pmis } }, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             // navigate('/super/admin_dashboard/add_user')
             if (result.data.Status) {
                 const emp_data = result.data.Result[0]
