@@ -23,7 +23,8 @@ const DoDuties = () => {
     const [usertype, setUsertype] = useState(localStorage.getItem('type'))
     useEffect(() => {
         if (BASE_URL) {
-            axios.get(`${BASE_URL}/auth/doduty`, {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            axios.get(`${BASE_URL}/auth/doduty`, 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
             })
                 .then(result => {
                     if (result.data.Status) {
@@ -39,7 +40,9 @@ const DoDuties = () => {
 
     const handleDelete = (id) => {
         console.log("Delete Working")
-        axios.delete(`${BASE_URL}/auth/delete_doduty/` + id)
+        axios.delete(`${BASE_URL}/auth/delete_doduty/` + id, 
+            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+        })
             .then(result => {
                 if (result.data.Status) {
                     window.location.reload()
