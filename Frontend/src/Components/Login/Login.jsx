@@ -22,13 +22,16 @@ const Login = ({ onLogin }) => {
     // }, [BASE_URL]);
 
     const navigate = useNavigate()
-    const branch = localStorage.getItem("bid");
-
+    
+    
+    const branch = localStorage.getItem("branch");
     const navigateBasedOnUsertype = (branch) => {
         switch (branch) {
             case 'सुपरएडमिन':
                 return '/super/admin_dashboard';
             case 'संचार':
+                return '/sanchar';
+            case 'सचिबालय':
                 return '/sanchar';
             case 'प्रशासन':
                 return '/admin/officeleave';
@@ -62,6 +65,7 @@ const Login = ({ onLogin }) => {
     axios.defaults.withCredentials = true;
 
     const handleSubmit = (event) => {
+        
         event.preventDefault()
         console.log(BASE_URL)
         if (BASE_URL) {
@@ -82,6 +86,7 @@ const Login = ({ onLogin }) => {
                         localStorage.setItem("branch", result.data.branch)
                         localStorage.setItem("bid", result.data.branch_id)
                         const path = navigateBasedOnUsertype(result.data.branch);
+                        console.log(result.data.branch)
                         navigate(path);
                     } else {
                         setError(result.data.Error)
