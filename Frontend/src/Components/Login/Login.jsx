@@ -34,7 +34,7 @@ const Login = ({ onLogin }) => {
             case 'सचिबालय':
                 return '/sanchar';
             case 'प्रशासन':
-                return '/admin/officeleave';
+                return '/admin/addleavecount';
             case 'कार्यालय प्रमुख':
                 return '/display/chief';
             case 'सुचना पाटी':

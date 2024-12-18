@@ -94,7 +94,9 @@ const SancharProgram = () => {
         // console.log('Submitting form data:', news);
         if (editMode) {
             try {
-                const result = await axios.put(`${BASE_URL}/auth/update_news/${editNewsId}`, news)
+                const result = await axios.put(`${BASE_URL}/auth/update_news/${editNewsId}`, news , 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            })
                 if (result.data.Status) {
                     fetch_news();
                     handleClear();
@@ -107,7 +109,9 @@ const SancharProgram = () => {
             }
         } else {
             try {
-                const result = await axios.post(`${BASE_URL}/auth/add_news`, news);
+                const result = await axios.post(`${BASE_URL}/auth/add_news`, news , 
+                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
                 if (result.data.Status) {
                     // alert("News Added Successfully");
                     fetch_news();
@@ -144,7 +148,9 @@ const SancharProgram = () => {
 
     const handleDelete = (id) => {
 
-        axios.delete(`${BASE_URL}/auth/delete_news/` + id)
+        axios.delete(`${BASE_URL}/auth/delete_news/` + id, 
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    })
             .then(result => {
                 if (result.data.Status) {
                     // window.location.reload()

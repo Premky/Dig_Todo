@@ -11,6 +11,7 @@ import axios from 'axios';
 import OfficeWiseLeaveCount from '../LeaveCount/OfficeWiseLeaveCount'
 import { getBaseUrl } from "../../Utilities/getBaseUrl";
 
+const token = localStorage.getItem("token");
 
 const AddLeaveCount = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -52,7 +53,9 @@ const AddLeaveCount = () => {
     console.log('submitting form data:', leaveCount);
 
     axios
-      .post(`${BASE_URL}/auth/add_leave_count`, leaveCount)
+      .post(`${BASE_URL}/auth/add_leave_count`, leaveCount, 
+      {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+  })
       .then(result => { navigate('/admin/addleavecount') })
       .catch(err => console.log(err))
   }
