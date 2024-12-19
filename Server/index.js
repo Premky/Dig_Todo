@@ -63,6 +63,6 @@ app.use(express.static('Public'));
 // app.use('/Uploads', express.static(path.join(__dirname, 'Public/Uploads')));
 app.use('/Uploads', express.static(path.join(__dirname, 'Public','Uploads')));
 
-app.listen(3001, () => {
+app.listen(3002, () => {
     console.log("Server is running");
 });
