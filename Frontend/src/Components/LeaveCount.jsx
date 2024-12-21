@@ -9,6 +9,7 @@ import axios from 'axios'
 import { getBaseUrl } from '../Utilities/getBaseUrl'
 
 const token = localStorage.getItem("token");
+console.log(token)
 
 const LeaveCount = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -29,8 +30,8 @@ const LeaveCount = () => {
 
     const fetchLeaveCount = () => {
         axios.get(`${BASE_URL}/auth/leave_count_self`, 
-            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-        })
+        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    })
             .then(result => {
                 if (result.data.Status) {
                     const data = result.data.Result[0]

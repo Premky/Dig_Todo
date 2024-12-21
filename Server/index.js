@@ -16,15 +16,6 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// This method is for single origin 
-// app.use(cors({
-//     // origin: "http://192.168.162.15:8211", // Allow your frontend's origin
-//     // origin: "http://192.168.1.35:5173", // Allow your frontend's origin
-//     origin: "http://localhost:5173", // Allow your frontend's origin
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     credentials: true // Allow credentials such as cookies
-// }));
-
 
 // ####################################
 // This method is for multiple origin

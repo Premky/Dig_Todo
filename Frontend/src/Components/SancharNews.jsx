@@ -94,15 +94,9 @@ const SancharProgram = () => {
         // console.log('Submitting form data:', news);
         if (editMode) {
             try {
-<<<<<<< HEAD
-                const result = await axios.put(`${BASE_URL}/auth/update_news/${editNewsId}`, news , 
-                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-            })
-=======
                 const result = await axios.put(`${BASE_URL}/auth/update_news/${editNewsId}`, news, 
                     {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
                   })
->>>>>>> 1baa66d62f13ffceb515ebc3de2ef77081f841e8
                 if (result.data.Status) {
                     fetch_news();
                     handleClear();
@@ -115,15 +109,9 @@ const SancharProgram = () => {
             }
         } else {
             try {
-<<<<<<< HEAD
                 const result = await axios.post(`${BASE_URL}/auth/add_news`, news , 
                 {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
             });
-=======
-                const result = await axios.post(`${BASE_URL}/auth/add_news`, news, 
-                    {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-                  });
->>>>>>> 1baa66d62f13ffceb515ebc3de2ef77081f841e8
                 if (result.data.Status) {
                     // alert("News Added Successfully");
                     fetch_news();
@@ -161,13 +149,8 @@ const SancharProgram = () => {
     const handleDelete = (id) => {
 
         axios.delete(`${BASE_URL}/auth/delete_news/` + id, 
-<<<<<<< HEAD
-        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-    })
-=======
             {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
           })
->>>>>>> 1baa66d62f13ffceb515ebc3de2ef77081f841e8
             .then(result => {
                 if (result.data.Status) {
                     // window.location.reload()
