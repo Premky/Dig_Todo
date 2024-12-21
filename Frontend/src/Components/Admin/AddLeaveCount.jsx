@@ -50,7 +50,9 @@ const AddLeaveCount = () => {
       return;
     }
     setValidationError('');
-    console.log('submitting form data:', leaveCount);
+    console.log('submitting form data:', leaveCount, 
+      {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+    });
 
     axios
       .post(`${BASE_URL}/auth/add_leave_count`, leaveCount, 
