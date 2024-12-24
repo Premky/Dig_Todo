@@ -613,6 +613,7 @@ router.get('/display_do_notice', verifyToken, (req, res) => {
 router.delete('/delete_uploaded_notice/:id', verifyToken, (req, res) => {
     const office_id = req.userOffice;
     const id = req.params.id;
+    console.log('office:',office_id, 'id:', id)
 
     const getFileSql = 'SELECT notice_img FROM do_notice WHERE donid=? AND office_id=?';
     con.query(getFileSql, [id, office_id], (err, result) => {
