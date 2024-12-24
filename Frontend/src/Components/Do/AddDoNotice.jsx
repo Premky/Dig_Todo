@@ -120,7 +120,8 @@ const AddDoNotice = () => {
 
     const handleDelete = async (id) => {
         try {
-            const result = await axios.delete(`${BASE_URL}/auth/delete_uploaded_notice/${id}`);
+            const result = await axios.delete(`${BASE_URL}/auth/delete_uploaded_notice/${id}`, {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
             if (result.data.Status) {
                 fetchDoNotices();
             } else {
