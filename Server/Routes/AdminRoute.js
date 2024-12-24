@@ -555,7 +555,7 @@ router.post('/add_do_notice', verifyToken, upload.single('image'), (req, res) =>
     try {
         const office_id = req.userOffice;
         const todayNepaliDate = req.body.date;
-
+        console.log(req.file)
         const sql = `INSERT INTO do_notice(date, subject, remarks, notice_img, created_by, office_id, branch_id) VALUES(?)`;
 
         const imageUrl = req.file ? `${req.file.filename}` : null;  // Updated path

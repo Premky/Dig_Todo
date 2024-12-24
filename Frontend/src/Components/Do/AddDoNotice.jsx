@@ -7,9 +7,9 @@ import Header from '../Headers/Header';
 import Footer from '../Headers/Footer';
 import { getBaseUrl } from '../../Utilities/getBaseUrl'
 
-const token = localStorage.getItem("token");
-
 const AddDoNotice = () => {
+    const token = localStorage.getItem("token");
+    
     const BASE_URL = import.meta.env.VITE_API_BASE_URL
     // const [BASE_URL, setBase_Url] = useState();
     // const getBaseURLFunc = async () => {
@@ -69,21 +69,25 @@ const AddDoNotice = () => {
     };
 
     const handleUpload = async (e) => {
+        console.log(token)
         e.preventDefault();
         const formData = new FormData();
         formData.append('date', notice.date);
         formData.append('subject', notice.subject);
         formData.append('remarks', notice.remarks);
         formData.append('image', selectedImage);
+        console.log(selectedImage)
         formData.append('user_id', notice.user_id);
         formData.append('office_id', notice.office_id);
         formData.append('branch_id', notice.branch_id);
 
+        // for (let [key, value] of formData.entries()) {
+        //     console.log(key, value); // Debug FormData content
+        // }
+
         try {
-            const response = await axios.post(`${BASE_URL}/auth/add_do_notice`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
+            const response = await axios.post(`${BASE_URL}/auth/add_do_notice`, formData, 
+                {headers: {  Authorization: `Bearer ${token}`}
             });
             if (response.data.Status) {
                 alert('Notice uploaded successfully');
