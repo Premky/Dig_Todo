@@ -55,7 +55,7 @@ router.post('/login', (req, res) => {
                         email: user.username,
                         office: user.office_id,
                         branch: user.branch_id,
-                    }, process.env.JWT_SECRET, { expiresIn: '2d' });
+                    }, process.env.JWT_SECRET, { expiresIn: '3d' });
 
                     res.cookie('token', token, { httpOnly: true, secure: true }); // Secure cookies
 
