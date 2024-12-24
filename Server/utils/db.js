@@ -9,11 +9,11 @@ const con = mysql.createConnection({
     password:process.env.DB_PASSWORD,
     database:process.env.DB_NAME,
     
+    ...(process.env.SSL && { ssl:{
+        rejectUnauthorized:false,
+    } })  
     
 })
-// ssl:{
-//     rejectUnauthorized:false,
-// }
 // console.log(con)
 
 

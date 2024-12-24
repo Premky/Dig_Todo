@@ -10,17 +10,17 @@ import { getBaseUrl } from '../../Utilities/getBaseUrl'
 const token = localStorage.getItem("token");
 
 const AddDoNotice = () => {
-    // const BASE_URL = import.meta.env.VITE_API_BASE_URL
-    const [BASE_URL, setBase_Url] = useState();
-    const getBaseURLFunc = async () => {
-        const url = await getBaseUrl();
-        setBase_Url(url)
-    }
-    console.log(BASE_URL)
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL
+    // const [BASE_URL, setBase_Url] = useState();
+    // const getBaseURLFunc = async () => {
+    //     const url = await getBaseUrl();
+    //     setBase_Url(url)
+    // }
+    // console.log(BASE_URL)
 
-    useEffect(() => {
-        getBaseURLFunc();
-    }, []);
+    // useEffect(() => {
+    //     getBaseURLFunc();
+    // }, []);
 
     const navigate = useNavigate();
     const [validationError, setValidationError] = useState(null);

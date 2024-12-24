@@ -9,7 +9,7 @@ import axios from 'axios'
 import { getBaseUrl } from '../Utilities/getBaseUrl'
 
 const token = localStorage.getItem("token");
-console.log(token)
+// console.log(token)
 
 const LeaveCount = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
