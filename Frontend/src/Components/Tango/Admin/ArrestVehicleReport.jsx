@@ -98,7 +98,7 @@ const ArrestVehicleReport = () => {
             });
 
             if (result.data.Status) {
-                console.log("Arrest Vehicles Data:", result.data.Result);
+                // console.log("Arrest Vehicles Data:", result.data.Result);
                 setFetchedArrestedVehicle(result.data.Result);
                 setFetchedArrestedVehicleXport(result.data.Result);
             } else {

@@ -15,6 +15,7 @@ import XportRajaswa from '../XportRajaswa';
 const PunishmentActionForm = () => {
     const { pmis } = useParams();
     const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    const token = localStorage.getItem("token");
     const npToday = new NepaliDate();
     const formattedDateNp = npToday.format('YYYY-MM-DD');
     const { register, handleSubmit, reset, setValue, formState: { errors }, control } = useForm();
