@@ -7,6 +7,7 @@ import "nepali-datepicker-reactjs/dist/index.css"
 import { format } from 'date-fns';
 import axios from 'axios'
 import { getBaseUrl } from '../Utilities/getBaseUrl'
+import { styled } from '@mui/material'
 
 const token = localStorage.getItem("token");
 // console.log(token)
@@ -29,9 +30,10 @@ const LeaveCount = () => {
     const [calculatedSum, setCalculatedSum] = useState();
 
     const fetchLeaveCount = () => {
-        axios.get(`${BASE_URL}/auth/leave_count_self`, 
-        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-    })
+        axios.get(`${BASE_URL}/auth/leave_count_self`,
+            {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            })
             .then(result => {
                 if (result.data.Status) {
                     const data = result.data.Result[0]
@@ -44,7 +46,7 @@ const LeaveCount = () => {
             }).catch(err => console.log(err))
     };
 
-    useEffect(() => {        
+    useEffect(() => {
         if (BASE_URL) {
             fetchLeaveCount(); //Fetch Initially
         };
@@ -63,6 +65,8 @@ const LeaveCount = () => {
         return <div>Loading(LC)...</div>
     }
 
+    const center = ['text-center']
+
     return (
         <div className='m-0 p-0' >
             <div className="p-2 d-flex justify-content-center text-center bg-primary shadow">
@@ -70,75 +74,74 @@ const LeaveCount = () => {
             </div>
             <div className='container-fluid m-0 p-0 border border-warning'>
                 <div className="row mx-0 px-2 bg-success bg-gradient text-white text-center">
-                    <div className="col">
+                    <div className="col text-center">
                         प्रनामनि <br />
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रवउ
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रउ
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रनाउ
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रनि
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रवनानि
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रनानि
                     </div>
                 </div>
                 <div className="row mx-0 px-2 text-center">
                     {/* <div className="col">{leaveCount.igp}</div>
                     <div className="col">{leaveCount.aig}</div>  */}
-                    <div className="col">{leaveCount.dig}</div>
-                    <div className="col">{leaveCount.ssp}</div>
-                    <div className="col">{leaveCount.sp}</div>
-                    <div className="col">{leaveCount.dsp}</div>
-                    <div className="col">{leaveCount.insp}</div>
-                    <div className="col">{leaveCount.ssi}</div>
-                    <div className="col">{leaveCount.si}</div>
+                    <div className="col text-center">{leaveCount.dig}</div>
+                    <div className="col text-center">{leaveCount.ssp}</div>
+                    <div className="col text-center">{leaveCount.sp}</div>
+                    <div className="col text-center">{leaveCount.dsp}</div>
+                    <div className="col text-center">{leaveCount.insp}</div>
+                    <div className="col text-center">{leaveCount.ssi}</div>
+                    <div className="col text-center">{leaveCount.si}</div>
                 </div>
-                <div className="row mx-0 px-2 bg-success bg-gradient text-white text-center">
 
-                    <div className="col">
-                        प्रसनि
+                <div className="row mx-0 px-2 bg-success bg-gradient text-white text-center">
+                    <div className="col text-center">
+                        प्रसनि <br />
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रवह
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रह
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रसह
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रज
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         प्रकास
                     </div>
-                    <div className="col">
+                    <div className="col text-center">
                         जम्मा
                     </div>
                 </div>
 
                 <div className="row mx-0 px-2 text-center">
-                    <div className="col">{leaveCount.asi}</div>
-                    <div className="col">{leaveCount.shc}</div>
-                    <div className="col">{leaveCount.hc}</div>
-                    <div className="col">{leaveCount.ahc}</div>
-                    <div className="col">{leaveCount.pc}</div>
-                    <div className="col">{leaveCount.poa}</div>
-                    <div className="col">
-                        <h5>    {calculatedSum} </h5>
+                    <div className="col text-center">{leaveCount.asi}</div>
+                    <div className="col text-center">{leaveCount.shc}</div>
+                    <div className="col text-center">{leaveCount.hc}</div>
+                    <div className="col text-center">{leaveCount.ahc}</div>
+                    <div className="col text-center">{leaveCount.pc}</div>
+                    <div className="col text-center">{leaveCount.poa}</div>
+                    <div className="col text-center">
+                        {calculatedSum}
                     </div>
-                    <div className="col"></div>
                 </div>
 
 
