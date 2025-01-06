@@ -19,25 +19,29 @@ const __dirname = path.dirname(__filename);
 
 // ####################################
 // This method is for multiple origin
+// const allowedOrigins = [
+//     'https://kppo-frontend.onrender.com',
+//     'https://kppo-frontend.onrender.com',
+//     'https://kppo-frontend.onrender.com/',
+//     'http://localhost:5173',
+//     'http://192.168.162.15:8211',
+//     'http://192.168.162.15:5173',
+// ];
+
 const allowedOrigins = [
-    'https://kppo-frontend.onrender.com',
-    'https://kppo-frontend.onrender.com',
-    'https://kppo-frontend.onrender.com/',
-    'http://localhost:5173',
-    'http://192.168.162.15:8211',
-    'http://192.168.162.15:5173',
+    'https://kppo-frontend.onrender.com', // Production frontend
+    'http://localhost:5173', // For local testing
 ];
 
 app.use(cors({
-    origin:'*',
-    // origin:
-    //     function (origin, callback) {
-    //         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-    //             callback(null, true);
-    //         } else {
-    //             callback(new Error('Not allowed by CORS'));
-    //         }
-    //     },
+    // origin:'*',
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true // Allow credentials such as cookies
 }));
