@@ -42,7 +42,9 @@ const Login = ({ onLogin }) => {
         event.preventDefault();
         if (BASE_URL) {
             try {
-                const result = await axios.post(`${BASE_URL}/auth/login`, values);
+                const result = await axios.post(`${BASE_URL}/auth/login`, values,{
+                    withCredentials:true,
+                });
                 if (result.data.loginStatus) {
                     onLogin(result.data);
                     localStorage.setItem("token", result.data.token);
