@@ -33,18 +33,27 @@ const allowedOrigins = [
     'http://localhost:5173', // For local testing
 ];
 
-app.use(cors({
-    // origin:'*',
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true // Allow credentials such as cookies
-}));
+// app.use(cors({
+//     // origin:'*',
+//     origin: function (origin, callback) {
+//         if (!origin || allowedOrigins.includes(origin)) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     },
+//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//     credentials: true // Allow credentials such as cookies
+// }));
+
+const corsOptions = {
+    origin: 'https://kppo-frontend.onrender.com', // Replace with your frontend domain
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true, // Allow cookies and credentials
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+};
+
+app.use(cors(corsOptions));
 
 
 app.use(express.json());
