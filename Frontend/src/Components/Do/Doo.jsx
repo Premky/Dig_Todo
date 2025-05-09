@@ -7,7 +7,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import DoDuties from '../Do/DoDuties'
 import axios from 'axios'
 import NepaliDate from 'nepali-datetime'
-import {getBaseUrl} from '../../Utilities/getBaseUrl'
+import { getBaseUrl } from '../../Utilities/getBaseUrl'
+import { useForm, Controller } from 'react-hook-form'
+import ReuseDatePicker from '../ReuseableComponents/ReuseDatePicker'
+
+
 
 const Doo = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -22,6 +26,7 @@ const Doo = () => {
     }, []);
 
     const navigate = useNavigate()
+    const { register, reset, setValue, formState: { errors }, control } = useForm();
     const [sdatevalidationError, setsDateValidationError] = useState();
     const [edatevalidationError, seteDateValidationError] = useState();
     // const [SelectedValue, setSelectedValue] = useState();
@@ -72,6 +77,11 @@ const Doo = () => {
         setDuty({ ...duty, dutytype: e.target.value })
         // console.log(duty.dutytype)
     }
+    const [date, setDate] = useState('');
+
+    const handleDate = ({ bsDate, adDate }) => {
+        setDate({ date: bsDate });
+    };
     return (
         <>
             <Header />
@@ -96,14 +106,13 @@ const Doo = () => {
                                         <label htmlFor="inputDate" className='form-label'>
                                             सुरु मिति:
                                         </label>
-                                        <NepaliDatePicker
-                                            inputClassName="form-control rounded-0"
-                                            value={duty.start_date}
-                                            required
-                                            onChange={handleStartDateChange}
-                                            options={{ calenderLocale: 'ne', valueLocale: 'en' }}
+                                        <ReuseDatePicker
+                                            defaultValue={duty.start_date}
+                                            onDateChange={handleStartDateChange}
+                                            theme="dark"
                                         />
                                         {sdatevalidationError && <div className='text-danger'>{sdatevalidationError}</div>}
+
                                     </div>
 
                                     <div className="col-6">
@@ -112,7 +121,7 @@ const Doo = () => {
                                         </label>
                                         <input type="time" className='form-control rounded-0'
                                             id='inputDate'
-                                            onChange={(e) => setDuty({ ...duty, start_time: e.target.value })} />
+                                            onChange={(e) => setDuty({ ...duty, start_time: e.target.value })} />                                        
                                     </div>
                                 </div>
                                 <div className="row">
@@ -120,14 +129,13 @@ const Doo = () => {
                                         <label htmlFor="inputDate" className='form-label'>
                                             समाप्त मिति:
                                         </label>
-                                        <NepaliDatePicker
-                                            inputClassName="form-control rounded-0"
-                                            value={duty.end_date}
-                                            required
-                                            onChange={handleEndDateChange}
-                                            options={{ calenderLocale: 'ne', valueLocale: 'en' }}
+                                        <ReuseDatePicker
+                                            defaultValue={duty.end_date}
+                                            onDateChange={handleEndDateChange}
+                                            theme="dark"
                                         />
                                         {edatevalidationError && <div className='text-danger'>{edatevalidationError}</div>}
+                                        
                                     </div>
 
                                     <div className="col-6">

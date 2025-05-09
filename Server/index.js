@@ -31,23 +31,21 @@ const __dirname = path.dirname(__filename);
 const allowedOrigins = [
     'https://kppo-frontend.onrender.com', // Production frontend
     'http://localhost:5173', // For local testing
+    'http://localhost:5174', // For local testing
+    'http://192.168.162.15:8211',
+    'http://192.168.162.15:5173',
 ];
 
-// app.use(cors({
-//     // origin:'*',
-//     origin: function (origin, callback) {
-//         if (!origin || allowedOrigins.includes(origin)) {
-//             callback(null, true);
-//         } else {
-//             callback(new Error('Not allowed by CORS'));
-//         }
-//     },
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     credentials: true // Allow credentials such as cookies
-// }));
 
 const corsOptions = {
-    origin: 'https://kppo-frontend.onrender.com', // Replace with your frontend domain
+    // origin: 'https://kppo-frontend.onrender.com', // Replace with your frontend domain
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true, // Allow cookies and credentials
     allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers

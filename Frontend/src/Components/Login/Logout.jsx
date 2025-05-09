@@ -19,6 +19,8 @@ const Logout = (onLogout) => {
 
   const handleLogout = () => {
     localStorage.removeItem("valid");
+    localStorage.removeItem("token");
+    localStorage.removeItem("branch");
     localStorage.removeItem("type");
     localStorage.removeItem("user");
     localStorage.removeItem("uid");
