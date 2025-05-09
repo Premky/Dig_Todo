@@ -6,21 +6,12 @@ import axios from 'axios';
 import Header from '../Headers/Header';
 import Footer from '../Headers/Footer';
 import { getBaseUrl } from '../../Utilities/getBaseUrl'
+import ReuseDatePicker from '../ReuseableComponents/ReuseDatePicker';
 
 const AddDoNotice = () => {
     const token = localStorage.getItem("token");
-    
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL
-    // const [BASE_URL, setBase_Url] = useState();
-    // const getBaseURLFunc = async () => {
-    //     const url = await getBaseUrl();
-    //     setBase_Url(url)
-    // }
-    // console.log(BASE_URL)
 
-    // useEffect(() => {
-    //     getBaseURLFunc();
-    // }, []);
+    const BASE_URL = import.meta.env.VITE_API_BASE_URL
 
     const navigate = useNavigate();
     const [validationError, setValidationError] = useState(null);
@@ -53,6 +44,7 @@ const AddDoNotice = () => {
     };
 
     const handleDateChange = (value) => {
+        // console.log(value)
         setNotice((prevNotice) => ({ ...prevNotice, date: value }));
     };
 
@@ -69,14 +61,15 @@ const AddDoNotice = () => {
     };
 
     const handleUpload = async (e) => {
-        console.log(token)
+        // console.log(token)
         e.preventDefault();
         const formData = new FormData();
+        console.log(notice.date)
         formData.append('date', notice.date);
         formData.append('subject', notice.subject);
         formData.append('remarks', notice.remarks);
         formData.append('image', selectedImage);
-        console.log(selectedImage)
+        // console.log(selectedImage)
         formData.append('user_id', notice.user_id);
         formData.append('office_id', notice.office_id);
         formData.append('branch_id', notice.branch_id);
@@ -86,9 +79,10 @@ const AddDoNotice = () => {
         // }
 
         try {
-            const response = await axios.post(`${BASE_URL}/auth/add_do_notice`, formData, 
-                {headers: {  Authorization: `Bearer ${token}`}
-            });
+            const response = await axios.post(`${BASE_URL}/auth/add_do_notice`, formData,
+                {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
             if (response.data.Status) {
                 alert('Notice uploaded successfully');
                 fetchDoNotices();
@@ -106,7 +100,8 @@ const AddDoNotice = () => {
 
     const fetchDoNotices = async () => {
         try {
-            const result = await axios.get(`${BASE_URL}/auth/uploaded_do_notice`, {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            const result = await axios.get(`${BASE_URL}/auth/uploaded_do_notice`, {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
             });
             if (result.data.Status) {
                 setDoNotice(result.data.Result);
@@ -124,7 +119,8 @@ const AddDoNotice = () => {
 
     const handleDelete = async (id) => {
         try {
-            const result = await axios.delete(`${BASE_URL}/auth/delete_uploaded_notice/${id}`, {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            const result = await axios.delete(`${BASE_URL}/auth/delete_uploaded_notice/${id}`, {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
             });
             if (result.data.Status) {
                 fetchDoNotices();
@@ -155,12 +151,18 @@ const AddDoNotice = () => {
                     <form onSubmit={handleUpload}>
                         <div className="col">
                             <label htmlFor="inputTitle">मितिः</label>
-                            <NepaliDatePicker
+                            {/* <NepaliDatePicker
                                 inputClassName="form-control rounded-0"
                                 value={notice.date}
                                 required
                                 onChange={handleDateChange}
                                 options={{ calenderLocale: 'ne', valueLocale: 'en' }}
+                            /> */}
+                            <ReuseDatePicker
+                                defaultValue={notice.date}
+                                onDateChange={handleDateChange}
+                                theme="default"
+                                required={true}
                             />
                             {validationError && (
                                 <div className="text-danger">{validationError}</div>
@@ -223,7 +225,17 @@ const AddDoNotice = () => {
                             <li key={notice.donid} className="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5>{notice.subject}</h5>
+                                    <p>{notice.date} </p>
                                     <p>{notice.remarks}</p>
+                                    {/* <div className="container row">
+                                        <div className="col-3">
+                                            </div>
+                                        <div className="col-3"><p></p></div>
+                                        <div className="col-6">
+                                            </div>
+                                    </div> */}
+
+
                                     {notice.notice_img && (
                                         <div>
                                             <img src={`${BASE_URL}/Uploads/${notice.notice_img}`} alt="Notice" style={{ width: '100px' }} />

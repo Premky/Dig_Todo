@@ -20,6 +20,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import ReuseDatePicker from './ReuseableComponents/ReuseDatePicker'
 
 //*******************This is closing for Modal */
 
@@ -84,7 +85,7 @@ const SancharProgram = () => {
         //     .catch(err => console.log(err))
 
         if (editMode) {
-            
+
             try {
                 const result = await axios.put(`${BASE_URL}/auth/update_program/${editProgramId}`, programs);
                 if (result.data.Status) {
@@ -147,9 +148,10 @@ const SancharProgram = () => {
     }, []);
 
     const fetch_programs = () => {
-        axios.get(`${BASE_URL}/auth/programs/${localStorage.getItem('oid')}`, 
-        {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-    })
+        axios.get(`${BASE_URL}/auth/programs/${localStorage.getItem('oid')}`,
+            {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            })
             .then(result => {
                 if (result.data.Status) {
                     setProgramList(result.data.Result);
@@ -213,14 +215,15 @@ const SancharProgram = () => {
         setOpen(false);
     };
 
-    
+
     //*******************This is for Modal **************/
     const [open, setOpen] = React.useState(false);
     const [delProgram, setDelProgram] = useState();
     const handleClickOpen = (id) => {
-        axios.get(`${BASE_URL}/auth/fetch_delete_program/${id}`, 
-            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-        })
+        axios.get(`${BASE_URL}/auth/fetch_delete_program/${id}`,
+            {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            })
             .then(result => {
                 if (result.data.Status) {
                     console.log(result.data.Result[0].pid)
@@ -250,7 +253,7 @@ const SancharProgram = () => {
                             <div className="col"></div>
                             <div className="col"><h4>आजको कार्यक्रम अपडेट गर्नुहोस्</h4> </div>
                             <div className="col"><p className='mb-2 btn btn-success' onClick={handleNews}>News</p></div>
-                            
+
                         </div>
                         <div className="d-flex flex-column px-0 pt-0 min-vh-100">
                             <form className='row g-10 m-2' onSubmit={handleProgramSubmit}>
@@ -259,13 +262,19 @@ const SancharProgram = () => {
                                         <label htmlFor="inputDate" className='form-label'>
                                             Date(मिति):
                                         </label>
-                                        <NepaliDatePicker
+                                        <ReuseDatePicker
+                                            defaultValue={programs.date}
+                                            onDateChange={handleProgramDateChange}
+                                            theme="default"
+                                            required={true}
+                                        />
+                                        {/* <NepaliDatePicker
                                             inputClassName="form-control rounded-0"
                                             value={programs.date}
                                             required
                                             onChange={handleProgramDateChange}
                                             options={{ calenderLocale: 'ne', valueLocale: 'en' }}
-                                        />
+                                        /> */}
                                         {validationError && <div className='text-danger'>{validationError}</div>}
                                     </div>
 
@@ -314,84 +323,84 @@ const SancharProgram = () => {
                                 </div>
                                 <div className="row">
                                     <div className="col-6 mt-2">
-                                        
+
                                         <button className="btn btn-primary w-100" >
                                             {editMode ? 'Update' : 'Add'}
                                         </button>
                                     </div>
                                     <div className="col-6 mt-2">
-                                    <div className="btn btn-secondary w-100" onClick={handleClear}>
+                                        <div className="btn btn-secondary w-100" onClick={handleClear}>
                                             clear
                                         </div>
                                     </div>
                                 </div>
                             </form>
-                        
-                        <div className="pt-2 d-flex justify-content-center shadow">
-                            <h4>सबै कार्यक्रमहरुः</h4>
-                        </div>
-                        <div className="d-flex flex-column px-0 pt-0">
-                            <table className='table table-striped p-0'>
-                                <thead className="bg-primary">
-                                    <tr>
-                                        <th className='bg-primary bg-gradient text-white'> सि.नं.</th>
-                                        <th className='bg-primary bg-gradient text-white'>मिति/समय</th>
-                                        <th className='bg-primary bg-gradient text-white'>कार्यक्रम</th>
-                                        <th className='bg-primary bg-gradient text-white'>स्थान</th>
-                                        <th className='bg-primary bg-gradient text-white'>आयोजक</th>
-                                        <th className='bg-primary bg-gradient text-white'>कै.</th>
-                                        <th className='bg-primary bg-gradient text-white'>सञ्चोधन</th> {/* New column for Edit button */}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {programList.map((pl, index) => (
-                                        <tr key={index}>
-                                            <td style={{ color: 'purple' }}>{index + 1}</td>
-                                            <td>
-                                                {pl.date}<br />
-                                                {pl.time && formatTime(pl.time)}
-                                            </td>
-                                            <td>{pl.program}</td>
-                                            <td>{pl.venue}</td>
-                                            <td>{pl.organizer}</td>
-                                            <td>{pl.remarks}</td>
-                                            {pl.branch_id == usr_branch_id && (
-                                                <td>
-                                                    {/* {!pl.hidden ? ( */}
-                                                    {!pl.is_displayed ? (
-                                                        <button className="btn btn-warning btn-sm me-2" onClick={() => handleHideShow(pl.pid, true)}>
-                                                            <i class="bi bi-eye-slash"></i>
-                                                        </button>
-                                                    ) : (
-                                                        <button className="btn btn-info btn-sm me-2" onClick={() => handleHideShow(pl.pid, false)}>
-                                                            <i class="bi bi-eye"></i>
-                                                        </button>
-                                                    )}
 
-                                                    <button className="btn btn-danger btn-sm me-2" id={pl.pid} onClick={() => handleEdit(pl)}  >
-                                                        <i class="bi bi-pencil-square"></i>
-                                                    </button>
-
-                                                    <Button className="btn btn-danger btn-sm me-2" id={pl.pid} variant="outlined" onClick={() => handleClickOpen(pl.pid)}>
-                                                        <i class="bi bi-trash"></i>
-                                                    </Button>
-
-                                                </td>
-                                            )}
+                            <div className="pt-2 d-flex justify-content-center shadow">
+                                <h4>सबै कार्यक्रमहरुः</h4>
+                            </div>
+                            <div className="d-flex flex-column px-0 pt-0">
+                                <table className='table table-striped p-0'>
+                                    <thead className="bg-primary">
+                                        <tr>
+                                            <th className='bg-primary bg-gradient text-white'> सि.नं.</th>
+                                            <th className='bg-primary bg-gradient text-white'>मिति/समय</th>
+                                            <th className='bg-primary bg-gradient text-white'>कार्यक्रम</th>
+                                            <th className='bg-primary bg-gradient text-white'>स्थान</th>
+                                            <th className='bg-primary bg-gradient text-white'>आयोजक</th>
+                                            <th className='bg-primary bg-gradient text-white'>कै.</th>
+                                            <th className='bg-primary bg-gradient text-white'>सञ्चोधन</th> {/* New column for Edit button */}
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        {programList.map((pl, index) => (
+                                            <tr key={index}>
+                                                <td style={{ color: 'purple' }}>{index + 1}</td>
+                                                <td>
+                                                    {pl.date}<br />
+                                                    {pl.time && formatTime(pl.time)}
+                                                </td>
+                                                <td>{pl.program}</td>
+                                                <td>{pl.venue}</td>
+                                                <td>{pl.organizer}</td>
+                                                <td>{pl.remarks}</td>
+                                                {pl.branch_id == usr_branch_id && (
+                                                    <td>
+                                                        {/* {!pl.hidden ? ( */}
+                                                        {!pl.is_displayed ? (
+                                                            <button className="btn btn-warning btn-sm me-2" onClick={() => handleHideShow(pl.pid, true)}>
+                                                                <i class="bi bi-eye-slash"></i>
+                                                            </button>
+                                                        ) : (
+                                                            <button className="btn btn-info btn-sm me-2" onClick={() => handleHideShow(pl.pid, false)}>
+                                                                <i class="bi bi-eye"></i>
+                                                            </button>
+                                                        )}
+
+                                                        <button className="btn btn-danger btn-sm me-2" id={pl.pid} onClick={() => handleEdit(pl)}  >
+                                                            <i class="bi bi-pencil-square"></i>
+                                                        </button>
+
+                                                        <Button className="btn btn-danger btn-sm me-2" id={pl.pid} variant="outlined" onClick={() => handleClickOpen(pl.pid)}>
+                                                            <i class="bi bi-trash"></i>
+                                                        </Button>
+
+                                                    </td>
+                                                )}
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
                     {/* <div className="col-auto col-md-6 col-xl-6  px-o p-0 m-0">                     */}
-                        {/* <p className='m-0 mt-1 p-1 btn btn-success' onClick={handleNews}>News</p> */}
+                    {/* <p className='m-0 mt-1 p-1 btn btn-success' onClick={handleNews}>News</p> */}
 
 
-                        {/* <AllPrograms /> */}
-                        
+                    {/* <AllPrograms /> */}
+
                     {/* </div> */}
                 </div>
             </div>

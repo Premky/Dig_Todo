@@ -18,6 +18,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import ReuseDatePicker from './ReuseableComponents/ReuseDatePicker'
 
 //*******************This is closing for Modal */
 
@@ -56,9 +57,10 @@ const SancharProgram = () => {
     }
 
     const fetch_news = () => {
-        axios.get(`${BASE_URL}/auth/news`, 
-            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-        })
+        axios.get(`${BASE_URL}/auth/news`,
+            {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            })
             .then(result => {
                 if (result.data.Status) {
                     setNewsList(result.data.Result)
@@ -94,9 +96,10 @@ const SancharProgram = () => {
         // console.log('Submitting form data:', news);
         if (editMode) {
             try {
-                const result = await axios.put(`${BASE_URL}/auth/update_news/${editNewsId}`, news, 
-                    {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-                  })
+                const result = await axios.put(`${BASE_URL}/auth/update_news/${editNewsId}`, news,
+                    {
+                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+                    })
                 if (result.data.Status) {
                     fetch_news();
                     handleClear();
@@ -109,9 +112,10 @@ const SancharProgram = () => {
             }
         } else {
             try {
-                const result = await axios.post(`${BASE_URL}/auth/add_news`, news , 
-                {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-            });
+                const result = await axios.post(`${BASE_URL}/auth/add_news`, news,
+                    {
+                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+                    });
                 if (result.data.Status) {
                     // alert("News Added Successfully");
                     fetch_news();
@@ -148,9 +152,10 @@ const SancharProgram = () => {
 
     const handleDelete = (id) => {
 
-        axios.delete(`${BASE_URL}/auth/delete_news/` + id, 
-            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-          })
+        axios.delete(`${BASE_URL}/auth/delete_news/` + id,
+            {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            })
             .then(result => {
                 if (result.data.Status) {
                     // window.location.reload()
@@ -171,9 +176,10 @@ const SancharProgram = () => {
     const [open, setOpen] = React.useState(false);
     const [delNews, setDelNews] = useState();
     const handleClickOpen = (id) => {
-        axios.get(`${BASE_URL}/auth/fetch_delete_news/${id}`, 
-            {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-        })
+        axios.get(`${BASE_URL}/auth/fetch_delete_news/${id}`,
+            {
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            })
             .then(result => {
                 if (result.data.Status) {
                     console.log(result.data.Result[0].news_id)
@@ -208,12 +214,13 @@ const SancharProgram = () => {
                                         <label htmlFor="inputDate" className='form-label'>
                                             Date(मिति):
                                         </label>
-                                        <NepaliDatePicker
+
+                                        <ReuseDatePicker
                                             inputClassName="form-control rounded-0"
-                                            value={news.date}
-                                            required
-                                            onChange={handlDateChange}
-                                            options={{ calenderLocale: 'ne', valueLocale: 'en' }}
+                                            defaultValue={news.date}
+                                            onDateChange={handlDateChange}
+                                            theme="default"
+                                            required={true}
                                         />
                                         {validationError && <div className='text-danger'>{validationError}</div>}
                                     </div>
