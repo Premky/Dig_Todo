@@ -1,67 +1,36 @@
-const API_OPTIONS = [
-  "http://localhost:3002",
-  "http://192.168.162.15:3002",
-  "http://192.168.192.15:3002"
-];
+import axios from 'axios';
 
-const PORT = 3002;
-const CURRENT_BASE_URL = `${window.location.protocol}//${window.location.hostname}:${PORT}`;
-const HEALTH_CHECK_PATH = "/display/ranks";
+const primaryUrl = import.meta.env.VITE_API_BASE_URL_PRIMARY;
+const secondaryUrl = import.meta.env.VITE_API_BASE_URL_SECONDARY;
+const ternaryUrl = import.meta.env.VITE_API_BASE_URL_TERNARY;
+const mainUrl = import.meta.env.VITE_API_BASE_URL;
 
-// Fetch with timeout
-const fetchWithTimeout = (url, options = {}, timeout = 1500) => {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
-
-  return fetch(url, {
-    ...options,
-    signal: controller.signal
-  }).finally(() => clearTimeout(id));
+// Function to check if a URL is reachable
+const isUrlAvailable = async (url) => {
+    try {
+        console.log('url', url)
+        const response = await axios.get(`${url}/display/ranks`, { timeout: 2000 }); // You can use a simple health-check endpoint
+        return response.status === 200;
+    } catch (error) {
+        return false;
+    }
 };
 
-// Main function to determine usable API
+// Function to get the working base URL
 export const getBaseUrl = async () => {
-  // 1. Try cached URL (if it exists)
-  const cached = localStorage.getItem("BASE_URL");
-  if (cached) {
-    try {
-      const res = await fetchWithTimeout(`${cached}${HEALTH_CHECK_PATH}`);
-      if (res.ok) {
-        console.log(`✅ Using cached API: ${cached}`);
-        return cached;
-      }
-    } catch {
-      console.warn(`❌ Cached API failed: ${cached}`);
+    if (await isUrlAvailable(mainUrl)) {
+        return mainUrl;
+    } else if (await isUrlAvailable(primaryUrl)) {
+        // console.log('primary', primaryUrl)
+        return primaryUrl;
+    } else if (await isUrlAvailable(secondaryUrl)) {
+        // console.log(secondaryUrl)
+        return secondaryUrl;
+    } else if (await isUrlAvailable(ternaryUrl)) {
+        // console.log(ternaryUrl)
+        return ternaryUrl;
+    } else {
+        throw new Error('No available API URLs');
     }
-  }
-
-  // 2. Try current origin
-  try {
-    const res = await fetchWithTimeout(`${CURRENT_BASE_URL}${HEALTH_CHECK_PATH}`);
-    if (res.ok) {
-      console.log(`✅ Using current origin: ${CURRENT_BASE_URL}`);
-      localStorage.setItem("BASE_URL", CURRENT_BASE_URL);
-      return CURRENT_BASE_URL;
-    }
-  } catch {
-    console.warn(`❌ Current origin not reachable: ${CURRENT_BASE_URL}`);
-  }
-
-  // 3. Try predefined options
-  for (const url of API_OPTIONS) {
-    try {
-      const res = await fetchWithTimeout(`${url}${HEALTH_CHECK_PATH}`);
-      if (res.ok) {
-        console.log(`✅ Using fallback API: ${url}`);
-        localStorage.setItem("BASE_URL", url);
-        return url;
-      }
-    } catch {
-      console.warn(`❌ API not reachable: ${url}`);
-    }
-  }
-
-  // 4. All failed
-  console.error("⚠️ No reachable API server found!");
-  return null;
 };
+

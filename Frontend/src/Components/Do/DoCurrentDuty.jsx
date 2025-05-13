@@ -41,8 +41,8 @@ const DoCurrentDuty = () => {
     return duties.filter(duty => {
       const startDateTime = new NepaliDate(duty.start_date + ' ' + duty.start_time);
       const endDateTime = new NepaliDate(duty.end_date + ' ' + duty.end_time);
-
       return currentDate >= startDateTime && currentDate <= endDateTime;
+
     });
   };
 
