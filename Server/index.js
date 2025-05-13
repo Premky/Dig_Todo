@@ -17,17 +17,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-// ####################################
-// This method is for multiple origin
-// const allowedOrigins = [
-//     'https://kppo-frontend.onrender.com',
-//     'https://kppo-frontend.onrender.com',
-//     'https://kppo-frontend.onrender.com/',
-//     'http://localhost:5173',
-//     'http://192.168.162.15:8211',
-//     'http://192.168.162.15:5173',
-// ];
-
 const allowedOrigins = [
     'https://kppo-frontend.onrender.com', // Production frontend
     'http://localhost:5173', // For local testing
@@ -67,7 +56,7 @@ app.use(express.static('Public'));
 // Serve files from the 'Public/Uploads' directory
 // app.use('/Uploads', express.static(path.join(__dirname, 'Public/Uploads')));
 app.use('/Uploads', express.static(path.join(__dirname, 'Public', 'Uploads')));
-
-app.listen(3002, () => {
-    console.log("Server is running");
+const port = process.env.APP_PORT || 3002;
+app.listen(port, () => {
+    console.log("Server is running on", port);
 });

@@ -66,10 +66,12 @@ const Doo = () => {
             .catch(err => console.log(err))
     }
     const handleStartDateChange = (value) => {
+        // console.log(value)
         setDuty({ ...duty, start_date: value });
         setsDateValidationError('');
     };
     const handleEndDateChange = (value) => {
+        // console.log(value)
         setDuty({ ...duty, end_date: value });
         seteDateValidationError('');
     };
