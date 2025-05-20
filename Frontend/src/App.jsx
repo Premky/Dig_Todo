@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, useParams, useNavigate, Browser
 import { useEffect } from 'react'
 import axios from 'axios'
 import NepaliDate from 'nepali-datetime'
+import { AuthProvider, useAuth } from './Context/AuthContext'
 
 import Login from './Components/Login/Login'
 import Header from './Components/Headers/Header'
@@ -61,107 +62,109 @@ function App() {
   return (
     <>
 
-      <BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
 
-        <Routes>
-          <Route path="/" element={<Login onLogin={handleLogin} />} />
-          <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          <Routes>
+            <Route path="/" element={<Login onLogin={handleLogin} />} />
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
 
 
-          <Route path='/news' element={
-            <SancharRoute>
-              <SancharNews />
-            </SancharRoute>
-          } />
-          <Route path='/sanchar' element={
-            <SancharRoute>
-              <SancharProgram />
-            </SancharRoute>
-          } />
-          <Route path='/notice' element={
-            <PrivateRoute>
-              <AddDoNotice />
-            </PrivateRoute>
-          } />
-
-          <Route path='/doadmin' element={
-            <PrivateRoute>
-              <Doo />
-            </PrivateRoute>
-          } />
-
-          <Route path='/admin/addleavecount' element={
-            <PrivateRoute>
-              <AddLeaveCount />
-            </PrivateRoute>
-          }>
-          </Route>
-          <Route path='/admin/officeleave' element={<OfficerLeave />}>
-          </Route>
-
-          <Route path='/display' element={<Header_Footer />}>
-            <Route path='/display/dodisplay' element={
-              // <PrivateRoute>
-              <DoDisplay />
-              // </PrivateRoute>
+            <Route path='/news' element={
+              <SancharRoute>
+                <SancharNews />
+              </SancharRoute>
             } />
-
-            <Route path="/display/chief" element={
+            <Route path='/sanchar' element={
+              <SancharRoute>
+                <SancharProgram />
+              </SancharRoute>
+            } />
+            <Route path='/notice' element={
               <PrivateRoute>
-                <DigDashboard />
+                <AddDoNotice />
               </PrivateRoute>
             } />
-          </Route>
 
-          <Route path='/super/admin_dashboard' element={<SuperDashboard />}>
-            <Route path='/super/admin_dashboard/add_user' element={
-              <AddUsers />}>
+            <Route path='/doadmin' element={
+              <PrivateRoute>
+                <Doo />
+              </PrivateRoute>
+            } />
+
+            <Route path='/admin/addleavecount' element={
+              <PrivateRoute>
+                <AddLeaveCount />
+              </PrivateRoute>
+            }>
+            </Route>
+            <Route path='/admin/officeleave' element={<OfficerLeave />}>
             </Route>
 
-            <Route path='/super/admin_dashboard/add_office' element={
-              <AddOffice />}>
+            <Route path='/display' element={<Header_Footer />}>
+              <Route path='/display/dodisplay' element={
+                // <PrivateRoute>
+                <DoDisplay />
+                // </PrivateRoute>
+              } />
+
+              <Route path="/display/chief" element={
+                <PrivateRoute>
+                  <DigDashboard />
+                </PrivateRoute>
+              } />
             </Route>
 
-            <Route path='/super/admin_dashboard/add_branches' element={<AddBranch />}></Route>
-            <Route path='/super/admin_dashboard/officer_leave' element={<AddEmployee />}>
-            </Route>
-          </Route>
+            <Route path='/super/admin_dashboard' element={<SuperDashboard />}>
+              <Route path='/super/admin_dashboard/add_user' element={
+                <AddUsers />}>
+              </Route>
 
-          <Route path='/emp' element={<EmpRoute />} >
-            <Route element={<EmpDashboard />}>
-              <Route index element={<Employee />} />
-              <Route path='/emp/addemp_form/' element={<AddEmployee />} />
-              <Route path='/emp/edit_emp_from/:pmis?' element={<AddEmployee />} />
-              <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom />} />
-              <Route path='/emp/training-form/:pmis?' element={<TrainingForm />} />
-              <Route path='/emp/award-form/:pmis?' element={<AwardForm />} />
-              <Route path='/emp/decoration-form/:pmis?' element={<DecorationForm />} />
-              <Route path='/emp/punishment-form/:pmis?' element={<PunishmentForm />} />
-              <Route path='/emp/job-description-form/:pmis?' element={<JobDescriptionForm />} />
-              <Route path='/emp/job-working-form/:pmis?' element={<EmpChangeForm />} />
-              <Route path='/emp/3puste/:pmis?' element={<FinalPreview />} />
-            </Route>
-          </Route>
+              <Route path='/super/admin_dashboard/add_office' element={
+                <AddOffice />}>
+              </Route>
 
-          <Route path='/tango' element={<TangoRoute />}> {/* Secured Route */}
-            <Route element={<TangoDashboard />}> {/* Common Layout */}
-              <Route index element={<TangoHome />} /> {/* Default Route */}
-              <Route path='kasur-form' element={<DailyKasurForm />} />
-              <Route path='rajashwa-form' element={<PunishmentActionForm />} />
-              <Route path='arrestedvehicle-form' element={<ArrestedVehicleForm />} />
-              <Route path='vehicle' element={<VehicleForm />} />
-              <Route path='kasur' element={<KasurForm />} />
-              <Route path='report' element={<TangoAdminDashboard />}>
-                <Route path='tango-user' element={<Users/>} />
-                <Route path='kasur-report' element={<KasurReport />} />
-                <Route path='rajashwa-report' element={<RajashwaReport />} />
-                <Route path='arrest_vehicle-report' element={<ArrestVehicleReport />} />
+              <Route path='/super/admin_dashboard/add_branches' element={<AddBranch />}></Route>
+              <Route path='/super/admin_dashboard/officer_leave' element={<AddEmployee />}>
               </Route>
             </Route>
-          </Route>
-        </Routes>
 
-      </BrowserRouter >
+            <Route path='/emp' element={<EmpRoute />} >
+              <Route element={<EmpDashboard />}>
+                <Route index element={<Employee />} />
+                <Route path='/emp/addemp_form/' element={<AddEmployee />} />
+                <Route path='/emp/edit_emp_from/:pmis?' element={<AddEmployee />} />
+                <Route path='/emp/qualification-form/:pmis?' element={<QualificationFrom />} />
+                <Route path='/emp/training-form/:pmis?' element={<TrainingForm />} />
+                <Route path='/emp/award-form/:pmis?' element={<AwardForm />} />
+                <Route path='/emp/decoration-form/:pmis?' element={<DecorationForm />} />
+                <Route path='/emp/punishment-form/:pmis?' element={<PunishmentForm />} />
+                <Route path='/emp/job-description-form/:pmis?' element={<JobDescriptionForm />} />
+                <Route path='/emp/job-working-form/:pmis?' element={<EmpChangeForm />} />
+                <Route path='/emp/3puste/:pmis?' element={<FinalPreview />} />
+              </Route>
+            </Route>
+
+            <Route path='/tango' element={<TangoRoute />}> {/* Secured Route */}
+              <Route element={<TangoDashboard />}> {/* Common Layout */}
+                <Route index element={<TangoHome />} /> {/* Default Route */}
+                <Route path='kasur-form' element={<DailyKasurForm />} />
+                <Route path='rajashwa-form' element={<PunishmentActionForm />} />
+                <Route path='arrestedvehicle-form' element={<ArrestedVehicleForm />} />
+                <Route path='vehicle' element={<VehicleForm />} />
+                <Route path='kasur' element={<KasurForm />} />
+                <Route path='report' element={<TangoAdminDashboard />}>
+                  <Route path='tango-user' element={<Users />} />
+                  <Route path='kasur-report' element={<KasurReport />} />
+                  <Route path='rajashwa-report' element={<RajashwaReport />} />
+                  <Route path='arrest_vehicle-report' element={<ArrestVehicleReport />} />
+                </Route>
+              </Route>
+            </Route>
+          </Routes>
+
+        </BrowserRouter >
+      </AuthProvider>
     </>
   )
 }

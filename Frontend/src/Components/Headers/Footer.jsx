@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import './style.css'
 import axios from 'axios'
-import { getBaseUrl } from '../../Utilities/getBaseUrl'
+import { useBaseURL } from '../../Context/BaseURLProvider';
 
 const token = localStorage.getItem("token");
 
 const Footer = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
-    const [BASE_URL, setBase_Url] = useState();
-    const getBaseURLFunc = async () => {
-        const url = await getBaseUrl();
-        setBase_Url(url)
-    }
+    // const [BASE_URL, setBase_Url] = useState();
+    // const getBaseURLFunc = async () => {
+    //     const url = await getBaseUrl();
+    //     setBase_Url(url)
+    // }
 
-    useEffect(() => {
-        getBaseURLFunc();
-    }, []);
+    // useEffect(() => {
+    //     getBaseURLFunc();
+    // }, []);
+
+    // const BASE_URL = useBaseURL();
+    const BASE_URL = localStorage.getItem('BASE_URL');
+    // console.log("BASE_URL", BASE_URL)
+
     const [news, setNews] = useState([])
     const Fetch_News = () => {
         axios.get(`${BASE_URL}/auth/news`, 
@@ -23,7 +28,7 @@ const Footer = () => {
         })
             .then(result => {
                 if (result.data.Status) {
-                    setNews(result.data.Result)
+                    setNews(result.data.Result)                    
                 } else {
                     console.log(result.data.Result)
                     alert(result.data.Result)

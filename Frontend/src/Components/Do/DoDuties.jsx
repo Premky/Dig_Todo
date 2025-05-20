@@ -3,22 +3,22 @@ import React, { useEffect, useState } from 'react'
 // import './Dashboard/scroll-table.css'
 import '../Dashboard/scroll-table.css'
 import { format } from 'date-fns';
-import { getBaseUrl } from '../../Utilities/getBaseUrl'
+import { useBaseURL } from '../../Context/BaseURLProvider'
 
 const token = localStorage.getItem("token");
 
 const DoDuties = () => {
     // const BASE_URL = import.meta.env.VITE_API_BASE_URL
-    const [BASE_URL, setBase_Url] = useState();
-    const getBaseURLFunc = async () => {
-        const url = await getBaseUrl();
-        setBase_Url(url)
-    }
+    // const [BASE_URL, setBase_Url] = useState();
+    // const getBaseURLFunc = async () => {
+    //     const url = await getBaseUrl();
+    //     setBase_Url(url)
+    // }
 
-    useEffect(() => {
-        getBaseURLFunc();
-    }, []);
-
+    // useEffect(() => {
+    //     getBaseURLFunc();
+    // }, []);
+    const BASE_URL = useBaseURL();
     const [allduty, setAllDuty] = useState([]);
     const [usertype, setUsertype] = useState(localStorage.getItem('type'))
     useEffect(() => {

@@ -1,48 +1,47 @@
 import jwt from 'jsonwebtoken';
 
 const verifyToken = (req, res, next) => {
-    let token = null;
+    const cookietoken = req.cookies?.token;
+    const authHeader = req.headers['authorization'];
+    const headertoken = authHeader && authHeader.startsWith("Bearer ") ? authHeader.split(' ')[1] : null;
 
-    // Check for token in cookies
-    if (req.cookies.token) {
-        token = req.cookies.token;
-        // console.log('cookies')
-    }
+    const token = cookietoken || headertoken;
 
-    // Check for token in Authorization header
-    if (req.headers['authorization']) {
-        token = req.headers['authorization'].split(' ')[1]; // Extract token from Bearer token
-        // console.log('header')
-    }
-
-    // If no token is provided
     if (!token) {
-        console.log('no token')
-        return res.status(403).json({ Status: false, Error: "No token provided." });
+        return res.status(401).json({ message: "Unauthorized: No token provided" });
     }
 
-    // Verify the token
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
-            console.error(err);
-            return res.status(401).json({ Status: false, Error: "Failed to authenticate token." });
+            if (err.name === 'TokenExpiredError') {
+                return res.status(401).json({ message: "Token expired" });
+            }
+            console.error('Token verification error:', err.message);
+            return res.status(403).json({ message: "Forbidden: Invalid token" });
         }
 
-        // Save user details to request object
-        req.userId = decoded.id;
-        req.userRole = decoded.role;
-        req.userEmail = decoded.email;
-        req.userOffice = decoded.office;
-        req.userBranch = decoded.branch;
+        req.user = decoded;
 
-        // console.log('USER:', req.userId, 
-        //             'ROLE:', req.userRole, 
-        //             'USER:', req.userEmail, 
-        //             'OFFICE:', req.userOffice,
-        //             'Branch:', req.userBranch
-        //         )
+        // 🔄 Refresh the token (optional)
+        // const refreshedToken = jwt.sign(decoded, process.env.JWT_SECRET, {
+        //     expiresIn: '1d', // or any duration
+        // });
 
-        next(); // Proceed to the next middleware or route
+        const { exp, iat, ...userData } = decoded;
+        // console.log("User Data:", userData);
+        const refreshedToken = jwt.sign(userData, process.env.JWT_SECRET, {
+            expiresIn: '1d',
+        });
+
+        res.cookie('token', refreshedToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            maxAge: 24 * 60 * 60 * 1000,
+        });
+
+        next();
     });
 };
+
 export default verifyToken;

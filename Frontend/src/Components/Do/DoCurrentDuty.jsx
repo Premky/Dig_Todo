@@ -21,12 +21,15 @@ const DoCurrentDuty = () => {
   const [currentDuties, setCurrentDuties] = useState([]);
   useEffect(() => {
     if (BASE_URL) {
-      axios.get(`${BASE_URL}/auth/docurrentduty`, {headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+      axios.get(`${BASE_URL}/auth/docurrentduty`, {
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
       })
         .then(response => {
           const duties = response.data.Result;
+          // console.log(duties);
           const filteredDuties = filterCurrentDuties(duties);
-          setCurrentDuties(filteredDuties);
+          // console.log("Filtered Duties:", filteredDuties);
+          setCurrentDuties(duties);
         })
         .catch(error => {
           console.log("Error fetching duties:", error);
@@ -35,50 +38,67 @@ const DoCurrentDuty = () => {
   }, [BASE_URL]);
 
   const filterCurrentDuties = (duties) => {
-    const currentDate = new NepaliDate();
-    const currentTime = currentDate.format('HH:mm');
+  const now = new Date();
+  const currentNepaliDate = new NepaliDate(); // today's Nepali date
 
-    return duties.filter(duty => {
-      const startDateTime = new NepaliDate(duty.start_date + ' ' + duty.start_time);
-      const endDateTime = new NepaliDate(duty.end_date + ' ' + duty.end_time);
-      return currentDate >= startDateTime && currentDate <= endDateTime;
+  const currentTimeStr = now.toTimeString().split(' ')[0]; // 'HH:MM:SS'
+  const [h, m, s] = currentTimeStr.split(':').map(Number);
 
-    });
-  };
+  currentNepaliDate.setHours(h);
+  currentNepaliDate.setMinutes(m);
+  currentNepaliDate.setSeconds(s);
+
+  return duties.filter(duty => {
+    
+    const startNepali = new NepaliDate(duty.start_date);
+    const endNepali = new NepaliDate(duty.end_date);
+
+    const [sh, sm, ss] = duty.start_time.split(":").map(Number);
+    const [eh, em, es] = duty.end_time.split(":").map(Number);
+
+    const startDateTime = new NepaliDate(startNepali.getYear(), startNepali.getMonth(), startNepali.getDate(), sh, sm, ss);
+    const endDateTime = new NepaliDate(endNepali.getYear(), endNepali.getMonth(), endNepali.getDate(), eh, em, es);
+
+    return currentNepaliDate.getTime() >= startDateTime.getTime() &&
+           currentNepaliDate.getTime() <= endDateTime.getTime();
+  });
+};
+
+
 
   return (
     <>
       <div className="current-duty-container m-0 p-0 container-fluid">
-      <div className="d-flex flex-column px-0 pt-0 " >
-        <table className="table table-sm">
-          <thead>
-            <tr className='text-center table-primary'>
-              {/* <th>सि.नं.</th> */}
-              <th>डिउटी</th>
-              <th>दर्जा नामथर</th>
-              <th>सम्पर्क नं.</th>
-              {/* <th>कैफियत</th> */}
-            </tr>
-          </thead>
-          <tbody>
-            {currentDuties.length > 0 ? (
-              currentDuties.map((duty, index) => (
-                <tr key={index} className='text-center'>
-                  {/* <td>{index + 1}</td> */}
-                  <td>{duty.dutytype === 1 ? 'फि.अ.' : duty.dutytype === 2 ? 'डि.अ.' : 'डि.अ. सहायक'}</td>
-                  <td className=''>{duty.do_name}</td>
-                  <td>{duty.contact}</td>
-                  {/* <td>{duty.remarks}</td> */}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="4" className="text-center">No current duties</td>
+        <div className="d-flex flex-column px-0 pt-0 " >
+          <table className="table table-sm">
+            <thead>
+              <tr className='text-center table-primary'>
+                {/* <th>सि.नं.</th> */}
+                <th>डिउटी</th>
+                <th>दर्जा नामथर</th>
+                <th>सम्पर्क नं.</th>
+                {/* <th>कैफियत</th> */}
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {currentDuties.length > 0 ? (
+                currentDuties.map((duty, index) => (
+                  <tr key={index} className='text-center'>
+                    {/* <td>{index + 1}</td> */}
+                    <td>{duty.dutytype === 1 ? 'फि.अ.' : duty.dutytype === 2 ? 'डि.अ.' : 'डि.अ. सहायक'}</td>
+                    <td className=''>{duty.do_name}</td>
+                    <td>{duty.contact}</td>
+                    {/* <td>{duty.remarks}</td> */}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" className="text-center">No current duties</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   )

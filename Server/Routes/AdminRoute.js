@@ -80,6 +80,32 @@ router.post('/login', (req, res) => {
     });
 });
 
+// Session Validation Route
+router.get('/session', verifyToken, (req, res) => {
+    if (!req.user) return res.status(401).json({ loggedIn: false });
+
+    const { username, role_np, office_np, branch_name, office_id, branch_id, allowed_apps } = req.user;
+
+    return res.json({
+        loggedIn: true,
+        user: {
+            username,
+            role_np,
+            office_np,
+            branch_name,
+            office_id,
+            branch_id,
+            allowed_apps,
+        }
+    });
+});
+
+
+// Health Check Route
+router.get('/health', (req, res) => {
+    res.status(200).send("OK");
+});
+
 
 router.get('/fetch_user_office/:user', (req, res) => {
     let user = req.params.user;
@@ -158,7 +184,7 @@ UPDATE programs
 // })
 
 router.get('/programs', verifyToken, (req, res) => {
-    const officeid = req.userOffice;
+    const officeid = req.user.office;
     const sql = "SELECT * FROM programs WHERE office_id=? ORDER BY -is_displayed, date, time";
 
     con.query(sql, officeid, (err, result) => {
@@ -223,7 +249,7 @@ router.delete('/delete_programs/:id', (req, res) => {
 })
 
 router.get('/news', verifyToken, (req, res) => {
-    const officeid = req.userOffice;
+    const officeid = req.user.office;
     // console.log(officeid, );
     const sql = "SELECT * FROM news WHERE office_id=? ORDER BY date";
     con.query(sql, officeid, (err, result) => {
@@ -233,7 +259,7 @@ router.get('/news', verifyToken, (req, res) => {
 })
 
 router.post('/add_news', verifyToken, (req, res) => {
-    const officeid = req.userOffice;
+    const officeid = req.user.office;
     const sql = `INSERT INTO news(date, title, news, created_by, office_id, branch_id) values(?)`;
     const values = [
         req.body.date,
@@ -295,7 +321,8 @@ router.delete('/delete_news/:id', (req, res) => {
 })
 
 router.get('/docurrentduty', verifyToken, (req, res) => {
-    const officeid = req.userOffice;
+    const officeid = req.user.office;
+    // console.log(officeid);
     const sql = "SELECT * FROM doduty WHERE office_id=? ORDER BY start_date, start_time, dutytype ASC LIMIT 3 ";
     con.query(sql, officeid, (err, result) => {
         // con.query(sql, (err, result)=>{
@@ -306,7 +333,7 @@ router.get('/docurrentduty', verifyToken, (req, res) => {
 })
 
 router.get('/doduty', verifyToken, (req, res) => {
-    const officeid = req.userOffice;
+    const officeid = req.user.office;
     // console.log(officeid );
     // const sql = "SELECT * FROM doduty";
     const sql = "SELECT * FROM doduty WHERE office_id=? ORDER BY start_date, start_time, dutytype ";
@@ -348,7 +375,7 @@ router.post('/add_doduty', (req, res) => {
   
 
 router.delete('/delete_doduty/:id', verifyToken, (req, res) => {
-    const officeid = req.userOffice;
+    const officeid = req.user.office;
     const id = req.params.id;
     console.log(officeid, id)
     const sql = "DELETE FROM doduty WHERE doid=? AND office_id=?";
@@ -422,7 +449,7 @@ router.put('/update_officer_leave/:id', (req, res) => {
 
 
 router.get('/office_leave/', verifyToken, (req, res) => {
-    const office_id = req.userOffice;
+    const officeid = req.user.office;
     const pmis = req.query.pmis;
 
     // console.log(office_id)
@@ -430,24 +457,24 @@ router.get('/office_leave/', verifyToken, (req, res) => {
                 ORDER BY (CASE WHEN present_day IS Null OR present_day='' THEN 1
                     ELSE 2 
                 END), leave_end_date `;
-    con.query(sql, [office_id, pmis, fy_date], (err, result) => {
+    con.query(sql, [officeid, pmis, fy_date], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
         return res.json({ Status: true, Result: result })
     })
 })
 
 router.get('/get_officer_leave/:id', verifyToken, (req, res) => {
-    const office_id = req.userOffice;
+    const officeid = req.user.office;
     const emp_id = req.params.id;
     const sql = `SELECT * FROM emp_leave WHERE l_id=?`;
-    con.query(sql, [emp_id, office_id, fy_date], (err, result) => {
+    con.query(sql, [emp_id, officeid, fy_date], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
         return res.json({ Status: true, Result: result })
     })
 })
 
 router.get('/all_officer_leave/', verifyToken, (req, res) => {
-    const office_id = req.userOffice;
+    const officeid = req.user.office;
 
     const sql = `SELECT emp.*, pmis.name_np FROM 
                 emp_leave emp 
@@ -457,7 +484,7 @@ router.get('/all_officer_leave/', verifyToken, (req, res) => {
                     ELSE 2 
                 END),
                  emp.leave_end_date `;
-    con.query(sql, [office_id, fy_date], (err, result) => {
+    con.query(sql, [officeid, fy_date], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
         return res.json({ Status: true, Result: result })
     })
@@ -484,18 +511,18 @@ router.post('/add_leave_count', (req, res) => {
 })
 
 router.get('/leave_count_self', verifyToken, (req, res) => {
-    const office_id = req.userOffice;
+    const officeid = req.user.office;
     const todayNepaliDate = new NepaliDate().format('YYYY-MM-DD');
     // console.log(office_id, todayNepaliDate)
     const sql = "SELECT * FROM leavecount WHERE office_id=? AND date=? ORDER BY -created_at";
-    con.query(sql, [office_id, todayNepaliDate], (err, result) => {
+    con.query(sql, [officeid, todayNepaliDate], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
         return res.json({ Status: true, Result: result })
     })
 })
 
 router.get('/leave_count_office', verifyToken, (req, res) => {
-    const office_id = req.userOffice;
+    const officeid = req.user.office;
     const todayNepaliDate = new NepaliDate().format('YYYY-MM-DD');
     // console.log('offid',office_id, todayNepaliDate)
     const sql =
@@ -503,7 +530,7 @@ router.get('/leave_count_office', verifyToken, (req, res) => {
             leavecount l
             JOIN office o ON l.office_id=o.o_id
             WHERE o.headoffice=? AND l.date=?`;
-    con.query(sql, [office_id, todayNepaliDate], (err, result) => {
+    con.query(sql, [officeid, todayNepaliDate], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
         // console.log(result)
         return res.json({ Status: true, Result: result })
@@ -511,7 +538,7 @@ router.get('/leave_count_office', verifyToken, (req, res) => {
 })
 
 router.post('/leave_count_office:date', verifyToken, (req, res) => {
-    const office_id = req.userOffice;
+    const officeid = req.user.office;
     const todayNepaliDate = req.params.date;
 
     const sql =
@@ -519,7 +546,7 @@ router.post('/leave_count_office:date', verifyToken, (req, res) => {
                     FROM leavecount l 
                     JOIN office o ON l.office_id=o.o_id
                     WHERE o.headoffice=? AND l.date=?`;
-    con.query(sql, [office_id, todayNepaliDate], (err, result) => {
+    con.query(sql, [officeid, todayNepaliDate], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
         return res.json({ Status: true, Result: result })
     })
@@ -553,7 +580,7 @@ const upload = multer({ storage: storage });
 
 router.post('/add_do_notice', verifyToken, upload.single('image'), (req, res) => {
     try {
-        const office_id = req.userOffice;
+        const officeid = req.user.office;
         const todayNepaliDate = req.body.date;
         console.log(req.file)
         const sql = `INSERT INTO do_notice(date, subject, remarks, notice_img, created_by, office_id, branch_id) VALUES(?)`;
@@ -583,40 +610,40 @@ router.post('/add_do_notice', verifyToken, upload.single('image'), (req, res) =>
 });
 
 router.get('/uploaded_do_notice', verifyToken, (req, res) => {
-    const office_id = req.userOffice;
+    const officeid = req.user.office;
 
     const sql = `SELECT do_notice.*, o.office_name 
                     FROM do_notice 
                     JOIN office o ON do_notice.office_id=o.o_id 
                     WHERE do_notice.office_id=?`;
 
-    con.query(sql, [office_id], (err, result) => {
+    con.query(sql, [officeid], (err, result) => {
         if (err) return res.status(500).json({ Status: false, Error: "Query Error", Details: err.message });
         return res.json({ Status: true, Result: result });
     });
 });
 
 router.get('/display_do_notice', verifyToken, (req, res) => {
-    const office_id = req.userOffice;
+    const officeid = req.user.office;
     // console.log(office_id)
     const sql = `SELECT do_notice.*, o.*
                     FROM do_notice 
                     JOIN office o ON do_notice.office_id=o.o_id 
                     WHERE do_notice.office_id=?`;
 
-    con.query(sql, [office_id], (err, result) => {
+    con.query(sql, [officeid], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Query Error" })
         return res.json({ Status: true, Result: result })
     })
 });
 
 router.delete('/delete_uploaded_notice/:id', verifyToken, (req, res) => {
-    const office_id = req.userOffice;
+    const officeid = req.user.office;
     const id = req.params.id;
-    console.log('office:',office_id, 'id:', id)
+    console.log('office:',officeid, 'id:', id)
 
     const getFileSql = 'SELECT notice_img FROM do_notice WHERE donid=? AND office_id=?';
-    con.query(getFileSql, [id, office_id], (err, result) => {
+    con.query(getFileSql, [id, officeid], (err, result) => {
         if (err) {
             console.error('Query Error:', err);
             return res.status(500).json({ Status: false, Error: "Query Error: " + err.message });
