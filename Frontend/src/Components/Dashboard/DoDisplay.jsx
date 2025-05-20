@@ -36,13 +36,13 @@ const DoDisplay = () => {
                         </div>
                         <DoCurrentDuty />
                     </div>
-                    <div className="row" style={{ fontSize: '0.6rem' }}>
-                    <div className="pt-1 d-flex justify-content-center shadow bg-warning bg-gradient ">
+                    {/* <div className="row" style={{ fontSize: '0.6rem' }}>
+                        <div className="pt-1 d-flex justify-content-center shadow bg-warning bg-gradient ">
                             <h6 > <strong> बिदामा रहेका प्रहरी कर्माचारीहरुको संख्या</strong></h6>
                         </div>
-                        {/* <LeaveCount /> */}
+                        <LeaveCount />
                         <DoLeaveCount />
-                    </div>
+                    </div> */}
 
                     <div className="row" style={{ fontSize: '0.6rem' }}>
                         <div className="pt-1 d-flex justify-content-center shadow bg-warning bg-gradient ">
@@ -50,7 +50,7 @@ const DoDisplay = () => {
                                 <h6>  कार्यलय प्रमुखको कार्यक्रम </h6>
                             </strong>
                         </div>
-                        <ProgramList/>
+                        <ProgramList />
                     </div>
 
                 </div>
