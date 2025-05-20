@@ -101,12 +101,6 @@ router.get('/session', verifyToken, (req, res) => {
 });
 
 
-// Health Check Route
-router.get('/health', (req, res) => {
-    res.status(200).send("OK");
-});
-
-
 router.get('/fetch_user_office/:user', (req, res) => {
     let user = req.params.user;
     // console.log(user)
@@ -677,4 +671,8 @@ router.delete('/delete_uploaded_notice/:id', verifyToken, (req, res) => {
     });
 });
 
+// Health Check Route
+router.get('/health', (req, res) => {
+    res.status(200).send("OK");
+});
 export { router as adminRouter }

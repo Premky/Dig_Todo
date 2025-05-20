@@ -8,9 +8,12 @@ export const BaseURLProvider = ({ children }) => {
 
   useEffect(() => {
     const fetchBaseUrl = async () => {
-      const url = await getAvailableBaseUrl();
+      // const url = await getAvailableBaseUrl();
+      const url = await getBaseUrl();      
+      console.log("Base URLddd:", url);
       setBaseURL(url);
     };
+
     fetchBaseUrl();
   }, []);
 
