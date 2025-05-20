@@ -11,7 +11,16 @@ import ReuseDatePicker from '../ReuseableComponents/ReuseDatePicker';
 const AddDoNotice = () => {
     const token = localStorage.getItem("token");
 
-    const BASE_URL = import.meta.env.VITE_API_BASE_URL
+    // const BASE_URL = import.meta.env.VITE_API_BASE_URL
+    const [BASE_URL, setBase_Url] = useState();
+    const getBaseURLFunc = async () => {
+        const url = await getBaseUrl();
+        setBase_Url(url)
+    }
+
+    useEffect(() => {
+        getBaseURLFunc();
+    }, []);
 
     const navigate = useNavigate();
     const [validationError, setValidationError] = useState(null);
