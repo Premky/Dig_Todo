@@ -651,7 +651,7 @@ router.delete('/delete_uploaded_notice/:id', verifyToken, (req, res) => {
         const filePath = path.join(__dirname, '..', 'Public', 'Uploads', noticeImg);
 
         const sql = 'DELETE FROM do_notice WHERE donid=? AND office_id=?';
-        con.query(sql, [id, office_id], (err, deleteResult) => {
+        con.query(sql, [id, officeid], (err, deleteResult) => {
             if (err) {
                 console.error('Query Error:', err);
                 return res.status(500).json({ Status: false, Error: "Query Error: " + err.message });
