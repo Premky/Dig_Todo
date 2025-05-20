@@ -39,9 +39,10 @@ const DigDashboard = () => {
                                 <div className="pt-2"><strong>डिउटी सहायकः</strong></div> <hr /> */}
                                 <DoCurrentDuty/>
                             </div>
-                            <div className="col-12 pt-2 h6" style={{fontSize: 'calc(1vw + 0.20rem)'}}>
+
+                            {/* <div className="col-12 pt-2 h6" style={{fontSize: 'calc(1vw + 0.20rem)'}}>
                                 <LeaveCount/>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
