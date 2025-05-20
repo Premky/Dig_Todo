@@ -18,7 +18,8 @@ const DoDuties = () => {
     // useEffect(() => {
     //     getBaseURLFunc();
     // }, []);
-    const BASE_URL = useBaseURL();
+    // const BASE_URL = useBaseURL();
+    const BASE_URL = localStorage.getItem('BASE_URL');
     const [allduty, setAllDuty] = useState([]);
     const [usertype, setUsertype] = useState(localStorage.getItem('type'))
     useEffect(() => {
