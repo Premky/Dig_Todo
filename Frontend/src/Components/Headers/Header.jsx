@@ -15,7 +15,7 @@ const Header = () => {
 
   // Function to update Nepali time
   const updateNepaliTime = () => {
-    const npTimeNow = new NepaliDate();
+    const npTimeNow = new NepaliDate();  
     setNepaliTime(npTimeNow.format('HH:mm:ss'));
   };
 
